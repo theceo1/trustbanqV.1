@@ -10,7 +10,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
     <div className="min-h-screen bg-gray-100">
       <Header />
-      <div className="flex">
+      <div className="flex pt-16"> {/* Add padding-top here */}
         <Sidebar />
         <main className="flex-grow p-6">{children}</main>
       </div>

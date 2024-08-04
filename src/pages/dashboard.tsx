@@ -8,15 +8,15 @@ import Trade from '@/components/dashboard/Trade'
 const Dashboard: React.FC = () => {
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-2">
         <h1 className="text-2xl font-bold">Dashboard</h1>
-        <div className="flex items-center space-x-2">
+        <div className="text-2lg flex items-center space-x-2">
           <button className="flex items-center px-3 py-2 bg-white rounded shadow">
-            <ArrowPathIcon className="w-5 h-5 mr-2" />
+            <ArrowPathIcon className="w-2 h-2 mr-2" />
             Refresh
           </button>
           <button className="flex items-center px-3 py-2 bg-white rounded shadow">
-            <FunnelIcon className="w-5 h-5 mr-2" />
+            <FunnelIcon className="w-2 h-2 mr-2" />
             Filter
           </button>
         </div>

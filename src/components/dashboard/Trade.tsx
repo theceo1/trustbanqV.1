@@ -9,13 +9,13 @@ const Trade: React.FC = () => {
       <h2 className="text-xl font-semibold mb-4">Trade</h2>
       <div className="flex mb-4">
         <button
-          className={`flex-1 py-2 ${action === 'buy' ? 'bg-primary text-white' : 'bg-gray-100'} rounded-l`}
+          className={`flex-1 py-2 ${action === 'buy' ? 'bg-teal-500 text-white' : 'bg-gray-100'} rounded-l`}
           onClick={() => setAction('buy')}
         >
           Buy
         </button>
         <button
-          className={`flex-1 py-2 ${action === 'sell' ? 'bg-primary text-white' : 'bg-gray-100'} rounded-r`}
+          className={`flex-1 py-2 ${action === 'sell' ? 'bg-teal-500 text-white' : 'bg-gray-100'} rounded-r`}
           onClick={() => setAction('sell')}
         >
           Sell
@@ -37,7 +37,7 @@ const Trade: React.FC = () => {
         <label className="block text-sm font-medium text-gray-700 mb-1">Amount</label>
         <input type="number" className="w-full p-2 border rounded" placeholder="0.00" />
       </div>
-      <button className="w-full bg-primary text-white py-2 rounded font-medium">
+      <button className="w-full bg-teal-500 text-white py-2 rounded font-medium">
         {action === 'buy' ? 'Buy' : 'Sell'} {coin.split(' ')[0]}
       </button>
     </div>

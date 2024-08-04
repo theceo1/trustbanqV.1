@@ -4,6 +4,9 @@
 
 body {
   @apply bg-gray-100;
+  body {
+    padding-top: 64px; /* Adjust this value based on your header height */
+  }
 }
 
 .container {
