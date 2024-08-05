@@ -4,6 +4,8 @@ import AccountBalance from '@/components/dashboard/AccountBalance'
 import RecentTransactions from '@/components/dashboard/RecentTransactions'
 import MarketOverview from '@/components/dashboard/MarketOverview'
 import Trade from '@/components/dashboard/Trade'
+import CryptoPriceTracker from '@/components/common/CryptoPriceTracker'
+import ProtectedRoute from '@/components/auth/ProtectedRoute'
 
 const Dashboard: React.FC = () => {
   return (
@@ -25,6 +27,9 @@ const Dashboard: React.FC = () => {
       <div className="grid grid-cols-3 gap-6">
         <div className="col-span-1">
           <AccountBalance />
+          <div className="mt-6">
+            <CryptoPriceTracker />
+          </div>
           <RecentTransactions />
         </div>
         
@@ -37,4 +42,4 @@ const Dashboard: React.FC = () => {
   )
 }
 
-export default Dashboard
+export default ProtectedRoute(Dashboard);
