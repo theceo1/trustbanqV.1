@@ -55,7 +55,7 @@ const CryptoPriceTracker: React.FC = () => {
   }, [lastMessage, messageHandler]);
 
   return (
-    <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-4">
+    <div className="bg-white dark:bg-black shadow rounded-lg p-4">
       <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Live Crypto Prices</h2>
       <div className="space-y-2">
         {prices.map((crypto) => (

@@ -1,3 +1,5 @@
+//src/components/trade/BuySell.tsx
+
 import React, { useState } from 'react';
 
 type TradeAction = 'buy' | 'sell';

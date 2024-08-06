@@ -1,22 +1,26 @@
-import { useRouter } from 'next/router';
 import { useAuth } from '../../context/AuthContext';
+import { useRouter } from 'next/router';
+import { useEffect, ReactNode } from 'react';
 
-const ProtectedRoute = (WrappedComponent: React.ComponentType) => {
-  return (props: any) => {
-    const { isAuthenticated } = useAuth();
-    const router = useRouter();
+interface ProtectedRouteProps {
+  children: ReactNode;
+}
 
-    if (typeof window !== 'undefined') {
-      if (!isAuthenticated) {
-        router.replace('/login');
-        return null;
-      }
-      return <WrappedComponent {...props} />;
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
+  const { user } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!user) {
+      router.push('/login');
     }
+  }, [user, router]);
 
-    // If we're on server, return null
-    return null;
-  };
+  if (!user) {
+    return null; // or a loading spinner
+  }
+
+  return <>{children}</>;
 };
 
 export default ProtectedRoute;

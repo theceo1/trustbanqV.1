@@ -1,52 +1,42 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useContext, ReactNode } from 'react';
 
 interface AuthContextType {
-  user: any;
-  login: (email: string, password: string) => Promise<void>;
+  user: string | null;
+  token: string | null;
+  login: (user: string, token: string) => void;
   logout: () => void;
-  isAuthenticated: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<any>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const [user, setUser] = useState<string | null>(null);
+  const [token, setToken] = useState<string | null>(null);
 
-  useEffect(() => {
-    // Check if user is stored in localStorage
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-      setIsAuthenticated(true);
-    }
-  }, []);
-
-  const login = async (email: string, password: string) => {
-    // Here you would typically make an API call to your backend
-    // For now, we'll just simulate a successful login
-    const mockUser = { id: '1', email, name: 'Test User' };
-    setUser(mockUser);
-    setIsAuthenticated(true);
-    localStorage.setItem('user', JSON.stringify(mockUser));
+  const login = (user: string, token: string) => {
+    setUser(user);
+    setToken(token);
+    localStorage.setItem('user', user);
+    localStorage.setItem('token', token);
   };
 
   const logout = () => {
     setUser(null);
-    setIsAuthenticated(false);
+    setToken(null);
     localStorage.removeItem('user');
+    localStorage.removeItem('token');
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isAuthenticated }}>
+    <AuthContext.Provider value={{ user, token, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-export const useAuth = () => {
+export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
-  if (context === undefined) {
+  if (!context) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;

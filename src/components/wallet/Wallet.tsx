@@ -1,49 +1,54 @@
-import React, { useState } from 'react';
-import { CurrencyDollarIcon, ArrowUpIcon, ArrowDownIcon } from '@heroicons/react/24/outline';
+// src/components/wallet/Wallet.tsx
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../../context/AuthContext';
+import { fetchBalance } from '../../services/api';
 
-type CryptoBalance = {
-  currency: string;
-  amount: number;
-  usdValue: number;
-};
+interface Balance {
+  NGN: number;
+  BTC: number;
+  ETH: number;
+}
 
 const Wallet: React.FC = () => {
-  const [balances, setBalances] = useState<CryptoBalance[]>([
-    { currency: 'BTC', amount: 0.5, usdValue: 20000 },
-    { currency: 'ETH', amount: 2.5, usdValue: 5000 },
-    { currency: 'USDT', amount: 1000, usdValue: 1000 },
-  ]);
+  const [balance, setBalance] = useState<Balance>({ NGN: 0, BTC: 0, ETH: 0 });
+  const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
 
-  const totalUsdValue = balances.reduce((total, balance) => total + balance.usdValue, 0);
+  useEffect(() => {
+    fetchBalanceData();
+  }, []);
+
+  const fetchBalanceData = async () => {
+    try {
+      const data = await fetchBalance();
+      setBalance(data as Balance);
+    } catch (error) {
+      console.error('Failed to fetch balance', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return <div className="text-center text-gray-600 dark:text-teal-500">Loading wallet...</div>;
+  }
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6">My Wallet</h1>
-      <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-        <h2 className="text-xl font-semibold mb-4">Total Balance</h2>
-        <p className="text-3xl font-bold">${totalUsdValue.toLocaleString()}</p>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {balances.map((balance) => (
-          <div key={balance.currency} className="bg-white rounded-lg shadow-md p-4">
-            <div className="flex justify-between items-center mb-2">
-              <span className="text-lg font-semibold">{balance.currency}</span>
-              <CurrencyDollarIcon className="w-6 h-6 text-gray-400" />
-            </div>
-            <p className="text-2xl font-bold mb-1">{balance.amount}</p>
-            <p className="text-gray-600">${balance.usdValue.toLocaleString()}</p>
-            <div className="mt-4 flex space-x-2">
-              <button className="flex-1 bg-green-500 text-white py-2 px-4 rounded-md flex items-center justify-center">
-                <ArrowUpIcon className="w-4 h-4 mr-2" />
-                Deposit
-              </button>
-              <button className="flex-1 bg-red-500 text-white py-2 px-4 rounded-md flex items-center justify-center">
-                <ArrowDownIcon className="w-4 h-4 mr-2" />
-                Withdraw
-              </button>
-            </div>
-          </div>
-        ))}
+    <div className="bg-white dark:bg-black shadow-lg rounded-lg p-6 mb-6">
+      <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-white">My Wallet</h2>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="bg-teal-600 rounded-lg p-4 text-white">
+          <h3 className="text-lg font-semibold mb-2">Nigerian Naira</h3>
+          <p className="text-2xl font-bold">₦ {balance.NGN.toLocaleString()}</p>
+        </div>
+        <div className="bg-orange-500 rounded-lg p-4 text-white">
+          <h3 className="text-lg font-semibold mb-2">Bitcoin</h3>
+          <p className="text-2xl font-bold">{balance.BTC.toFixed(8)} BTC</p>
+        </div>
+        <div className="bg-blue-500 rounded-lg p-4 text-white">
+          <h3 className="text-lg font-semibold mb-2">Ethereum</h3>
+          <p className="text-2xl font-bold">{balance.ETH.toFixed(8)} ETH</p>
+        </div>
       </div>
     </div>
   );
