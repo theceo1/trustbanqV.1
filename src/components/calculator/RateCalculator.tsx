@@ -83,7 +83,7 @@ const RateCalculator: React.FC = () => {
       </div>
       
       <div className="mt-8 text-center">
-        <p className="text-sm text-gray-600 mb-2">JOIN 300,000+ PEOPLE USING TRUSTBANK</p>
+        <p className="text-sm text-gray-600 mb-2">JOIN 300,000+ PEOPLE USING trustBank</p>
         <p className="text-2xl font-bold text-blue-800">Create a free account and get started</p>
       </div>
     </div>

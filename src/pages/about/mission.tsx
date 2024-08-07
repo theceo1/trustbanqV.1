@@ -1,14 +1,19 @@
 import React from 'react';
-import Layout from '../../components/layout/Layout';
+import Head from 'next/head';
+import withSidebar from '@/components/layout/withSidebar';
 
-const Mission: React.FC = () => {
+const MissionPage: React.FC = () => {
   return (
-    <Layout>
+    <>
+     <Head>
+        <title>Mission - trustBank</title>
+        <meta name="description" content="Our mission statement" />
+      </Head>
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 space-y-8">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-black mb-4">Our Mission</h1>
         
         <p>
-        At TrustBank, our mission is to empower individuals globally by providing accessible financial services to one billion people. We believe that financial inclusion is key to a better future, and we are dedicated to making this vision a reality.
+        At trustBank, our mission is to empower individuals globally by providing accessible financial services to one billion people. We believe that financial inclusion is key to a better future, and we are dedicated to making this vision a reality.
       </p>
 
       <p>
@@ -16,8 +21,8 @@ const Mission: React.FC = () => {
       </p>
      
     </div>
-    </Layout>
+    </>
   );
 };
 
-export default Mission;
+export default withSidebar(MissionPage);

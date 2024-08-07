@@ -5,7 +5,7 @@ import { HomeIcon, ChartBarIcon, WalletIcon, CurrencyDollarIcon, EyeIcon } from 
 
 const Sidebar: React.FC = () => {
   return (
-    <aside className="bg-white w-64 h-screen p-4 mt-8"> {/* Ensures full height */}
+    <aside className="bg-white w-60 h-80 p-2 mt-4 rounded shadow "> 
       <nav>
         <ul className="space-y-4">
           <li>
