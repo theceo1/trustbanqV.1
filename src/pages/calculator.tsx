@@ -1,7 +1,7 @@
 import React from 'react';
 import Head from 'next/head';
-import Layout from '../components/layout/Layout';
 import RateCalculator from '../components/calculator/RateCalculator';
+import Layout from '@/components/layout/Layout';
 
 const CalculatorPage: React.FC = () => {
   return (

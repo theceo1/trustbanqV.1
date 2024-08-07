@@ -1,7 +1,6 @@
-// src/components/wallet/Wallet.tsx
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { fetchBalance } from '../../services/api';
+import { fetchBalance } from '../../services/api'; // Ensure this import is correct
 
 interface Balance {
   NGN: number;

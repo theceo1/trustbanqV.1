@@ -3,7 +3,7 @@ import React, { createContext, useState, useContext, ReactNode } from 'react';
 interface AuthContextType {
   user: string | null;
   token: string | null;
-  login: (email: string, password: string) => Promise<void>;
+  login: (user: string, token: string) => void;
   logout: () => void;
 }
 
@@ -13,12 +13,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<string | null>(null);
   const [token, setToken] = useState<string | null>(null);
 
-  const login = async (email: string, password: string) => {
-    const userResponse = await // your login logic here
-    setUser(userResponse.user);
-    setToken(userResponse.token);
-    localStorage.setItem('user', userResponse.user);
-    localStorage.setItem('token', userResponse.token);
+  const login = (user: string, token: string) => {
+    setUser(user);
+    setToken(token);
+    localStorage.setItem('user', user);
+    localStorage.setItem('token', token);
   };
 
   const logout = () => {

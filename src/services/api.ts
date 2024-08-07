@@ -21,3 +21,8 @@ export const resetPassword = async (token: string, password: string) => {
   const response = await axios.post(`${API_URL}/auth/reset-password`, { token, password });
   return response.data;
 };
+
+export const fetchBalance = async () => {
+  const response = await axios.get(`${API_URL}/wallet/balance`);
+  return response.data;
+};

@@ -1,12 +1,12 @@
-import React from 'react'
-import Layout from '../components/layout/Layout'
-import { ArrowPathIcon, FunnelIcon } from '@heroicons/react/24/outline'
-import AccountBalance from '@/components/dashboard/AccountBalance'
-import RecentTransactions from '@/components/dashboard/RecentTransactions'
-import MarketOverview from '@/components/dashboard/MarketOverview'
-import Trade from '@/components/dashboard/Trade'
-import CryptoPriceTracker from '@/components/common/CryptoPriceTracker'
-import ProtectedRoute from '@/components/auth/ProtectedRoute'
+import React from 'react';
+import { ArrowPathIcon, FunnelIcon } from '@heroicons/react/24/outline';
+import AccountBalance from '@/components/dashboard/AccountBalance';
+import RecentTransactions from '@/components/dashboard/RecentTransactions';
+import MarketOverview from '@/components/dashboard/MarketOverview';
+import Trade from '@/components/dashboard/Trade';
+import CryptoPriceTracker from '@/components/common/CryptoPriceTracker';
+import ProtectedRoute from '@/components/auth/ProtectedRoute';
+import Layout from '@/components/layout/Layout';
 
 const Dashboard: React.FC = () => {
   return (
@@ -40,7 +40,7 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
     </Layout>
-  )
-}
+  );
+};
 
 export default Dashboard;

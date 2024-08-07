@@ -1,5 +1,5 @@
-import React from 'react'
-import Head from 'next/head'
+import React from 'react';
+import Head from 'next/head';
 import Layout from '../components/layout/Layout';
 
 const Home: React.FC = () => {
@@ -12,6 +12,7 @@ const Home: React.FC = () => {
       <div className="container mx-auto px-4 py-12">
         <h1 className="text-4xl font-bold mb-0">trustBank</h1>
         <p className="text-2lg mb-4 mt-0">TRADE | SPEND | <span className="text-green-600">EARN</span></p>
+
         <p className="text-lg mb-4">
           Secure and user-friendly cryptocurrency exchange you can <span className="text-green-600">trust</span>
         </p>
@@ -20,7 +21,7 @@ const Home: React.FC = () => {
         </button>
       </div>
     </Layout>
-  )
-}
+  );
+};
 
 export default Home;
