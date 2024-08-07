@@ -2,7 +2,7 @@ import React from 'react'
 
 const AccountBalance: React.FC = () => {
   return (
-    <div className="bg-teal-500 text-white p-6 rounded-lg">
+    <div className="bg-green-600 text-white p-6 rounded-lg">
       <h2 className="text-xl font-semibold mb-2">Account Balance</h2>
       <div className="flex items-baseline">
         <span className="text-4xl font-bold">$12,345.67</span>

@@ -38,7 +38,7 @@ const Wallet: React.FC = () => {
       <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-white">My Wallet</h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-teal-600 rounded-lg p-4 text-white">
-          <h3 className="text-lg font-semibold mb-2">Nigerian Naira</h3>
+          <h3 className="text-lg font-semibold mb-2">Naira</h3>
           <p className="text-2xl font-bold">₦ {balance.NGN.toLocaleString()}</p>
         </div>
         <div className="bg-orange-500 rounded-lg p-4 text-white">

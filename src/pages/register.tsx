@@ -1,3 +1,4 @@
+//src/pages/register.tsx
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '../context/AuthContext';

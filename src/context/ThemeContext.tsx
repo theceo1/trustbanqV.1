@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { ThemeProvider as StyledThemeProvider } from 'styled-components';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import { ThemeProvider as StyledThemeProvider, createGlobalStyle } from 'styled-components';
 
 interface ThemeContextProps {
   theme: string;
@@ -20,16 +20,33 @@ const darkTheme = {
   color: '#ffffff',
 };
 
+const GlobalStyle = createGlobalStyle<{ theme: any }>`
+  body {
+    background-color: ${(props) => props.theme.background};
+    color: ${(props) => props.theme.color};
+  }
+`;
+
 export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null;
+    if (savedTheme) {
+      setTheme(savedTheme);
+    }
+  }, []);
+
   const toggleTheme = () => {
-    setTheme((prevTheme) => (prevTheme === 'light' ? 'dark' : 'light'));
+    const newTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
   };
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>
       <StyledThemeProvider theme={theme === 'light' ? lightTheme : darkTheme}>
+        <GlobalStyle theme={theme === 'light' ? lightTheme : darkTheme} />
         {children}
       </StyledThemeProvider>
     </ThemeContext.Provider>
