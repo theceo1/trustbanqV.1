@@ -46,8 +46,8 @@ export interface ChartData {
   prices: number[][];
 }
 
-export const fetchPriceChartData = async (coin: string) => {
-  const response = await axios.get<ChartData>(`https://api.coingecko.com/api/v3/coins/${coin}/market_chart`, {
+export const fetchBitcoinPriceData = async () => {
+  const response = await axios.get<ChartData>(`https://api.coingecko.com/api/v3/coins/bitcoin/market_chart`, {
     params: {
       vs_currency: 'usd',
       days: '30',
@@ -108,4 +108,16 @@ export const fetchWatchlist = async () => {
     },
   });
   return response.data;
+};
+
+export const fetchBalance = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/wallet/balance`, {
+      withCredentials: true, // Include cookies if your backend requires them for authentication
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching balance:', error);
+    throw error; // Rethrow the error so it can be caught in the component
+  }
 };

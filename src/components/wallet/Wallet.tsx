@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { fetchBalance } from '../../services/api'; // Ensure this import is correct
+import { fetchBalance } from '../../services/api';
 
 interface Balance {
   NGN: number;
