@@ -5,11 +5,13 @@ type LayoutProps = {
   children: ReactNode;
 };
 
-const Layout: React.FC<LayoutProps> = ({ children }) => {
+const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col">
+    <div className="min-h-screen bg-gray-100">
       <Header />
-      <main className="flex-grow p-6">{children}</main>
+      <div className="flex pt-2"> {/* Add padding-top here */}
+        <main className="pl-2 pt-2 flex-grow">{children}</main> {/* Adjust margin-left */}
+      </div>
     </div>
   );
 };

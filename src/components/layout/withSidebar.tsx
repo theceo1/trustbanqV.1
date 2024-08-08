@@ -5,11 +5,9 @@ import Sidebar from './Sidebar';
 const withSidebar = (WrappedComponent: React.FC) => {
   const ComponentWithSidebar: React.FC = (props) => (
     <Layout>
-      <div className="flex">
-        <Sidebar />
-        <div className="flex-grow">
-          <WrappedComponent {...props} />
-        </div>
+      <Sidebar />
+      <div className="ml-64 p-6">
+        <WrappedComponent {...props} />
       </div>
     </Layout>
   );

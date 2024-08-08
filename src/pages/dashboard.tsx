@@ -5,7 +5,6 @@ import RecentTransactions from '@/components/dashboard/RecentTransactions';
 import MarketOverview from '@/components/dashboard/MarketOverview';
 import Trade from '@/components/dashboard/Trade';
 import CryptoPriceTracker from '@/components/common/CryptoPriceTracker';
-import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import withSidebar from '@/components/layout/withSidebar';
 
 const Dashboard: React.FC = () => {

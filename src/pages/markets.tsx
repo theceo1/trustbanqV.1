@@ -1,20 +1,40 @@
 import React from 'react';
-import Head from 'next/head';
-import withSidebar from '@/components/layout/withSidebar';
+import Layout from '../components/layout/Layout';
+import MarketOverview from '../components/market/MarketOverview';
+import MarketTrends from '../components/market/MarketTrends';
+import NewsFeed from '../components/market/NewsFeed';
+import MarketStats from '../components/market/MarketStats';
+import PriceCharts from '../components/market/PriceCharts';
+import Watchlist from '../components/market/Watchlist';
 
 const MarketsPage: React.FC = () => {
   return (
-    <>
-      <Head>
-        <title>Markets - trustBank</title>
-        <meta name="description" content="Cryptocurrency markets overview" />
-      </Head>
+    <Layout>
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-black mb-6">Markets</h1>
-        {/* Add your markets content here */}
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-black mb-6">Market</h1>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            <MarketOverview />
+          </div>
+          <div className="lg:col-span-1">
+            <MarketStats />
+          </div>
+          <div className="lg:col-span-3">
+            <PriceCharts coin="bitcoin" />
+          </div>
+          <div className="lg:col-span-2">
+            <MarketTrends />
+          </div>
+          <div className="lg:col-span-1">
+            <Watchlist />
+          </div>
+          <div className="lg:col-span-3">
+            <NewsFeed />
+          </div>
+        </div>
       </div>
-    </>
+    </Layout>
   );
 };
 
-export default withSidebar(MarketsPage);
+export default MarketsPage;
