@@ -13,12 +13,12 @@ export const login = async (email: string, password: string) => {
 };
 
 export const requestPasswordReset = async (email: string) => {
-  const response = await axios.post(`${API_URL}/auth/request-password-reset`, { email });
+  const response = await axios.post(`${API_URL}/users/request-password-reset`, { email });
   return response.data;
 };
 
 export const resetPassword = async (token: string, password: string) => {
-  const response = await axios.post(`${API_URL}/auth/reset-password`, { token, password });
+  const response = await axios.post(`${API_URL}/users/reset-password`, { token, password });
   return response.data;
 };
 
