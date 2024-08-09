@@ -1,18 +1,20 @@
 // src/components/layout/Layout.tsx
-import React from 'react';
+import React, { useState } from 'react';
 import Header from './Header';
 
-interface LayoutProps {
-  toggleSidebar: () => void;
-  isSidebarOpen: boolean;
-  children: React.ReactNode;
-}
+const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-const Layout: React.FC<LayoutProps> = ({ children, toggleSidebar, isSidebarOpen }) => {
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
   return (
-    <div>
+    <div className="flex flex-col min-h-screen">
       <Header toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} />
-      <main>{children}</main>
+      <main className="flex-1 p-4">
+        {children}
+      </main>
     </div>
   );
 };

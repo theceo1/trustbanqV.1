@@ -1,17 +1,54 @@
+// src/components/calculator/RateCalculator.tsx
+
 import React, { useState } from 'react';
 import Image from 'next/image';
+import axios from 'axios';
 
 const RateCalculator: React.FC = () => {
   const [selectedCurrency, setSelectedCurrency] = useState('BTC');
   const [walletAction, setWalletAction] = useState('BUY');
   const [amount, setAmount] = useState('');
+  const [calculatedValue, setCalculatedValue] = useState<number | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const currencies = [
     { symbol: 'BTC', name: 'Bitcoin' },
     { symbol: 'ETH', name: 'Ethereum (ERC20)' },
-    { symbol: 'USDT', name: 'USDT (ERC20)' },
+    { symbol: 'USDT', name: 'Tether (USDT)' },
     { symbol: 'USDC', name: 'USDC (TRC20)' },
   ];
+
+  const fetchMarketValue = async () => {
+    setLoading(true);
+    setError(null);
+    setCalculatedValue(null);
+
+    try {
+      const response = await axios.get(
+        `https://api.coingecko.com/api/v3/simple/price?ids=${selectedCurrency.toLowerCase()}&vs_currencies=usd`
+      );
+
+      const rate = response.data[selectedCurrency.toLowerCase()].usd;
+      const value = walletAction === 'BUY'
+        ? parseFloat(amount) / rate
+        : parseFloat(amount) * rate;
+        
+      setCalculatedValue(value);
+    } catch (err) {
+      setError('Failed to fetch market value. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCalculate = () => {
+    if (!amount || isNaN(parseFloat(amount))) {
+      setError('Please enter a valid amount.');
+      return;
+    }
+    fetchMarketValue();
+  };
 
   return (
     <div className="bg-blue-100 p-8 rounded-lg shadow-lg">
@@ -62,12 +99,30 @@ const RateCalculator: React.FC = () => {
           </div>
           
           <div className="mb-4">
-            <p className="text-2xl font-bold">0.00</p>
-            <p className="text-sm text-gray-600">BTC 0.0000</p>
+            {loading ? (
+              <p className="text-lg text-teal-500">Calculating...</p>
+            ) : error ? (
+              <p className="text-lg text-red-500">{error}</p>
+            ) : calculatedValue !== null ? (
+              <>
+                <p className="text-2xl font-bold">
+                  {calculatedValue.toFixed(4)} {selectedCurrency}
+                </p>
+                <p className="text-sm text-gray-600">
+                  {walletAction === 'BUY' ? `You can buy ${calculatedValue.toFixed(4)} ${selectedCurrency}` : `You'll get ${calculatedValue.toFixed(4)} ${selectedCurrency}`}
+                </p>
+              </>
+            ) : (
+              <p className="text-2xl font-bold">0.00</p>
+            )}
             <p className="text-xs text-gray-500 mt-2">NOTE: This is an estimated rate. Actual rate may differ</p>
           </div>
           
-          <button className="w-full bg-teal-500 text-white py-2 rounded font-semibold">
+          <button
+            className="w-full bg-teal-500 text-white py-2 rounded font-semibold"
+            onClick={handleCalculate}
+            disabled={loading}
+          >
             Calculate
           </button>
         </div>

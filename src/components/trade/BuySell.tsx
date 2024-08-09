@@ -1,6 +1,7 @@
-//src/components/trade/BuySell.tsx
+// src/components/trade/BuySell.tsx
 
 import React, { useState } from 'react';
+import Modal from '../common/Modal'; // Make sure the Modal component is available at this path
 
 type TradeAction = 'buy' | 'sell';
 
@@ -8,13 +9,14 @@ const BuySell: React.FC = () => {
   const [action, setAction] = useState<TradeAction>('buy');
   const [currency, setCurrency] = useState('BTC');
   const [amount, setAmount] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would typically send the trade request to your backend
-    console.log(`${action} ${amount} ${currency}`);
-    // Reset form
-    setAmount('');
+    openModal();
   };
 
   return (
@@ -72,6 +74,26 @@ const BuySell: React.FC = () => {
           {action === 'buy' ? 'Buy' : 'Sell'} {currency}
         </button>
       </form>
+
+      <Modal isOpen={isModalOpen} onClose={closeModal} title={`Confirm ${action}`}>
+        <p>
+          You are about to {action} {amount} {currency}. Do you want to proceed?
+        </p>
+        <div className="flex justify-end mt-4">
+          <button
+            onClick={closeModal}
+            className="mr-2 px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={closeModal}
+            className={`px-4 py-2 ${action === 'buy' ? 'bg-green-500 hover:bg-green-600' : 'bg-red-500 hover:bg-red-600'} text-white rounded`}
+          >
+            Confirm
+          </button>
+        </div>
+      </Modal>
     </div>
   );
 };

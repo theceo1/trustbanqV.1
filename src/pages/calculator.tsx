@@ -1,3 +1,4 @@
+//src/pages/calculator.tsx
 import React from 'react';
 import Head from 'next/head';
 import RateCalculator from '../components/calculator/RateCalculator';
