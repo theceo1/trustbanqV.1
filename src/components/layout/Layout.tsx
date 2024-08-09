@@ -1,17 +1,18 @@
-import React, { ReactNode } from 'react';
+// src/components/layout/Layout.tsx
+import React from 'react';
 import Header from './Header';
 
-type LayoutProps = {
-  children: ReactNode;
-};
+interface LayoutProps {
+  toggleSidebar: () => void;
+  isSidebarOpen: boolean;
+  children: React.ReactNode;
+}
 
-const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const Layout: React.FC<LayoutProps> = ({ children, toggleSidebar, isSidebarOpen }) => {
   return (
-    <div className="min-h-screen bg-gray-100">
-      <Header />
-      <div className="flex pt-2"> {/* Add padding-top here */}
-        <main className="pl-2 pt-2 flex-grow">{children}</main> {/* Adjust margin-left */}
-      </div>
+    <div>
+      <Header toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} />
+      <main>{children}</main>
     </div>
   );
 };
