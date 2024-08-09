@@ -1,23 +1,27 @@
-// src/components/calculator/RateCalculator.tsx
-
 import React, { useState } from 'react';
-import Image from 'next/image';
 import axios from 'axios';
+import Image from 'next/image';
+
+interface CoinGeckoResponse {
+  [key: string]: {
+    ngn: number;
+  };
+}
 
 const RateCalculator: React.FC = () => {
-  const [selectedCurrency, setSelectedCurrency] = useState('BTC');
+  const [selectedCurrency, setSelectedCurrency] = useState<'BTC' | 'ETH' | 'USDT' | 'USDC'>('BTC');
   const [walletAction, setWalletAction] = useState('BUY');
   const [amount, setAmount] = useState('');
   const [calculatedValue, setCalculatedValue] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const currencies = [
-    { symbol: 'BTC', name: 'Bitcoin' },
-    { symbol: 'ETH', name: 'Ethereum (ERC20)' },
-    { symbol: 'USDT', name: 'Tether (USDT)' },
-    { symbol: 'USDC', name: 'USDC (TRC20)' },
-  ];
+  const currencyIds: { [key in typeof selectedCurrency]: string } = {
+    BTC: 'bitcoin',
+    ETH: 'ethereum',
+    USDT: 'tether',
+    USDC: 'usd-coin'
+  };
 
   const fetchMarketValue = async () => {
     setLoading(true);
@@ -25,17 +29,28 @@ const RateCalculator: React.FC = () => {
     setCalculatedValue(null);
 
     try {
-      const response = await axios.get(
-        `https://api.coingecko.com/api/v3/simple/price?ids=${selectedCurrency.toLowerCase()}&vs_currencies=usd`
+      const currencyId = currencyIds[selectedCurrency];
+      const response = await axios.get<CoinGeckoResponse>(
+        `https://api.coingecko.com/api/v3/simple/price?ids=${currencyId}&vs_currencies=ngn`
       );
 
-      const rate = response.data[selectedCurrency.toLowerCase()].usd;
-      const value = walletAction === 'BUY'
-        ? parseFloat(amount) / rate
-        : parseFloat(amount) * rate;
-        
+      console.log("API Response:", response.data);
+
+      const currencyData = response.data[currencyId];
+
+      if (!currencyData) {
+        throw new Error(`No data found for ${selectedCurrency}`);
+      }
+
+      const rate = currencyData.ngn;
+      const value =
+        walletAction === 'BUY'
+          ? parseFloat(amount) / rate
+          : parseFloat(amount) * rate;
+
       setCalculatedValue(value);
-    } catch (err) {
+    } catch (err: any) {
+      console.error("Error fetching market value:", err);
       setError('Failed to fetch market value. Please try again later.');
     } finally {
       setLoading(false);
@@ -54,26 +69,26 @@ const RateCalculator: React.FC = () => {
     <div className="bg-blue-100 p-8 rounded-lg shadow-lg">
       <h1 className="text-3xl font-bold mb-6">CALCULATOR</h1>
       <h2 className="text-2lg font-semibold mb-8 text-gray-700">Market rates you can trust</h2>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="bg-blue-50 p-6 rounded-lg">
           <h3 className="text-lg font-semibold mb-4">CRYPTO | <span className="text-teal-500">TRUST</span></h3>
-          
+
           <div className="mb-4">
             <p className="mb-2">Select Currency:</p>
             <div className="flex space-x-2">
-              {currencies.map((currency) => (
+              {Object.keys(currencyIds).map((currency) => (
                 <button
-                  key={currency.symbol}
-                  className={`p-2 rounded ${selectedCurrency === currency.symbol ? 'bg-teal-500 text-white' : 'bg-gray-200'}`}
-                  onClick={() => setSelectedCurrency(currency.symbol)}
+                  key={currency}
+                  className={`p-2 rounded ${selectedCurrency === currency ? 'bg-teal-500 text-white' : 'bg-gray-200'}`}
+                  onClick={() => setSelectedCurrency(currency as 'BTC' | 'ETH' | 'USDT' | 'USDC')}
                 >
-                  {currency.symbol}
+                  {currency}
                 </button>
               ))}
             </div>
           </div>
-          
+
           <div className="mb-4">
             <p className="mb-2">Wallet Action:</p>
             <select
@@ -85,7 +100,7 @@ const RateCalculator: React.FC = () => {
               <option value="SELL">SELL</option>
             </select>
           </div>
-          
+
           <div className="mb-4">
             <p className="mb-2">Amount in USD</p>
             <input
@@ -97,7 +112,7 @@ const RateCalculator: React.FC = () => {
             />
             <p className="text-sm text-gray-600 mt-1">$1 - NGN1640</p>
           </div>
-          
+
           <div className="mb-4">
             {loading ? (
               <p className="text-lg text-teal-500">Calculating...</p>
@@ -117,7 +132,7 @@ const RateCalculator: React.FC = () => {
             )}
             <p className="text-xs text-gray-500 mt-2">NOTE: This is an estimated rate. Actual rate may differ</p>
           </div>
-          
+
           <button
             className="w-full bg-teal-500 text-white py-2 rounded font-semibold"
             onClick={handleCalculate}
@@ -126,7 +141,7 @@ const RateCalculator: React.FC = () => {
             Calculate
           </button>
         </div>
-        
+
         <div className="flex items-center justify-center">
           <Image
             src="/images/calculator-illustration.png"
@@ -136,7 +151,7 @@ const RateCalculator: React.FC = () => {
           />
         </div>
       </div>
-      
+
       <div className="mt-8 text-center">
         <p className="text-sm text-gray-600 mb-2">JOIN 300,000+ PEOPLE USING trustBank</p>
         <p className="text-2xl font-bold text-blue-800">Create a free account and get started</p>
