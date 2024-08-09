@@ -56,6 +56,16 @@ export const fetchBitcoinPriceData = async () => {
   return response.data;
 };
 
+export const fetchPriceChartData = async (coin: string) => {
+  const response = await axios.get<ChartData>(`https://api.coingecko.com/api/v3/coins/${coin}/market_chart`, {
+    params: {
+      vs_currency: 'usd',
+      days: '30',
+    },
+  });
+  return response.data;
+};
+
 export interface MarketTrend {
   item: {
     id: string;

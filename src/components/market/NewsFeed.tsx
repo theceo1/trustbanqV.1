@@ -1,27 +1,40 @@
-import React, { useEffect, useState } from 'react';
+// src/components/market/NewsFeed.tsx
+import React, { useState, useEffect } from 'react';
 import { fetchCryptoNews, NewsArticle } from '../../services/api';
 
 const NewsFeed: React.FC = () => {
-  const [news, setNews] = useState<NewsArticle[]>([]);
+  const [articles, setArticles] = useState<NewsArticle[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const getNews = async () => {
-      const data = await fetchCryptoNews();
-      setNews(data.articles);
+    const fetchData = async () => {
+      try {
+        const news = await fetchCryptoNews();
+        setArticles(news.articles);
+      } catch (error) {
+        console.error('Failed to fetch news articles', error);
+      } finally {
+        setLoading(false);
+      }
     };
-    getNews();
+
+    fetchData();
   }, []);
 
+  if (loading) {
+    return <div>Loading news...</div>;
+  }
+
   return (
-    <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 mb-6">
-      <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-white">Latest News</h2>
+    <div className="bg-teal-100 shadow-lg rounded-lg p-6">
+      <h2 className="text-2xl font-bold mb-4 text-gray-900">Latest Crypto News</h2>
       <ul>
-        {news.map((article, index) => (
+        {articles.map((article, index) => (
           <li key={index} className="mb-4">
-            <a href={article.url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+            <a href={article.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
               {article.title}
             </a>
-            <p className="text-gray-700 dark:text-gray-400">{article.description}</p>
+            <p className="text-gray-600 dark:text-gray-400">{article.description}</p>
           </li>
         ))}
       </ul>

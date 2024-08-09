@@ -19,3 +19,21 @@ main {
   padding-top: 0; /* Remove extra padding if added by default */
   margin-top: 0; /* Ensure no unwanted margin */
 }
+
+/* button {
+  @apply bg-teal-500 text-white font-semibold rounded-lg hover:bg-teal-600 transition focus:outline-none focus:ring-2 focus:ring-teal-400;
+}
+
+body.dark {
+  background-color: #121212;
+  color: #e0e0e0;
+}
+
+.dark .card {
+  background-color: #1e1e1e;
+  color: #e0e0e0;
+}
+
+.dark h1, .dark h2, .dark h3 {
+  color: #ffffff;
+} */
