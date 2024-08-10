@@ -1,4 +1,3 @@
-// src/components/layout/Header.tsx
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { MoonIcon, SunIcon, ChevronDownIcon, Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
@@ -77,10 +76,10 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, isSidebarOpen }) => {
           <Link href="/markets" className="block hover:text-green-600">Markets</Link>
           <Link href="/calculator" className="block hover:text-green-600">Calculator</Link>
           <div className="block hover:text-green-600">About</div>
-          <div className="ml-4 space-y-1">
-            <Link href="/about/vision" className="block hover:text-green-600">Vision</Link>
-            <Link href="/about/mission" className="block hover:text-green-600">Mission</Link>
-            <Link href="/about/blog" className="block hover:text-green-600">Blog</Link>
+          <div className="pl-4 space-y-1">
+            <Link href="/about/vision" className="block">Vision</Link>
+            <Link href="/about/mission" className="block">Mission</Link>
+            <Link href="/about/blog" className="block">Blog</Link>
           </div>
         </nav>
       )}
