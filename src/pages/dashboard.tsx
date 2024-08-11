@@ -7,8 +7,11 @@ import Trade from '@/components/dashboard/Trade';
 import CryptoPriceTracker from '@/components/common/CryptoPriceTracker';
 import withSidebar from '@/components/layout/withSidebar';
 
+import ProtectedRoute from '@/components/auth/ProtectedRoute';
+
 const Dashboard: React.FC = () => {
   return (
+    <ProtectedRoute>
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Dashboard</h1>
@@ -39,6 +42,7 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
     </div>
+    </ProtectedRoute>
     
   );
 };
