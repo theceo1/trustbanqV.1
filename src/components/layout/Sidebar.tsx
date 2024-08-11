@@ -33,13 +33,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               </Link>
             </li>
             <li>
-              <Link href="/calculator" legacyBehavior>
-                <a className="flex items-center p-2 hover:bg-gray-700 rounded">
-                  <span className="w-5 h-5 mr-2">🔢</span> Calculator
-                </a>
-              </Link>
-            </li>
-            <li>
               <Link href="/wallet" legacyBehavior>
                 <a className="flex items-center p-2 hover:bg-gray-700 rounded">
                   <span className="w-5 h-5 mr-2">💼</span> Wallet
@@ -54,29 +47,48 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               </Link>
             </li>
             <li>
-              <Link href="/vision" legacyBehavior>
+              <Link href="/calculator" legacyBehavior>
                 <a className="flex items-center p-2 hover:bg-gray-700 rounded">
-                  <span className="w-5 h-5 mr-2">👁️</span> Vision
+                  <span className="w-5 h-5 mr-2">🔢</span> Calculator
                 </a>
               </Link>
             </li>
             <li>
-              <Link href="/blog" legacyBehavior>
-                <a className="flex items-center p-2 hover:bg-gray-700 rounded">
-                  <span className="w-5 h-5 mr-2">📝</span> Blog
-                </a>
-              </Link>
+              <div className="block hover:text-green-600">About</div>
+              <div className="ml-4 space-y-1">
+                <Link href="/about/vision" legacyBehavior>
+                  <a className="flex items-center p-2 hover:bg-gray-700 rounded">
+                    <span className="w-5 h-5 mr-2">👁️</span> Vision
+                  </a>
+                </Link>
+                <Link href="/about/mission" legacyBehavior>
+                  <a className="flex items-center p-2 hover:bg-gray-700 rounded">
+                    <span className="w-5 h-5 mr-2">🎯</span> Mission
+                  </a>
+                </Link>
+                <Link href="/about/blog" legacyBehavior>
+                  <a className="flex items-center p-2 hover:bg-gray-700 rounded">
+                    <span className="w-5 h-5 mr-2">📝</span> Blog
+                  </a>
+                </Link>
+              </div>
             </li>
             <li>
-              <Link href="/faq" legacyBehavior>
+              <Link href="/signin" legacyBehavior>
                 <a className="flex items-center p-2 hover:bg-gray-700 rounded">
-                  <span className="w-5 h-5 mr-2">❓</span> FAQ
+                  <span className="w-5 h-5 mr-2">🔑</span> Sign In/Sign Out
                 </a>
               </Link>
             </li>
           </ul>
         </nav>
       </aside>
+      {isOpen && (
+        <div
+          onClick={onClose}
+          className="fixed inset-0 z-30 bg-black opacity-50"
+        />
+      )}
     </>
   );
 };
