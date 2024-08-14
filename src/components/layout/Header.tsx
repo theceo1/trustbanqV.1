@@ -48,6 +48,9 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, isSidebarOpen }) => {
                 <Link href="/about/vision" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Vision</Link>
                 <Link href="/about/mission" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Mission</Link>
                 <Link href="/about/blog" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Blog</Link>
+                <Link href="/about/faq" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">FAQ</Link>
+                <Link href="/about/contact" className="block px-4 py-2 text-sm text-gray-700 hover:bg-green-600">Contact Us</Link>
+
               </div>
             </div>
           </div>
@@ -59,6 +62,7 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, isSidebarOpen }) => {
             {theme === 'dark' ? <SunIcon className="w-4 h-4" /> : <MoonIcon className="w-4 h-4" />}
           </button>
           <button className="bg-red-500 text-white px-2 py-2 rounded hover:bg-teal-600">Sign Up</button>
+
         </div>
       </nav>
 
@@ -75,6 +79,7 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, isSidebarOpen }) => {
             <Link href="/about/vision" className="block hover:text-green-600">Vision</Link>
             <Link href="/about/mission" className="block hover:text-green-600">Mission</Link>
             <Link href="/about/blog" className="block hover:text-green-600">Blog</Link>
+            <Link href="/about/faq" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">FAQ</Link>
           </div>
         </nav>
       )}

@@ -79,7 +79,7 @@ const BuySell: React.FC = () => {
         <p>
           You are about to {action} {amount} {currency}. Do you want to proceed?
         </p>
-        <div className="flex justify-end mt-4">
+        <div className="flex justify-end mt-4 bg-red">
           <button
             onClick={closeModal}
             className="mr-2 px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
@@ -88,7 +88,7 @@ const BuySell: React.FC = () => {
           </button>
           <button
             onClick={closeModal}
-            className={`px-4 py-2 ${action === 'buy' ? 'bg-green-500 hover:bg-green-600' : 'bg-red-500 hover:bg-red-600'} text-white rounded`}
+            className={`px-4 py-2 ${action === 'buy' ? 'bg-green-500 hover:bg-green-600' : 'bg-green-500 hover:bg-green-600'} text-white rounded`}
           >
             Confirm
           </button>

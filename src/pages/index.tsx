@@ -45,38 +45,62 @@ const Home: React.FC = () => {
 
         {/* Testimonials Section */}
         <section className="mb-12">
+          <h2 className="text-3xl font-bold text-center mb-8">Vision Board</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            
+            <div className="bg-green-600 p-6 rounded-lg shadow-lg text-center">
+              <h3 className="text-xl font-semibold mb-4 text-gray-200">trustCard</h3>
+              <p className="text-gray-200">Boarderless Payments, Real Time transaction at terminal and cashback rewards when you transact with trustCard.</p>
+            </div>
+            <div className="bg-green-600 p-6 rounded-lg shadow-md text-center">
+              <h3 className="text-xl font-semibold mb-4 text-gray-200">trustCoin</h3>
+              <p className="text-gray-200">Tired of the market volatility? Look no further! experience stability with trustCoin. Our most stable ETF. Safe as investment and reliable store of value.</p>
+            </div>
+            <div className="bg-green-600 p-6 rounded-lg shadow-md text-center">
+              <h3 className="text-xl font-semibold mb-4 text-gray-200">trustExchange</h3>
+              <p className="text-gray-200">Experience user friendly yet professional trading of ETFs and other digital assets on a trusted platform <span className='text-black'>TTX</span>.</p>
+            </div>
+            <div className="bg-green-600 p-6 rounded-lg shadow-md text-center">
+              <h3 className="text-xl font-semibold mb-4 text-gray-200">trustTerminal</h3>
+              <p className="text-gray-200">Point Of Service terminal for merchants who accept crypto payments. Save on transaction time, cost, profit and EARN on every transaction approved through the terminal.</p>
+            </div>
+          </div>
+        </section>
+
+        {/* Testimonials Section */}
+        <section className="mb-12">
           <h2 className="text-3xl font-bold text-center mb-8">What Our Users Say</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg text-center">
-              <p className="text-gray-700 dark:text-gray-300 mb-4">
+            <div className="bg-white dark:bg-gray-100 p-6 rounded-lg shadow-lg text-center">
+              <p className="text-gray-700 mb-4">
                 "trustBank has made my crypto trading experience smooth and secure. I couldn't ask for a better platform."
               </p>
-              <p className="font-semibold text-gray-900 dark:text-white">- Jane Doe</p>
+              <p className="font-semibold text-gray-700">- Jane Doe</p>
             </div>
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg text-center">
-              <p className="text-gray-700 dark:text-gray-300 mb-4">
+            <div className="bg-white dark:bg-gray-100 p-6 rounded-lg shadow-lg text-center">
+              <p className="text-gray-700 mb-4">
                 "The real-time market data and intuitive design have helped me make informed decisions quickly."
               </p>
-              <p className="font-semibold text-gray-900 dark:text-white">- John Smith</p>
+              <p className="font-semibold text-gray-700">- John Smith</p>
             </div>
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg text-center">
-              <p className="text-gray-700 dark:text-gray-300 mb-4">
+            <div className="bg-white dark:bg-gray-100 p-6 rounded-lg shadow-lg text-center">
+              <p className="text-gray-700 mb-4">
                 "I trust trustBank for its top-notch security and reliable service."
               </p>
-              <p className="font-semibold text-gray-900 dark:text-white">- Sarah Johnson</p>
+              <p className="font-semibold text-gray-700">- Sarah Johnson</p>
             </div>
           </div>
         </section>
 
         {/* Footer Section */}
-        <footer className="bg-gray-800 text-white py-8 mt-12">
+        <footer className="bg-black text-white py-8 mt-12">
           <div className="container mx-auto text-center">
             <p className="mb-4">&copy; 2024 trustBank. All rights reserved.</p>
             <div className="flex justify-center space-x-6">
-              <a href="/about" className="hover:underline">About Us</a>
+              <a href="/register" className="hover:underline">Join Us</a>
               <a href="/terms" className="hover:underline">Terms of Service</a>
               <a href="/privacy" className="hover:underline">Privacy Policy</a>
-              <a href="/contact" className="hover:underline">Contact Us</a>
+              <a href="/about/contact" className="hover:underline">Contact Us</a>
             </div>
           </div>
         </footer>

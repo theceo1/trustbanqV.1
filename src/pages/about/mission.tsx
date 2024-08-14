@@ -9,7 +9,7 @@ const MissionPage: React.FC = () => {
         <title>Mission - trustBank</title>
         <meta name="description" content="Our mission statement" />
       </Head>
-      <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 space-y-8">
+      <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 space-y-8 mt-4">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-black mb-4">Our Mission</h1>
         
         <p>

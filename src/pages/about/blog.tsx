@@ -9,8 +9,8 @@ const BlogPage: React.FC = () => {
         <title>Blog - trustBank</title>
         <meta name="description" content="Read our latest blog posts" />
       </Head>
-      <div className="container mx-auto py-2 px-4 text-black">
-        <h1 className="text-3xl font-bold mb-4">trustBank Blog</h1>
+      <div className="container mx-auto py-2 px-4 text-black mt-4">
+        <h1 className="text-3xl font-bold mt-4 mb-4">trustBank Blog</h1>
         <p className="text-black mb-10">
           Welcome to the trustBank blog! Here, you&apos;ll find the latest updates on the crypto market, as well as news and insights from our company. Stay tuned for expert analysis, company announcements, and tips to help you achieve the most in your financial journey.
         </p>
