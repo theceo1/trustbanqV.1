@@ -1,13 +1,11 @@
-// src/components/auth/ProtectedRoute.tsx
-import React, { useContext } from 'react';
-import { useRouter } from 'next/router';
 import { useAuth } from '@/context/AuthContext';
+import { useRouter } from 'next/router';
 
-const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user } = useAuth();
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const authContext = useAuth();
   const router = useRouter();
 
-  if (!user) {
+  if (!authContext?.user) {  // Use optional chaining to check if user exists
     router.push('/login');
     return null;
   }

@@ -1,6 +1,6 @@
 //src/pages/_app.tsx
 import '@/styles/globals.css';
-import type { AppProps } from 'next/app';
+import { AppProps } from 'next/app';
 import Layout from '@/components/layout/Layout';
 import { AuthProvider } from '../context/AuthContext';
 import { ThemeProvider } from '../context/ThemeContext';

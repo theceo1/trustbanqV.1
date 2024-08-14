@@ -1,9 +1,10 @@
+// backend/src/routes/walletRoutes.ts
 import express from 'express';
 import { getWalletBalance } from '../controllers/walletController';
+import { authMiddleware } from '../middleware/authMiddleware';
 
 const router = express.Router();
 
-// Define the route to get the wallet balance
-router.get('/balance', getWalletBalance);
+router.get('/balance', authMiddleware, getWalletBalance);
 
-export { router as walletRoutes };
+export default router;
