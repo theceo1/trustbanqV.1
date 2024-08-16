@@ -1,3 +1,4 @@
+// backend/src/models/User.ts
 import mongoose, { Document, Schema } from 'mongoose';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
@@ -8,12 +9,14 @@ export interface IUser extends Document {
   balance: number; // Add the balance field here
   comparePassword(candidatePassword: string): Promise<boolean>;
   generateAuthToken(): string;
+  googleId?: string;
 }
 
 const userSchema = new mongoose.Schema<IUser>({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  balance: { type: Number, default: 0 }, // Add the balance field in the schema
+  balance: { type: Number, default: 0 },
+  googleId: { type: String },
 });
 
 // Hash the password before saving the user
@@ -31,9 +34,10 @@ userSchema.methods.comparePassword = async function (candidatePassword: string) 
 
 // Generate JWT token
 userSchema.methods.generateAuthToken = function () {
-  return jwt.sign({ _id: this._id }, process.env.JWT_SECRET as string, {
+  const token = jwt.sign({ _id: this._id }, process.env.JWT_SECRET as string, {
     expiresIn: '1h',
   });
+  return token;
 };
 
 const User = mongoose.model<IUser>('User', userSchema);
