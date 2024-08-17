@@ -2,11 +2,14 @@
 import express from 'express';
 import passport from '../middleware/googleAuth';
 import { registerUser, loginUser } from '../controllers/authController';
-import { IUser } from '../models/User';  // Import IUser from the correct location
+import { IUser } from '../models/User';
 
 const router = express.Router();
 
+// Registration route
 router.post('/register', registerUser);
+
+// Login route
 router.post('/login', loginUser);
 
 // Google OAuth login
