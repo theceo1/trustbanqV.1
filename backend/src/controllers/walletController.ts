@@ -4,20 +4,22 @@ import { getBalance } from '../services/walletService';
 import { IUser } from '../models/User';
 
 interface AuthenticatedRequest extends Request {
-  user?: IUser; // Explicitly declare the user property as optional and of type IUser
+  user?: IUser;
 }
 
-export const getWalletBalance = async (req: AuthenticatedRequest, res: Response) => {
+export const getWalletBalance = async (req: Request, res: Response) => {
+  const authenticatedReq = req as AuthenticatedRequest;
+
   try {
-    if (!req.user || !req.user._id) {
+    if (!authenticatedReq.user || !authenticatedReq.user._id) {
       return res.status(401).json({ message: 'User not authenticated' });
     }
 
-    const userId = req.user._id.toString(); // Safe to access _id as we've checked if user exists
+    const userId = authenticatedReq.user._id.toString();
     const balance = await getBalance(userId);
-    res.status(200).json({ balance });
+    return res.status(200).json({ balance });
   } catch (error) {
     console.error('Error fetching wallet balance:', error);
-    res.status(500).json({ message: 'Server error' });
+    return res.status(500).json({ message: 'Server error' });
   }
 };
