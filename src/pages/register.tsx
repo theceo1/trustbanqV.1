@@ -1,11 +1,13 @@
 // src/pages/register.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import Alert from '@/components/common/Alert';
+import Head from 'next/head';
 
 interface AuthResponse {
   token: string;
+  user: any;
 }
 
 const RegisterPage: React.FC = () => {
@@ -15,15 +17,22 @@ const RegisterPage: React.FC = () => {
   const [success, setSuccess] = useState<string | null>(null);
   const router = useRouter();
 
+  useEffect(() => {
+    if (router.query.token) {
+      console.log('Recieved token:', router.query.token);
+      localStorage.setItem('token', router.query.token as string);
+      router.push('/');
+    }
+  }, [router]);
+
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       const response = await axios.post<AuthResponse>('/api/auth/register', { email, password });
+      localStorage.setItem('token', response.data.token);
       console.log('Registration successful:', response.data);
-      setSuccess('Registration successful! Redirecting to login...');
-      setTimeout(() => {
-        router.push('/login');
-      }, 2000); // Redirect after 2 seconds
+      setSuccess('Registration successful! Redirecting to home...');
+      router.push('/');
     } catch (err) {
       const errorMessage = (err as any).response?.data?.message || 'Registration failed';
       setError(errorMessage);
@@ -31,11 +40,17 @@ const RegisterPage: React.FC = () => {
   };
 
   const handleGoogleRegister = () => {
-    // Implement Google register logic here
+    console.log("Starting Google OAuth flow");
     window.location.href = '/api/auth/google';
   };
 
   return (
+    <>
+      <Head>
+        <title>Register - trustBank</title>
+        <meta name="description" content="Create an account" />
+      </Head>
+
     <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
       <div className="max-w-md w-full bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 space-y-6">
         <h2 className="text-3xl font-semibold text-center text-gray-800 dark:text-gray-200">Create Your Account</h2>
@@ -84,6 +99,7 @@ const RegisterPage: React.FC = () => {
         </p>
       </div>
     </div>
+    </>
   );
 };
 

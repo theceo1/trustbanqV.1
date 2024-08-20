@@ -1,7 +1,15 @@
 import React from 'react';
+import Head from 'next/head';
+import withSidebar from '@/components/layout/withSidebar';
 
-const Contact = () => {
+const Contact: React.FC = () => {
   return (
+    <>
+      <Head>
+        <title>Contact Us - trustBank</title>
+        <meta name="description" content="Get in touch with us" />
+      </Head>
+
     <div className="max-w-4xl mx-auto p-8 space-y-8 mt-4">
       <h1 className="text-3xl font-bold">Contact Us</h1>
       <p className="text-gray-500 dark:text-gray-400">
@@ -20,10 +28,11 @@ const Contact = () => {
           <label htmlFor="message" className="block text-sm font-bold">Message</label>
           <textarea id="message" className="w-full p-2 border rounded" placeholder="Your Message" rows={5}></textarea> {/* Use number for rows */}
         </div>
-        <button type="submit" className="bg-green-600 text-white p-2 rounded hover:bg-teal-600">Send</button>
+        <button type="submit" className="bg-green-600 text-white p-2 rounded hover:bg-green-600">Send</button>
       </form>
     </div>
+    </>
   );
 };
 
-export default Contact;
+export default withSidebar(Contact);

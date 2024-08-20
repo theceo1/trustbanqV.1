@@ -8,8 +8,8 @@ const Home: React.FC = () => {
   return (
     <Layout>
       <Head>
-        <title>trustBank - Cryptocurrency Exchange</title>
-        <meta name="description" content="Exchange fiat to cryptocurrency and vice-versa" />
+        <title>trustBank - Cryptocurrency Exchange you can trust</title>
+        <meta name="description" content="Begin your cryptocurrency journey with us" />
       </Head>
       <div className="container mx-auto px-4 py-12">
         {/* Hero Section */}

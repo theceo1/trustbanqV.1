@@ -7,10 +7,16 @@ import MarketStats from '../components/market/MarketStats';
 import PriceCharts from '../components/market/PriceCharts';
 import Watchlist from '../components/market/Watchlist';
 import withSidebar from '@/components/layout/withSidebar';
+import Head from 'next/head';
 
 const MarketsPage: React.FC = () => {
   return (
     <Layout>
+      <Head>
+        <title>Market - trustBank</title>
+        <meta name="description" content="Market Overview" />
+      </Head>
+
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">Market</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

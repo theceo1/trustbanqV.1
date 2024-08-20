@@ -47,14 +47,14 @@ const RequestReset: React.FC = () => {
           </div>
           <button
             type="submit"
-            className="w-full py-2 px-4 bg-teal-500 text-white font-semibold rounded-lg hover:bg-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-400 focus:ring-opacity-75 transition"
+            className="w-full py-2 px-4 bg-green-600 text-white font-semibold rounded-lg hover:bg-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-400 focus:ring-opacity-75 transition"
           >
             Send reset link
           </button>
         </form>
-        <p className="text-center text-gray-600 dark:text-gray-400 mt-4">
+        <p className="text-center text-gray-600 mt-4">
           Remembered your password?{' '}
-          <a href="/login" className="text-teal-600 hover:underline">
+          <a href="/login" className="text-green-600 hover:underline">
             Sign in
           </a>
         </p>

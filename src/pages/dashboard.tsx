@@ -1,4 +1,5 @@
 import React from 'react';
+import Head from 'next/head';
 import { ArrowPathIcon, FunnelIcon } from '@heroicons/react/24/outline';
 import AccountBalance from '@/components/dashboard/AccountBalance';
 import RecentTransactions from '@/components/dashboard/RecentTransactions';
@@ -11,6 +12,12 @@ import ProtectedRoute from '@/components/auth/ProtectedRoute';
 
 const Dashboard: React.FC = () => {
   return (
+    <>
+    <Head>
+        <title>Dashboard - trustBank</title>
+        <meta name="description" content="User Dashboard" />
+      </Head>
+
     <ProtectedRoute>
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
@@ -43,7 +50,7 @@ const Dashboard: React.FC = () => {
       </div>
     </div>
     </ProtectedRoute>
-    
+    </>
   );
 };
 

@@ -76,6 +76,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                     <span className="w-5 h-5 mr-2">📝</span> FAQ
                   </a>
                 </Link>
+                <Link href="/about/contact" legacyBehavior>
+                  <a className="flex items-center p-2 hover:bg-green-600 rounded">
+                    <span className="w-5 h-5 mr-2">🎯</span> Contact Us
+                  </a>
+                </Link>
               </div>
             </li>
             <li>
@@ -84,11 +89,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                   <span className="w-5 h-5 mr-2">🔑</span> Sign Up
                 </a>
               </Link>
-              <Link href="/about/contact" legacyBehavior>
-                  <a className="flex items-center p-2 hover:bg-green-600 rounded">
-                    <span className="w-5 h-5 mr-2">🎯</span> Contact Us
-                  </a>
-                </Link>
+              
             </li>
           </ul>
         </nav>

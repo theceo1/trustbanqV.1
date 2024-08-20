@@ -4,10 +4,16 @@ import Wallet from '../components/wallet/Wallet';
 import BuySell from '../components/trade/BuySell';
 import CryptoPriceTracker from '../components/common/CryptoPriceTracker';
 import withSidebar from '@/components/layout/withSidebar';
+import Head from 'next/head';
 
 const WalletPage: React.FC = () => {
   return (
     <Layout>
+      <Head>
+        <title>Wallet - trustBank</title>
+        <meta name="description" content="User Wallet" />
+      </Head>
+
       <div className="max-w-7xl mx-auto py-8 sm:px-6 lg:px-8">
         <h1 className="text-3xl font-bold text-black mb-8">Wallet</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

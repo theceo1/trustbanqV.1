@@ -1,8 +1,8 @@
-// src/pages/login.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import Alert from '@/components/common/Alert';
+import Head from 'next/head';
 
 interface AuthResponse {
   token: string;
@@ -14,14 +14,25 @@ const LoginPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
+  useEffect(() => {
+    // Check if the token is in the URL after OAuth
+    if (router.query.token) {
+      console.log('Received token:', router.query.token);
+      // Save the token to localStorage
+      localStorage.setItem('token', router.query.token as string);
+      // Redirect to the home page
+      router.push('/');
+    }
+  }, [router]);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       const response = await axios.post<AuthResponse>('/api/auth/login', { email, password });
-      localStorage.setItem('token', response.data.token); // TypeScript now knows response.data has a token
+      localStorage.setItem('token', response.data.token); // Store token
       console.log('Login successful:', response.data);
-      router.push('/dashboard'); // Redirect to dashboard after login
-    } catch (err: unknown) {
+      router.push('/'); // Redirect after login
+    } catch (err) {
       const errorMessage = (err as any).response?.data?.message || 'Login failed';
       console.error('Login failed:', errorMessage);
       setError(errorMessage);
@@ -29,11 +40,16 @@ const LoginPage: React.FC = () => {
   };
 
   const handleGoogleLogin = () => {
-    // Implement Google login logic here
     window.location.href = '/api/auth/google';
   };
 
   return (
+    <>
+    <Head>
+        <title>Login - trustBank</title>
+        <meta name="description" content="Login to your account" />
+      </Head>
+
     <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
       <div className="max-w-md w-full bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 space-y-6">
         <h2 className="text-3xl font-semibold text-center text-gray-800 dark:text-gray-200">Login to Your Account</h2>
@@ -68,7 +84,7 @@ const LoginPage: React.FC = () => {
             Login
           </button>
           <div className="flex justify-between items-center mt-4">
-            <a href="/auth/request-reset" className="text-sm text-green-600 hover:underline">Forgot Password?</a>
+            <a href="/auth/RequestReset" className="text-sm text-green-600 hover:underline">Forgot Password?</a>
           </div>
         </form>
         <div className="mt-4">
@@ -84,6 +100,7 @@ const LoginPage: React.FC = () => {
         </p>
       </div>
     </div>
+    </>
   );
 };
 

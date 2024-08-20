@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 
 export interface IUser extends Document {
   email: string;
-  password: string;
+  password?: string;
   balance: number; // Add the balance field here
   comparePassword(candidatePassword: string): Promise<boolean>;
   generateAuthToken(): string;
@@ -14,16 +14,17 @@ export interface IUser extends Document {
 
 const userSchema = new mongoose.Schema<IUser>({
   email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
+  password: { type: String},
   balance: { type: Number, default: 0 },
-  googleId: { type: String },
+  googleId: { type: String, unique: true },
 });
 
 // Hash the password before saving the user
 userSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) return next();
+  if (this.password && this.isModified('password')) {;
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
+  }
   next();
 });
 
