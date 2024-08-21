@@ -1,10 +1,23 @@
-//src/pages/index.tsx
+// src/pages/index.tsx
 import React from 'react';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 import Layout from '../components/layout/Layout';
 
-
 const Home: React.FC = () => {
+  const router = useRouter();
+
+  const handleGetStarted = () => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      // User is authenticated, redirect to dashboard
+      router.push('/dashboard');
+    } else {
+      // User is not authenticated, redirect to login
+      router.push('/login');
+    }
+  };
+
   return (
     <Layout>
       <Head>
@@ -19,7 +32,10 @@ const Home: React.FC = () => {
           <p className="text-lg mb-6">
             Secure and user-friendly cryptocurrency exchange you can <span className="text-green-600">trust</span>.
           </p>
-          <button className="bg-green-600 text-white px-6 py-3 rounded-md text-lg hover:bg-opacity-90">
+          <button
+            className="bg-green-600 text-white px-6 py-3 rounded-md text-lg hover:bg-opacity-90"
+            onClick={handleGetStarted}
+          >
             Get Started
           </button>
         </section>
@@ -43,11 +59,10 @@ const Home: React.FC = () => {
           </div>
         </section>
 
-        {/* Testimonials Section */}
+        {/* Vision Board Section */}
         <section className="mb-12">
           <h2 className="text-3xl font-bold text-center mb-8">Vision Board</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            
             <div className="bg-green-600 p-6 rounded-lg shadow-lg text-center">
               <h3 className="text-xl font-semibold mb-4 text-gray-200">trustCard</h3>
               <p className="text-gray-200">Boarderless Payments, Real Time transaction at terminal and cashback rewards when you transact with trustCard.</p>
@@ -75,19 +90,19 @@ const Home: React.FC = () => {
               <p className="text-gray-700 mb-4">
                 "trustBank has made my crypto trading experience smooth and secure. I couldn't ask for a better platform."
               </p>
-              <p className="font-semibold text-gray-700">- Jane Doe</p>
+              <p className="font-semibold text-gray-700">- Ijeoma Ogugua</p>
             </div>
             <div className="bg-white dark:bg-gray-100 p-6 rounded-lg shadow-lg text-center">
               <p className="text-gray-700 mb-4">
                 "The real-time market data and intuitive design have helped me make informed decisions quickly."
               </p>
-              <p className="font-semibold text-gray-700">- John Smith</p>
+              <p className="font-semibold text-gray-700">- Michael Massamba</p>
             </div>
             <div className="bg-white dark:bg-gray-100 p-6 rounded-lg shadow-lg text-center">
               <p className="text-gray-700 mb-4">
                 "I trust trustBank for its top-notch security and reliable service."
               </p>
-              <p className="font-semibold text-gray-700">- Sarah Johnson</p>
+              <p className="font-semibold text-gray-700">- Vivian Vincent</p>
             </div>
           </div>
         </section>

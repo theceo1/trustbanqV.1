@@ -1,6 +1,6 @@
-// src/components/layout/Sidebar.tsx
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -8,6 +8,23 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    // Check if the user is authenticated
+    const token = localStorage.getItem('token');
+    setIsAuthenticated(!!token);
+  }, []);
+
+  const handleSignOut = () => {
+    // Clear authentication (e.g., remove token)
+    localStorage.removeItem('token');
+    setIsAuthenticated(false);
+    onClose(); // Close the sidebar after sign-out
+    router.push('/login'); // Redirect to login page
+  };
+
   return (
     <>
       {/* Sidebar for mobile views */}
@@ -54,7 +71,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               </Link>
             </li>
             <li>
-              <div className="block ">About</div>
+              <div className="block">About</div>
               <div className="ml-4 space-y-1">
                 <Link href="/about/vision" legacyBehavior>
                   <a className="flex items-center p-2 hover:bg-green-600 rounded">
@@ -84,12 +101,20 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               </div>
             </li>
             <li>
-              <Link href="/register" legacyBehavior>
-                <a className="flex items-center p-2 hover:bg-green-600 rounded">
-                  <span className="w-5 h-5 mr-2">🔑</span> Sign Up
-                </a>
-              </Link>
-              
+              {isAuthenticated ? (
+                <button
+                  onClick={handleSignOut}
+                  className="flex items-center p-2 hover:bg-green-600 rounded w-full text-left"
+                >
+                  <span className="w-5 h-5 mr-2">🚪</span> Sign Out
+                </button>
+              ) : (
+                <Link href="/register" legacyBehavior>
+                  <a className="flex items-center p-2 hover:bg-green-600 rounded">
+                    <span className="w-5 h-5 mr-2">🔑</span> Sign Up
+                  </a>
+                </Link>
+              )}
             </li>
           </ul>
         </nav>

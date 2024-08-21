@@ -1,6 +1,6 @@
-// src/components/layout/Header.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { MoonIcon, SunIcon, ChevronDownIcon, Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 
 interface HeaderProps {
@@ -10,10 +10,25 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ toggleSidebar, isSidebarOpen }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [theme, setTheme] = useState('light'); // Example state, adjust as per your logic
+  const [theme, setTheme] = useState('light');
+  const [isAuthenticated, setIsAuthenticated] = useState(false); // State to track if the user is authenticated
+  const router = useRouter();
+
+  useEffect(() => {
+    // Check if the user is authenticated (you might have a different method to check this)
+    const token = localStorage.getItem('token');
+    setIsAuthenticated(!!token);
+  }, []);
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const toggleTheme = () => setTheme(theme === 'light' ? 'dark' : 'light');
+
+  const handleSignOut = () => {
+    // Clear authentication (e.g., remove token)
+    localStorage.removeItem('token');
+    setIsAuthenticated(false);
+    router.push('/login'); // Redirect to login page
+  };
 
   return (
     <header className="fixed top-0 left-0 z-50 w-full bg-black text-white">
@@ -50,7 +65,6 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, isSidebarOpen }) => {
                 <Link href="/about/blog" className="block px-4 py-2 text-sm text-gray-700 hover:bg-green-600">Blog</Link>
                 <Link href="/about/faq" className="block px-4 py-2 text-sm text-gray-700 hover:bg-green-600">FAQ</Link>
                 <Link href="/about/contact" className="block px-4 py-2 text-sm text-gray-700 hover:bg-green-600">Contact Us</Link>
-
               </div>
             </div>
           </div>
@@ -61,10 +75,21 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, isSidebarOpen }) => {
           <button onClick={toggleTheme} className="p-2 rounded-full hover:bg-gray-700">
             {theme === 'dark' ? <SunIcon className="w-4 h-4" /> : <MoonIcon className="w-4 h-4" />}
           </button>
-          <button className="bg-red-500 text-white px-2 py-2 rounded hover:bg-green-600">
-            Sign Up
-            </button>
 
+          {isAuthenticated ? (
+            <button 
+              onClick={handleSignOut}
+              className="bg-red-500 text-white px-2 py-2 rounded hover:bg-green-600"
+            >
+              Sign Out
+            </button>
+          ) : (
+            <Link href="/register" passHref>
+              <button className="bg-green-600 text-white px-2 py-2 rounded hover:bg-green-700">
+                Login
+              </button>
+            </Link>
+          )}
         </div>
       </nav>
 

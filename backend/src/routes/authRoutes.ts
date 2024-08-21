@@ -40,7 +40,7 @@ router.get(
 
     if (token) {
       // Redirect with token in query params
-      res.redirect(`http://localhost:3000/home?token=${token}`);
+      res.redirect(`http://localhost:3000/?token=${token}`);
     } else {
       res.redirect('http://localhost:3000/login');
     }

@@ -1,15 +1,21 @@
-//src/components/auth/ProtectedRoute.tsx
-import { useAuth } from '@/context/AuthContext';
+// src/components/auth/ProtectedRoute.tsx
 import { useRouter } from 'next/router';
+import { useEffect } from 'react';
 
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const authContext = useAuth();
+interface ProtectedRouteProps {
+  children: React.ReactNode;
+}
+
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const router = useRouter();
 
-  if (!authContext?.user) {  // Use optional chaining to check if user exists
-    router.push('/login');
-    return null;
-  }
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      router.push('/'); // Redirect to login page if not authenticated
+    }
+  }, [router]);
 
   return <>{children}</>;
 };

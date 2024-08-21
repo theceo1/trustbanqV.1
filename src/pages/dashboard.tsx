@@ -1,3 +1,4 @@
+// src/pages/dashboard.tsx
 import React from 'react';
 import Head from 'next/head';
 import { ArrowPathIcon, FunnelIcon } from '@heroicons/react/24/outline';
