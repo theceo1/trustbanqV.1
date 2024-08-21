@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useRouter } from 'next/router';
 import Alert from '@/components/common/Alert';
 import Head from 'next/head';
+import Link from 'next/link';
 
 interface AuthResponse {
   token: string;
@@ -84,7 +85,7 @@ const LoginPage: React.FC = () => {
             Login
           </button>
           <div className="flex justify-between items-center mt-4">
-            <a href="/auth/RequestReset" className="text-sm text-green-600 hover:underline">Forgot Password?</a>
+            <Link href="/auth/RequestReset" className="text-sm text-green-600 hover:underline" legacyBehavior><a>Forgot Password?</a></Link>
           </div>
         </form>
         <div className="mt-4">
@@ -96,7 +97,7 @@ const LoginPage: React.FC = () => {
           </button>
         </div>
         <p className="text-sm text-center text-gray-600 dark:text-gray-400 mt-4">
-          Don&apos;t have an account? <a href="/register" className="text-green-600 hover:underline">Register</a>
+          Don&apos;t have an account? <Link href="/register" className="text-green-600 hover:underline" legacyBehavior><a>Register</a></Link>
         </p>
       </div>
     </div>

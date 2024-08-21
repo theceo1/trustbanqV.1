@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useRouter } from 'next/router';
 import Alert from '@/components/common/Alert';
 import Head from 'next/head';
+import Link from 'next/link';
 
 interface AuthResponse {
   token: string;
@@ -95,7 +96,7 @@ const RegisterPage: React.FC = () => {
           </button>
         </div>
         <p className="text-sm text-center text-gray-600 dark:text-gray-400 mt-4">
-          Already have an account? <a href="/login" className="text-green-600 hover:underline">Login</a>
+          Already have an account? <Link href="/login" className="text-green-600 hover:underline" legacyBehavior><a>Login</a></Link>
         </p>
       </div>
     </div>

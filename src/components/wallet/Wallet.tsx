@@ -1,3 +1,4 @@
+// src/components/wallet/Wallet.tsx
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { fetchBalance } from '../../services/api';
@@ -11,11 +12,13 @@ interface Balance {
 const Wallet: React.FC = () => {
   const [balance, setBalance] = useState<Balance>({ NGN: 0, BTC: 0, ETH: 0 });
   const [loading, setLoading] = useState(true);
-  const { user } = useAuth();
+  const { user } = useAuth();  
 
   useEffect(() => {
-    fetchBalanceData();
-  }, []);
+    if (user) {  
+      fetchBalanceData();
+    }
+  }, [user]);
 
   const fetchBalanceData = async () => {
     try {

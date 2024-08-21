@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { requestPasswordReset } from '../../services/api';
 import Alert from '../../components/common/Alert';
+import Link from 'next/link';
 
 const RequestReset: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -54,9 +55,9 @@ const RequestReset: React.FC = () => {
         </form>
         <p className="text-center text-gray-600 mt-4">
           Remembered your password?{' '}
-          <a href="/login" className="text-green-600 hover:underline">
-            Sign in
-          </a>
+          <Link href="/login" className="text-green-600 hover:underline">
+            <a>Login</a>
+          </Link>
         </p>
       </div>
     </div>
