@@ -10,8 +10,7 @@
     "paths": {
       "*": ["node_modules/*", "src/types/*"]
     },
-    "typeRoots": ["node_modules/@types"],
-    "types": ["mongoose"]
+    "typeRoots": ["node_modules/@types"]
   },
   "include": ["src/**/*", "src/types/**/*"],
   "exclude": ["node_modules"]

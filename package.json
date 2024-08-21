@@ -43,6 +43,7 @@
   "devDependencies": {
     "@types/axios": "^0.9.36",
     "@types/bcrypt": "^5.0.2",
+    "@types/bcryptjs": "^2.4.6",
     "@types/jsonwebtoken": "^9.0.6",
     "@types/mongoose": "^5.11.96",
     "@types/node": "^20",
