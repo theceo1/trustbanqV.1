@@ -19,14 +19,14 @@ router.post('/api/auth/login', (req, res, next) => {
 }, loginUser);
 
 // Google OAuth login
-router.get('/google', (req, res, next) => {
+router.get('/api/auth/google', (req, res, next) => {
   console.log('Google OAuth route hit');
   next();
 }, passport.authenticate('google', { scope: ['profile', 'email'] }));
 
 // Google OAuth callback
 router.get(
-  '/google/callback',
+  '/api/auth/google/callback',
   (req, res, next) => {
     console.log('Google OAuth callback route hit');
     next();
