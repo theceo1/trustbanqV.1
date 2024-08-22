@@ -1,5 +1,6 @@
 // src/components/layout/Layout.tsx
 import React, { useState } from 'react';
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import Header from './Header';
 import Sidebar from './Sidebar';
 
@@ -29,6 +30,9 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           />
         </div>
       )}
+
+      {/* Add Speed Insights */}
+      <SpeedInsights />
     </div>
   );
 };
