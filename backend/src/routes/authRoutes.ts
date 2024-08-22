@@ -7,13 +7,13 @@ import { IUser } from '../models/User';
 const router = express.Router();
 
 // Registration route
-router.post('/register', (req, res, next) => {
+router.post('/api/auth/register', (req, res, next) => {
   console.log('Register route hit:', req.body);
   next();
 }, registerUser);
 
 // Login route
-router.post('/login', (req, res, next) => {
+router.post('/api/auth/login', (req, res, next) => {
   console.log('Login route hit:', req.body);
   next();
 }, loginUser);
