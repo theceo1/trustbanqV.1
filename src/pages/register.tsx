@@ -95,8 +95,8 @@ const RegisterPage: React.FC = () => {
             Continue with Google
           </button>
         </div>
-        <p className="text-sm text-center text-gray-600 dark:text-gray-400 mt-4">
-          Already have an account? <Link href="/login" className="text-green-600 hover:underline" legacyBehavior><a>Login</a></Link>
+        <p className="text-sm text-center text-gray-400">
+          Already have an account? <Link href="/login" legacyBehavior><a><span className="text-green-600 hover:underline">Login</span></a></Link>
         </p>
       </div>
     </div>

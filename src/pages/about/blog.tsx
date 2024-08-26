@@ -19,13 +19,13 @@ const BlogPage: React.FC = () => {
             Become the bank you trust. Our mission is to empower individuals with secure, transparent, and accessible financial tools that help them achieve their financial goals.
           </p>
           <article>
-            <h2 className="text-2xl font-semibold mb-2">The Future of Cryptocurrency</h2>
+            <h2 className="text-2xl font-semibold mb-2 mt-10">The Future of Cryptocurrency</h2>
             <p className='mb-6'>
               Stay updated with the latest trends and predictions for the future of cryptocurrency. Our experts share their insights on how the market is evolving and what to expect in the coming years.
             </p>
           </article>
           <article>
-            <h2 className="text-2xl font-semibold mb-2">trustBank Initiatives</h2>
+            <h2 className="text-2xl font-semibold mb-2 mt-10">trustBank Initiatives</h2>
             <p className='mb-60'>
               Learn about the latest initiatives and projects we are working on to improve our services and support our users. From new features to community events, stay informed about what&apos;s happening at trustBank.
             </p>

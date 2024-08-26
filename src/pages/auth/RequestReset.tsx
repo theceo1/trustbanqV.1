@@ -53,10 +53,10 @@ const RequestReset: React.FC = () => {
             Send reset link
           </button>
         </form>
-        <p className="text-center text-gray-600 mt-4">
+        <p className="text-center text-gray-400 mt-4">
           Remembered your password?{' '}
-          <Link href="/login" className="text-green-600 hover:underline">
-            <a>Login</a>
+          <Link href="/login" legacyBehavior>
+            <a><span className="text-green-600 hover:underline">Login</span></a>
           </Link>
         </p>
       </div>

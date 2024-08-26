@@ -25,11 +25,11 @@ const Home: React.FC = () => {
         <title>trustBank - Cryptocurrency Exchange you can trust</title>
         <meta name="description" content="Begin your cryptocurrency journey with us" />
       </Head>
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 py-12 bg-blue-200">
         {/* Hero Section */}
-        <section className="text-center mb-12">
-          <h1 className="text-5xl font-bold mb-4">trustBank</h1>
-          <p className="text-2xl mb-8">TRADE | SPEND | <span className="text-green-600">EARN</span></p>
+        <section className="text-center mb-2">
+          <h1 className="text-6xl font-bold mb-2">trustBank</h1>
+          <p className="text-xl mb-8">TRADE | SPEND | <span className="text-green-600">EARN</span></p>
           <p className="text-lg mb-6">
             Secure and user-friendly cryptocurrency exchange you can <span className="text-green-600">trust</span>.
           </p>
@@ -66,7 +66,7 @@ const Home: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="bg-green-600 p-6 rounded-lg shadow-lg text-center">
               <h3 className="text-xl font-semibold mb-4 text-gray-200">trustCard</h3>
-              <p className="text-gray-200">Borderless Payments, Real-Time transactions at the terminal, and cashback rewards when you transact with trustCard.</p>
+              <p className="text-gray-200">Borderless Payments, Real-Time transactions at terminal, and cashback rewards when you transact with trustCard.</p>
             </div>
             <div className="bg-green-600 p-6 rounded-lg shadow-md text-center">
               <h3 className="text-xl font-semibold mb-4 text-gray-200">trustCoin</h3>

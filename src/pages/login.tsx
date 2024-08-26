@@ -86,7 +86,7 @@ const LoginPage: React.FC = () => {
             Login
           </button>
           <div className="flex justify-between items-center mt-4">
-            <Link href="/auth/RequestReset" className="text-sm text-green-600 hover:underline" legacyBehavior><a>Forgot Password?</a></Link>
+            <Link href="/auth/RequestReset" legacyBehavior><a><span className="text-sm text-green-600 hover:underline">Forgot your password?</span></a></Link>
           </div>
         </form>
         <div className="mt-4">
@@ -97,8 +97,9 @@ const LoginPage: React.FC = () => {
             Continue with Google
           </button>
         </div>
-        <p className="text-sm text-center text-gray-600 dark:text-gray-400 mt-4">
-          Don&apos;t have an account? <Link href="/register" className="text-green-600 hover:underline" legacyBehavior><a>Register</a></Link>
+        <p className="text-sm text-center text-gray-400 mt-4">
+          Don&apos;t have an account? 
+          <Link href="/register" legacyBehavior><a><span className="text-green-600 hover:underline">Register</span></a></Link>
         </p>
       </div>
     </div>

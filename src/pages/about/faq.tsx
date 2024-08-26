@@ -13,28 +13,28 @@ const FAQPage: React.FC = () => {
         <meta name="description" content="Frequently Asked Questions" />
       </Head>
 
-    <div className="max-w-4xl mx-auto space-y-8 mt-10 ml-1">
+    <div className="max-w-4xl mx-auto space-y-8 mt-12 ml-2">
       <h1 className="text-3xl font-bold">Frequently Asked Questions</h1>
       <div className="space-y-4">
         <div>
-          <h2 className="text-xl font-bold">What is trustBank?</h2>
-          <p className="text-gray-500 dark:text-gray-400">
-            trustBank is a financial platform dedicated to providing secure and transparent banking solutions for everyone. We offer a range of services from cryptocurrency trading to fiat currency management.
+          <h2 className="text-xl font-bold mb-4">What is trustBank?</h2>
+          <p className="text-gray-600 ">
+            trustBank is the financial platform dedicated to providing secure, swift and transparent crypto banking solutions for the unbanked. We offer a range of services from cryptocurrency trading to fiat currency management and an exciting range of reward earnings per transactions.
           </p>
         </div>
         <div>
-          <h2 className="text-xl font-bold">How can I create an account?</h2>
-          <p className="text-gray-500 dark:text-gray-400">
+          <h2 className="text-xl font-bold mt-6 mb-2">How can I create an account?</h2>
+          <p className="text-gray-600">
             You can create an account by visiting our{' '}
             <Link href="/register" legacyBehavior>
-              <a className="text-teal-500 hover:underline">Sign Up</a>
+              <a className="text-green-600 hover:underline">Sign Up</a>
             </Link>{' '}
             page and following the instructions.
           </p>
         </div>
         <div>
-          <h2 className="text-xl font-bold">What services do you offer?</h2>
-          <p className="text-gray-500 dark:text-gray-400">
+          <h2 className="text-xl font-bold mt-6 mb-2">What services do you offer?</h2>
+          <p className="text-gray-600">
             We offer cryptocurrency trading, a secure wallet, and a debit card for easy transactions, among other financial services.
           </p>
         </div>
