@@ -1,3 +1,4 @@
+// src/pages/about/vision.tsx
 import React from 'react';
 import Head from 'next/head';
 import withSidebar from '@/components/layout/withSidebar';
@@ -5,23 +6,22 @@ import Image from 'next/image';
 
 const VisionPage: React.FC = () => {
   return (
-    <>
+    <div className="bg-blue-200 min-h-screen w-full absolute left-0 right-0 top-0">
       <Head>
         <title>Vision - trustBank</title>
         <meta name="description" content="Our vision statement" />
       </Head> 
-    <div className="container py-8 px-4 max-w-4xl mx-auto space-y-8">
+    <div className="container py-8 px-4 max-w-4xl mx-auto space-y-8 relative z-10">
       <div>
         <h1 className="text-2xl font-bold mb-4 mt-4">Our Vision</h1>
         <p className="text-gray-600 text-sm">
           At trustBank, our vision is to revolutionize the way people interact with their finances. We believe that everyone should have access to secure, transparent, and empowering financial tools that help them achieve their goals.
         </p>
       </div>
-      <div>
         <h2 className="text-lg font-bold mb-4">Our Debit Card</h2>
         <div className="flex justify-center">
           <Image
-            src="/images/debit-card.png"
+            src="/debit-card.png"
             alt="trustBank Debit Card"
             width={400}
             height={250}
@@ -50,7 +50,6 @@ const VisionPage: React.FC = () => {
         </p>
       </div>
     </div>
-    </>
     );
 };
 

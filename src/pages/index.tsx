@@ -20,12 +20,14 @@ const Home: React.FC = () => {
   };
 
   return (
+    <div className="bg-blue-200 min-h-screen">
+
     <Layout>
       <Head>
         <title>trustBank - Cryptocurrency Exchange you can trust</title>
         <meta name="description" content="Begin your cryptocurrency journey with us" />
       </Head>
-      <div className="container mx-auto px-4 py-12 bg-blue-200">
+      <div className="px-4 py-12">
         {/* Hero Section */}
         <section className="text-center mb-2">
           <h1 className="text-6xl font-bold mb-2">trustBank</h1>
@@ -122,6 +124,8 @@ const Home: React.FC = () => {
         </footer>
       </div>
     </Layout>
+    </div>
+
   );
 };
 
