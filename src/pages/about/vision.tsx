@@ -6,12 +6,13 @@ import Image from 'next/image';
 
 const VisionPage: React.FC = () => {
   return (
-    <div className="bg-blue-200 min-h-screen w-full absolute left-0 right-0 top-0">
+    <>
+    <div className="bg-blue-200 min-h-screen w-full">
       <Head>
         <title>Vision - trustBank</title>
         <meta name="description" content="Our vision statement" />
       </Head> 
-    <div className="container py-8 px-4 max-w-4xl mx-auto space-y-8 relative z-10">
+    <div className="container py-8 px-4 max-w-4xl mx-auto space-y-8">
       <div>
         <h1 className="text-2xl font-bold mb-4 mt-4">Our Vision</h1>
         <p className="text-gray-600 text-sm">
@@ -50,6 +51,7 @@ const VisionPage: React.FC = () => {
         </p>
       </div>
     </div>
+    </>
     );
 };
 
