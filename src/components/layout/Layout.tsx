@@ -1,4 +1,3 @@
-// src/components/layout/Layout.tsx
 import React, { useState } from 'react';
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from '@vercel/analytics/react';
@@ -14,7 +13,7 @@ declare global {
   }
 }
 
-const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const LayoutComponent: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
@@ -38,20 +37,12 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-blue-300">
       <Header toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} />
       
       {/* Main content area */}
       <main className="flex-1 p-4">
         {children}
-
-        {/* Example button to track clicks
-        <button 
-          className="bg-blue-500 text-white px-4 py-2 mt-4 rounded"
-          onClick={handleButtonClick} // Track button clicks
-        >
-          Click Me
-        </button> */}
       </main>
 
       {/* Sidebar for mobile screens */}
@@ -65,13 +56,10 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         </div>
       )}
 
-      {/* Add Speed Insights */}
       <SpeedInsights />
-
-      {/* Add Vercel Analytics */}
       <Analytics />
     </div>
   );
 };
 
-export default Layout;
+export default LayoutComponent;

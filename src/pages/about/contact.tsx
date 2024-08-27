@@ -10,9 +10,10 @@ const Contact: React.FC = () => {
         <meta name="description" content="Get in touch with us" />
       </Head>
 
+    <div className="h-screen w-full bg-blue-200">
     <div className="max-w-4xl mx-auto p-8 space-y-8 mt-4">
       <h1 className="text-3xl font-bold">Contact Us</h1>
-      <p className="text-gray-500 dark:text-gray-400">
+      <p className="text-gray-900">
         Have questions or need assistance? Reach out to us, and we&apos;ll be happy to help.
       </p>
       <form className="space-y-4">
@@ -30,6 +31,7 @@ const Contact: React.FC = () => {
         </div>
         <button type="submit" className="bg-green-600 text-white p-2 rounded hover:bg-green-600">Send</button>
       </form>
+    </div>
     </div>
     </>
   );
