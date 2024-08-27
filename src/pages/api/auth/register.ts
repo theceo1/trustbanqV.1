@@ -3,8 +3,8 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import User from '@models/User'; // Path alias to the User model
-import connectDB from '@utils/connectDB'; // Path alias to the connectDB utility
+import User from '@models/User';
+import connectDB from '@utils/connectDB';
 
 connectDB();
 
@@ -39,3 +39,4 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 }
+
