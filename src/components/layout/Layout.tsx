@@ -2,15 +2,39 @@
 import React, { useState } from 'react';
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from '@vercel/analytics/react';
-
 import Header from './Header';
 import Sidebar from './Sidebar';
+
+// Extend the Window interface to include VercelAnalytics
+declare global {
+  interface Window {
+    VercelAnalytics: {
+      track: (event: string, properties?: Record<string, any>) => void;
+    };
+  }
+}
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
+
+    // Manual event tracking using window.VercelAnalytics
+    if (typeof window !== 'undefined' && window.VercelAnalytics) {
+      window.VercelAnalytics.track('sidebar_toggle', {
+        isSidebarOpen: !isSidebarOpen,
+      });
+    }
+  };
+
+  const handleButtonClick = () => {
+    // Manual event tracking for button click
+    if (typeof window !== 'undefined' && window.VercelAnalytics) {
+      window.VercelAnalytics.track('button_click', {
+        buttonName: 'Example Button',
+      });
+    }
   };
 
   return (
@@ -20,6 +44,14 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       {/* Main content area */}
       <main className="flex-1 p-4">
         {children}
+
+        {/* Example button to track clicks */}
+        <button 
+          className="bg-blue-500 text-white px-4 py-2 mt-4 rounded"
+          onClick={handleButtonClick} // Track button clicks
+        >
+          Click Me
+        </button>
       </main>
 
       {/* Sidebar for mobile screens */}
@@ -36,6 +68,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       {/* Add Speed Insights */}
       <SpeedInsights />
 
+      {/* Add Vercel Analytics */}
       <Analytics />
     </div>
   );
