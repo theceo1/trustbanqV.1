@@ -1,3 +1,5 @@
+// backend/src/routes/authRoutes.ts
+
 import express, { Request, Response } from 'express';
 import passport from '../middleware/googleAuth';
 import { registerUser, loginUser } from '../controllers/authController';

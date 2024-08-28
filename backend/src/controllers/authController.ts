@@ -50,6 +50,12 @@ export const loginUser = async (req: Request, res: Response) => {
     res.status(200).json({ token });
   } catch (error) {
     console.error('Error logging in user:', error);
-    res.status(500).json({ message: 'Server error' });
+    // Add more detailed error logging
+    if (error instanceof Error) {
+      console.error('Error name:', error.name);
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
+    }
+    res.status(500).json({ message: 'Server error', error: error instanceof Error ? error.message : String(error) });
   }
 };

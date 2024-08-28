@@ -1,3 +1,4 @@
+// backend/src/server.ts
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -19,6 +20,7 @@ app.use(cors({
 app.use(passport.initialize());
 
 // Routes
+
 app.use('/api/auth', authRoutes);
 app.use('/api/wallet', walletRoutes);
 
