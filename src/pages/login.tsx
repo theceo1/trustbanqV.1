@@ -1,4 +1,3 @@
-// src/pages/login.tsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
@@ -17,12 +16,9 @@ const LoginPage: React.FC = () => {
   const router = useRouter();
 
   useEffect(() => {
-    // Check if the token is in the URL after OAuth
     if (router.query.token) {
       console.log('Received token:', router.query.token);
-      // Save the token to localStorage
       localStorage.setItem('token', router.query.token as string);
-      // Redirect to the home page
       router.push('/');
     }
   }, [router]);
@@ -31,11 +27,12 @@ const LoginPage: React.FC = () => {
     e.preventDefault();
     try {
       const response = await axios.post<AuthResponse>('/api/auth/login', { email, password });
-      localStorage.setItem('token', response.data.token); // Store token
+      localStorage.setItem('token', response.data.token);
       console.log('Login successful:', response.data);
-      router.push('/'); // Redirect after login
+      router.push('/');
     } catch (err) {
-      const errorMessage = (err as any).response?.data?.message || 'Login failed';
+      const error = err as Error;
+      const errorMessage = error.message || 'An unexpected error occurred';
       console.error('Login failed:', errorMessage);
       setError(errorMessage);
     }
@@ -98,9 +95,11 @@ const LoginPage: React.FC = () => {
           </button>
         </div>
         <p className="text-sm text-center text-gray-400 mt-4">
-          Don&apos;t have an account? 
-          <Link href="/register" legacyBehavior><a><span className="text-green-600 hover:underline">Register</span></a></Link>
-        </p>
+        Don&apos;t have an account?{' '}
+        <Link href="/register" legacyBehavior>
+          <a className="text-green-600 hover:underline">Register</a>
+        </Link>
+      </p>
       </div>
     </div>
     </>

@@ -14,11 +14,10 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(cors({
-  origin: [process.env.FRONTEND_URL || '', 'https://trustbank1.vercel.app'],
+  origin: ['http://localhost:3000', process.env.FRONTEND_URL || '', 'https://trustbank1.vercel.app'],
   credentials: true
 }));
 app.use(passport.initialize());
-
 // Routes
 
 app.use('/api/auth', authRoutes);

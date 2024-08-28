@@ -1,21 +1,47 @@
 // src/services/api.ts
-// src/services/api.ts
 import axios from 'axios';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api';
 
 export const axiosInstance = axios.create({
   baseURL: API_URL,
   withCredentials: true,
 });
 
+interface AxiosErrorResponse {
+  response?: {
+    data: {
+      message?: string;
+    };
+  };
+  request?: unknown;
+  message?: string;
+}
+
 export const login = async (email: string, password: string) => {
   try {
     const response = await axiosInstance.post('/auth/login', { email, password });
     return response.data;
-  } catch (error) {
-    console.error('Login error:', error);
-    throw error;
+  } catch (error: unknown) {
+    if (error && typeof error === 'object' && 'isAxiosError' in error) {
+      const axiosError = error as AxiosErrorResponse;
+      if (axiosError.response) {
+        console.error('Login error:', axiosError.response.data);
+        throw new Error(axiosError.response.data.message || 'An error occurred during login');
+      } else if (axiosError.request) {
+        console.error('No response received:', axiosError.request);
+        throw new Error('No response received from server');
+      } else {
+        console.error('Error setting up request:', axiosError.message);
+        throw new Error('Error setting up request');
+      }
+    } else if (error instanceof Error) {
+      console.error('Unexpected error:', error.message);
+      throw new Error('An unexpected error occurred');
+    } else {
+      console.error('Unknown error:', error);
+      throw new Error('An unknown error occurred');
+    }
   }
 };
 
