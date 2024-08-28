@@ -3,7 +3,7 @@
 import express, { Request, Response } from 'express';
 import passport from '../middleware/googleAuth';
 import { registerUser, loginUser } from '../controllers/authController';
-import { IUser } from '../models/User';
+import User, { IUser } from '../models/User';
 
 const router = express.Router();
 
@@ -32,5 +32,14 @@ router.get(
     }
   }
 );
+
+router.get('/checkuser/:email', async (req, res) => {
+  const user = await User.findOne({ email: req.params.email });
+  if (user) {
+    res.json({ exists: true, hasPassword: !!user.password });
+  } else {
+    res.json({ exists: false });
+  }
+});
 
 export default router;

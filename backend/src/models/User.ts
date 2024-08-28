@@ -31,7 +31,13 @@ userSchema.pre('save', async function (next) {
 
 // Compare passwords
 userSchema.methods.comparePassword = async function (candidatePassword: string) {
-  return bcrypt.compare(candidatePassword, this.password);
+  if (!this.password) {
+    console.log('User has no password set');
+    return false;
+  }
+  const isMatch = await bcrypt.compare(candidatePassword, this.password);
+  console.log('Password comparison result:', isMatch);
+  return isMatch;
 };
 
 // Generate JWT token

@@ -4,14 +4,14 @@ import { useAuth } from '../../context/AuthContext';
 import { fetchBalance } from '../../services/api';
 
 interface Balance {
-  NAIRA: number;
+  NGN: number;
   BTC: number;
   ETH: number;
   USDT: number;
 }
 
 const Wallet: React.FC = () => {
-  const [balance, setBalance] = useState<Balance>({ NAIRA: 0, BTC: 0, ETH: 0, USDT: 0 });
+  const [balance, setBalance] = useState<Balance>({ NGN: 0, BTC: 0, ETH: 0, USDT: 0 });
   //
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -54,8 +54,8 @@ const Wallet: React.FC = () => {
       <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-white">My Wallet</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-teal-600 rounded-lg p-4 text-white">
-          <h3 className="text-lg font-semibold mb-2">Naira</h3>
-          <p className="text-2xl font-bold">₦ {balance.NAIRA.toLocaleString()}</p>
+          <h3 className="text-lg font-semibold mb-2">NGN</h3>
+          <p className="text-2xl font-bold">₦ {balance.NGN.toLocaleString()}</p>
         </div>
         <div className="bg-orange-500 rounded-lg p-4 text-white">
           <h3 className="text-lg font-semibold mb-2">Bitcoin</h3>
