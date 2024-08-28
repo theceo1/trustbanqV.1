@@ -1,15 +1,22 @@
+// src/services/api.ts
+// src/services/api.ts
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
-export const register = async (name: string, email: string, password: string) => {
-  const response = await axios.post(`${API_URL}/auth/register`, { name, email, password });
-  return response.data;
-};
+export const axiosInstance = axios.create({
+  baseURL: API_URL,
+  withCredentials: true,
+});
 
 export const login = async (email: string, password: string) => {
-  const response = await axios.post(`${API_URL}/auth/login`, { email, password });
-  return response.data;
+  try {
+    const response = await axiosInstance.post('/auth/login', { email, password });
+    return response.data;
+  } catch (error) {
+    console.error('Login error:', error);
+    throw error;
+  }
 };
 
 export const requestPasswordReset = async (email: string) => {
@@ -128,15 +135,10 @@ export interface Balance {
 
 export const fetchBalance = async (): Promise<Balance> => {
   try {
-    const token = localStorage.getItem('token');
-    const response = await axios.get<Balance>(`${API_URL}/wallet/balance`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await axiosInstance.get<Balance>('/wallet/balance');
     return response.data;
   } catch (error) {
     console.error('Error fetching balance:', error);
-    throw error as Error;
+    throw error;
   }
 };
