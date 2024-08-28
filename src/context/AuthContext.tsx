@@ -1,7 +1,8 @@
-// src/context/AuthContext.tsx
-import React, { createContext, useState, useContext, ReactNode } from 'react';
+import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
+
+const API_URL = 'http://localhost:5000/api';
 
 interface User {
   id: string;
@@ -11,42 +12,63 @@ interface User {
 }
 
 interface AuthContextType {
-  user: User | null;  // Update this line
+  user: User | null;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
 }
 
 interface LoginResponseData {
   token: string;
-  user: User;  // Add user information to the response
+  user: User;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);  // Update this line
+  const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      fetchUserData(token);
+    }
+  }, []);
+
+  const fetchUserData = async (token: string) => {
+    try {
+      const response = await axios.get<{ user: User }>(`${API_URL}/auth/user`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setUser(response.data.user);
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      logout();
+    }
+  };
 
   const login = async (email: string, password: string) => {
     try {
       const response = await axios.post<LoginResponseData>(
-        'http://localhost:5001/api/auth/login',
+        `${API_URL}/auth/login`,
         { email, password }
       );
 
       const { user, token } = response.data;
-      setUser(user);  // Store the user object
-      localStorage.setItem('token', token); // Store the token if needed
+      setUser(user);
+      localStorage.setItem('token', token);
       router.push('/dashboard');
     } catch (error) {
       console.error('Login error:', error);
-      // Handle error if needed
+      throw error;
     }
   };
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('token'); // Clear token if needed
+    localStorage.removeItem('token');
     router.push('/');
   };
 

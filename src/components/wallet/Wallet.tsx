@@ -12,14 +12,14 @@ interface Balance {
 const Wallet: React.FC = () => {
   const [balance, setBalance] = useState<Balance>({ NGN: 0, BTC: 0, ETH: 0 });
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null); // State to handle errors
-  const { user } = useAuth();  
+  const [error, setError] = useState<string | null>(null);
+  const { user } = useAuth();
 
   useEffect(() => {
-    if (user) {  
+    if (user) {
       fetchBalanceData();
     } else {
-      setLoading(false); // Stop loading if the user is not authenticated
+      setLoading(false);
       setError('User not authenticated.');
     }
   }, [user]);
@@ -27,15 +27,12 @@ const Wallet: React.FC = () => {
   const fetchBalanceData = async () => {
     try {
       const data = await fetchBalance();
-      if (!data) {
-        throw new Error('No data returned from API');
-      }
-      setBalance(data as Balance);
+      setBalance(data);
     } catch (error) {
       console.error('Failed to fetch balance', error);
-      setError('Failed to load wallet data.'); // Set error message
+      setError('Failed to load wallet data.');
     } finally {
-      setLoading(false); // Stop loading once data is fetched or an error occurs
+      setLoading(false);
     }
   };
 

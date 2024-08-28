@@ -120,14 +120,23 @@ export const fetchWatchlist = async () => {
   return response.data;
 };
 
-export const fetchBalance = async () => {
+export interface Balance {
+  NGN: number;
+  BTC: number;
+  ETH: number;
+}
+
+export const fetchBalance = async (): Promise<Balance> => {
   try {
-    const response = await axios.get(`${API_URL}/wallet/balance`, {
-      withCredentials: true, // Include cookies if your backend requires them for authentication
+    const token = localStorage.getItem('token');
+    const response = await axios.get<Balance>(`${API_URL}/wallet/balance`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     });
     return response.data;
   } catch (error) {
     console.error('Error fetching balance:', error);
-    throw error; // Rethrow the error so it can be caught in the component
+    throw error as Error;
   }
 };
