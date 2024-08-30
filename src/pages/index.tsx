@@ -8,14 +8,18 @@ import { useAuth } from '../context/AuthContext';
 
 const Home: React.FC = () => {
   const router = useRouter();
-  const { login, user } = useAuth();
+  const { login, user, loading } = useAuth();
 
   useEffect(() => {
     const token = router.query.token as string;
     if (token) {
+      console.log('Token received, logging in');
       login(token);
+    } else if (!loading && user) {
+      console.log('User already logged in, redirecting to dashboard');
+      router.push('/dashboard');
     }
-  }, [router.query.token, login]);
+  }, [router.query.token, login, user, loading, router]);
 
   const handleGetStarted = () => {
     if (user) {

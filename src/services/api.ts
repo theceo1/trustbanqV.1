@@ -18,6 +18,85 @@ interface AxiosErrorResponse {
   message?: string;
 }
 
+export interface ChartData {
+  prices: [number, number][];
+  market_caps: [number, number][];
+  total_volumes: [number, number][];
+}
+
+export interface MarketTrend {
+  item: {
+    id: string;
+    coin_id: number;
+    name: string;
+    symbol: string;
+    market_cap_rank: number;
+    thumb: string;
+    small: string;
+    large: string;
+    slug: string;
+    price_btc: number;
+    score: number;
+    price_change_percentage_24h: number;
+  };
+}
+
+export interface Coin {
+  id: string;
+  symbol: string;
+  name: string;
+  image: string;
+  current_price: number;
+  market_cap: number;
+  market_cap_rank: number;
+  fully_diluted_valuation: number | null;
+  total_volume: number;
+  high_24h: number;
+  low_24h: number;
+  price_change_24h: number;
+  price_change_percentage_24h: number;
+  market_cap_change_24h: number;
+  market_cap_change_percentage_24h: number;
+  circulating_supply: number;
+  total_supply: number | null;
+  max_supply: number | null;
+  ath: number;
+  ath_change_percentage: number;
+  ath_date: string;
+  atl: number;
+  atl_change_percentage: number;
+  atl_date: string;
+  roi: null | {
+    times: number;
+    currency: string;
+    percentage: number;
+  };
+  last_updated: string;
+}
+
+export interface NewsArticle {
+  title: string;
+  description: string;
+  url: string;
+  publishedAt: string;
+  source: {
+    name: string;
+  };
+}
+
+export interface MarketStats {
+  total_market_cap: { usd: number };
+  total_volume: { usd: number };
+  market_cap_percentage: { btc: number };
+  active_cryptocurrencies: number;
+}
+
+export interface Balance {
+  NGN: number;
+  BTC: number;
+  ETH: number;
+}
+
 export const login = async (email: string, password: string) => {
   try {
     const response = await axiosInstance.post('/auth/login', { email, password });
@@ -55,15 +134,10 @@ export const resetPassword = async (token: string, password: string) => {
   return response.data;
 };
 
-export interface Coin {
-  id: string;
-  name: string;
-  current_price: number;
-  price_change_percentage_24h: number;
-}
+
 
 export const fetchMarketOverview = async () => {
-  const response = await axios.get<Coin[]>(`https://api.coingecko.com/api/v3/coins/markets`, {
+  const response = await axiosInstance.get<Coin[]>(`/coingecko/markets`, {
     params: {
       vs_currency: 'usd',
       order: 'market_cap_desc',
@@ -75,13 +149,11 @@ export const fetchMarketOverview = async () => {
   return response.data;
 };
 
-export interface ChartData {
-  prices: number[][];
-}
 
 export const fetchBitcoinPriceData = async () => {
-  const response = await axios.get<ChartData>(`https://api.coingecko.com/api/v3/coins/bitcoin/market_chart`, {
+  const response = await axiosInstance.get<ChartData>(`/coingecko/market_chart`, {
     params: {
+      id: 'bitcoin',
       vs_currency: 'usd',
       days: '30',
     },
@@ -90,8 +162,9 @@ export const fetchBitcoinPriceData = async () => {
 };
 
 export const fetchPriceChartData = async (coin: string) => {
-  const response = await axios.get<ChartData>(`https://api.coingecko.com/api/v3/coins/${coin}/market_chart`, {
+  const response = await axiosInstance.get<ChartData>(`/coingecko/market_chart`, {
     params: {
+      id: coin,
       vs_currency: 'usd',
       days: '30',
     },
@@ -99,65 +172,42 @@ export const fetchPriceChartData = async (coin: string) => {
   return response.data;
 };
 
-export interface MarketTrend {
-  item: {
-    id: string;
-    name: string;
-    price_change_percentage_24h: number;
-  };
-}
-
 export const fetchMarketTrends = async () => {
-  const response = await axios.get<{ coins: MarketTrend[] }>(`https://api.coingecko.com/api/v3/search/trending`);
+  const response = await axiosInstance.get<{ coins: MarketTrend[] }>(`/coingecko/search/trending`);
   const gainers = response.data.coins.filter((coin) => coin.item.price_change_percentage_24h > 0);
   const losers = response.data.coins.filter((coin) => coin.item.price_change_percentage_24h < 0);
   return { gainers, losers };
 };
 
-export interface NewsArticle {
-  title: string;
-  description: string;
-  url: string;
-}
+
 
 export const fetchCryptoNews = async () => {
   const response = await axios.get<{ articles: NewsArticle[] }>(`https://newsapi.org/v2/everything`, {
     params: {
       q: 'cryptocurrency',
       sortBy: 'publishedAt',
-      apiKey: process.env.NEXT_PUBLIC_NEWS_API_KEY, // Use environment variable for API key
+      apiKey: process.env.NEXT_PUBLIC_NEWS_API_KEY,
     },
   });
   return response.data;
 };
 
-export interface MarketStats {
-  total_market_cap: { usd: number };
-  total_volume: { usd: number };
-  market_cap_percentage: { btc: number };
-  active_cryptocurrencies: number;
-}
-
 export const fetchMarketStats = async () => {
-  const response = await axios.get<{ data: MarketStats }>(`https://api.coingecko.com/api/v3/global`);
+  const response = await axiosInstance.get<{ data: MarketStats }>(`/coingecko/global`);
   return response.data.data;
 };
 
 export const fetchWatchlist = async () => {
-  const response = await axios.get<Coin[]>(`https://api.coingecko.com/api/v3/coins/markets`, {
+  const response = await axiosInstance.get<Coin[]>(`/coingecko/markets`, {
     params: {
       vs_currency: 'usd',
-      ids: 'bitcoin,ethereum,litecoin',
+      ids: 'bitcoin,ethereum,tether',
     },
   });
   return response.data;
 };
 
-export interface Balance {
-  NGN: number;
-  BTC: number;
-  ETH: number;
-}
+
 
 export const fetchBalance = async (): Promise<Balance> => {
   try {

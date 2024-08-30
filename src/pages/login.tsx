@@ -5,6 +5,7 @@ import { useRouter } from 'next/router';
 import Alert from '@/components/common/Alert';
 import Head from 'next/head';
 import Link from 'next/link';
+import { useAuth } from '../context/AuthContext';
 
 interface AuthResponse {
   message: string;
@@ -17,14 +18,20 @@ const LoginPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const { login, user, loading } = useAuth();
+
+  useEffect(() => {
+    if (!loading && user) {
+      router.push('/dashboard');
+    }
+  }, [user, loading, router]);
 
   useEffect(() => {
     if (router.query.token) {
       console.log('Received token from query params:', router.query.token);
-      localStorage.setItem('token', router.query.token as string);
-      router.push('/');
+      login(router.query.token as string);
     }
-  }, [router]);
+  }, [router.query.token, login]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,9 +43,7 @@ const LoginPage: React.FC = () => {
       console.log('Login response data:', response.data);
       
       if (response.data.token) {
-        localStorage.setItem('token', response.data.token);
-        console.log('Token stored in localStorage:', response.data.token);
-        router.push('/');
+        await login(response.data.token);
       } else {
         console.warn('No token received in login response, response message:', response.data.message);
         setError('Login successful, but no token received. Please try again.');
@@ -77,6 +82,14 @@ const LoginPage: React.FC = () => {
     console.log('Redirecting to Google login...');
     window.location.href = '/api/auth/google';
   };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (user) {
+    return null; // or a redirect component
+  }
 
   return (
     <>

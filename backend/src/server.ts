@@ -8,6 +8,7 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import express from 'express';
 import passport from './middleware/googleAuth';
+import coinGeckoRoutes from './routes/coinGeckoRoutes';
 
 const app = express();
 
@@ -34,6 +35,7 @@ app.get('/test', (req, res) => {
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/wallet', walletRoutes);
+app.use('/api/coinGecko', coinGeckoRoutes);
 
 // 404 handler
 app.use((req, res, next) => {
@@ -49,14 +51,7 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
 const PORT = process.env.PORT || 5001;
 const MONGODB_URI = process.env.MONGODB_URI || '';
 
-const mongoOptions = {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  serverSelectionTimeoutMS: 5000,
-  socketTimeoutMS: 45000,
-};
-
-mongoose.connect(MONGODB_URI, mongoOptions)
+mongoose.connect(MONGODB_URI)
   .then(() => console.log('Connected to MongoDB'))
   .catch(err => {
     console.error('MongoDB connection error:', err);
