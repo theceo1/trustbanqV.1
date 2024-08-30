@@ -73,3 +73,9 @@ export const loginUser = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Server error', error: error instanceof Error ? error.message : String(error) });
   }
 };
+
+// Get user profile
+export const getUserProfile = (req: Request, res: Response) => {
+  const user = (req as any).user;
+  res.json({ user: { id: user._id, email: user.email, name: user.name } });
+};

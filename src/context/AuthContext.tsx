@@ -3,7 +3,7 @@ import React, { createContext, useState, useContext, useEffect, useCallback, Rea
 import axios from 'axios';
 import { useRouter } from 'next/router';
 
-const API_URL = 'http://localhost:5001/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api';
 
 interface User {
   id: string;
@@ -26,76 +26,60 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  const logout = useCallback(() => {
-    console.log('Logout initiated');
-    setUser(null);
-    localStorage.removeItem('token');
-    console.log('User state cleared and token removed from localStorage');
-    router.push('/login');
-    console.log('Redirected to login page');
-  }, [router]);
 
   const fetchUserData = useCallback(async (token: string) => {
     try {
       console.log('Fetching user data with token:', token);
+      console.log('Full URL:', `${API_URL}/auth/user`);
       const response = await axios.get<{ user: User }>(`${API_URL}/auth/user`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` }
       });
-      console.log('User data received:', response.data);
-      setUser(response.data.user);
-      console.log('User state updated:', response.data.user);
-    } catch (error: unknown) {
+      console.log('Response:', response.data);
+      const userData = response.data.user;
+      setUser(userData);
+      return userData;
+    } catch (error) {
       console.error('Error fetching user data:', error);
       if (error && typeof error === 'object' && 'response' in error) {
         const axiosError = error as { response?: { data?: unknown; status?: number } };
-        if (axiosError.response) {
-          console.error('Response data:', axiosError.response.data);
-          console.error('Response status:', axiosError.response.status);
-          if (axiosError.response.status === 401) {
-            console.log('Token is invalid or expired. Logging out.');
-            logout();
-          }
-        }
-      } else {
-        console.error('Non-Axios error:', error);
+        console.error('Response data:', axiosError.response?.data);
+        console.error('Response status:', axiosError.response?.status);
+      } else if (error instanceof Error) {
+        console.error('Error message:', error.message);
       }
       setUser(null);
-      console.log('User state cleared due to error');
+      localStorage.removeItem('token');
+      throw error;
     }
-  }, [logout]);
+  }, []);
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      console.log('Checking authentication state...');
-      const token = localStorage.getItem('token');
-      if (token) {
-        console.log('Token found in localStorage, fetching user data');
+  const checkAuth = useCallback(async () => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
         await fetchUserData(token);
-      } else {
-        console.log('No token found in localStorage');
+      } catch (error) {
+        console.error('Error during authentication check:', error);
       }
-      setLoading(false);
-      console.log('Authentication check complete');
-    };
-    checkAuth();
+    }
+    setLoading(false);
   }, [fetchUserData]);
 
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
+
   const login = async (token: string) => {
-    console.log('Login attempt with token:', token);
     localStorage.setItem('token', token);
-    console.log('Token stored in localStorage');
     await fetchUserData(token);
-    if (user) {
-      console.log('Login successful, redirecting to dashboard');
-      router.push('/dashboard');
-    } else {
-      console.log('Login failed, user data not fetched');
-    }
+    router.push('/dashboard');
   };
 
-  console.log('Current auth state:', { user, loading });
+  const logout = useCallback(() => {
+    setUser(null);
+    localStorage.removeItem('token');
+    router.push('/login');
+  }, [router]);
 
   return (
     <AuthContext.Provider value={{ user, loading, login, logout }}>
@@ -107,7 +91,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    console.error('useAuth called outside of AuthProvider');
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;

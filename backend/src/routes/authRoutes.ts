@@ -1,9 +1,11 @@
 // backend/src/routes/authRoutes.ts
 import express, { Request, Response, NextFunction } from 'express';
 import passport from '../middleware/googleAuth';
-import { registerUser, loginUser } from '../controllers/authController';
+import { registerUser, loginUser, getUserProfile } from '../controllers/authController';
 import User, { IUser } from '../models/User';
 import jwt from 'jsonwebtoken';
+import { authenticateToken } from '../middleware/authMiddleware';
+
 
 const router = express.Router();
 
@@ -65,36 +67,8 @@ router.get('/test', (req, res) => {
   res.json({ message: 'Auth test route working' });
 });
 
-router.get('/user', async (req, res) => {
-  console.log('Received request to /api/auth/user');
-  const authHeader = req.headers.authorization;
-  if (!authHeader) {
-    console.log('No authorization header');
-    return res.status(401).json({ message: 'No token provided' });
-  }
+// Updated /user route
+router.get('/user', authenticateToken, getUserProfile);
 
-  const token = authHeader.split(' ')[1];
-  if (!token) {
-    console.log('No token in authorization header');
-    return res.status(401).json({ message: 'No token provided' });
-  }
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { _id: string };
-    console.log('Decoded token:', decoded);
-
-    const user = await User.findById(decoded._id);
-    if (!user) {
-      console.log('User not found');
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    console.log('User found:', user);
-    res.json({ user: { id: user._id, email: user.email, name: user.name } });
-  } catch (error) {
-    console.error('Error verifying token:', error);
-    res.status(401).json({ message: 'Invalid token' });
-  }
-});
 
 export default router;

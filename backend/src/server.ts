@@ -15,7 +15,7 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(cors({
-  origin: process.env.FRONTEND_URL,
+  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
   credentials: true,
 }));
 app.use(passport.initialize());
@@ -23,6 +23,7 @@ app.use(passport.initialize());
 // Debugging middleware
 app.use((req, res, next) => {
   console.log(`Received request: ${req.method} ${req.url}`);
+  console.log('Headers:', req.headers);
   next();
 });
 
