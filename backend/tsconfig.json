@@ -1,8 +1,8 @@
-//trustbank/backend/tsconfig.json
 {
   "compilerOptions": {
     "target": "ES6",
     "module": "commonjs",
+    "outDir": "./dist",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -13,6 +13,6 @@
     },
     "typeRoots": ["node_modules/@types"]
   },
-  "include": ["src/**/*", "src/types/**/*",],
+  "include": ["src/**/*", "src/types/**/*"],
   "exclude": ["node_modules"]
 }

@@ -11,13 +11,15 @@ export interface IUser extends Document {
   comparePassword(candidatePassword: string): Promise<boolean>;
   generateAuthToken(): string;
   googleId?: string;
+  name?: string;
 }
 
 const userSchema = new mongoose.Schema<IUser>({
   email: { type: String, required: true, unique: true },
   password: { type: String },
   balance: { type: Number, default: 0 },
-  googleId: { type: String, unique: true },
+  googleId: { type: String, sparse: true },
+  name: { type: String },
 });
 
 // Hash the password before saving the user
@@ -35,9 +37,14 @@ userSchema.methods.comparePassword = async function (candidatePassword: string) 
     console.log('User has no password set');
     return false;
   }
-  const isMatch = await bcrypt.compare(candidatePassword, this.password);
-  console.log('Password comparison result:', isMatch);
-  return isMatch;
+  try {
+    const isMatch = await bcrypt.compare(candidatePassword, this.password);
+    console.log('Password comparison result:', isMatch);
+    return isMatch;
+  } catch (error) {
+    console.error('Error comparing passwords:', error);
+    return false;
+  }
 };
 
 // Generate JWT token

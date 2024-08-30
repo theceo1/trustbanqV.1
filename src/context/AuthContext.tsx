@@ -1,9 +1,8 @@
-// src/context/AuthContext.tsx
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = 'http://localhost:5001/api';
 
 interface User {
   id: string;
@@ -14,13 +13,8 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
-  login: (email: string, password: string) => Promise<void>;
+  login: (token: string) => Promise<void>;
   logout: () => void;
-}
-
-interface LoginResponseData {
-  token: string;
-  user: User;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -50,21 +44,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const login = async (email: string, password: string) => {
-    try {
-      const response = await axios.post<LoginResponseData>(
-        `${API_URL}/auth/login`,
-        { email, password }
-      );
-
-      const { user, token } = response.data;
-      setUser(user);
-      localStorage.setItem('token', token);
-      router.push('/dashboard');
-    } catch (error) {
-      console.error('Login error:', error);
-      throw error;
-    }
+  const login = async (token: string) => {
+    localStorage.setItem('token', token);
+    await fetchUserData(token);
+    router.push('/dashboard');
   };
 
   const logout = () => {

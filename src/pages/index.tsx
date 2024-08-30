@@ -1,16 +1,24 @@
 // src/pages/index.tsx
-import React from 'react';
+import React, { useEffect } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import Layout from '../components/layout/Layout';
 import Link from 'next/link';
+import { useAuth } from '../context/AuthContext';
 
 const Home: React.FC = () => {
   const router = useRouter();
+  const { login, user } = useAuth();
+
+  useEffect(() => {
+    const token = router.query.token as string;
+    if (token) {
+      login(token);
+    }
+  }, [router.query.token, login]);
 
   const handleGetStarted = () => {
-    const token = localStorage.getItem('token');
-    if (token) {
+    if (user) {
       // User is authenticated, redirect to dashboard
       router.push('/dashboard');
     } else {
@@ -20,8 +28,6 @@ const Home: React.FC = () => {
   };
 
   return (
-    <div className="bg-blue-200 min-h-screen">
-
     <Layout>
       <Head>
         <title>trustBank - Cryptocurrency Exchange you can trust</title>
@@ -124,8 +130,6 @@ const Home: React.FC = () => {
         </footer>
       </div>
     </Layout>
-    </div>
-
   );
 };
 

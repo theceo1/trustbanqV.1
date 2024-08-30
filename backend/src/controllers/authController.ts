@@ -44,7 +44,13 @@ export const loginUser = async (req: Request, res: Response) => {
       return res.status(400).json({ message: 'Invalid email or password' });
     }
 
-    console.log('User found:', user);
+    console.log('User found:', user.email); // Only log the email, not the entire user object
+    console.log('User has password:', !!user.password);
+
+    if (!user.password) {
+      console.log('User has no password set (possibly a Google OAuth user)');
+      return res.status(400).json({ message: 'Invalid login method' });
+    }
 
     const isMatch = await user.comparePassword(password);
     console.log('Password match result:', isMatch);

@@ -18,10 +18,33 @@ app.use(cors({
   credentials: true,
 }));
 app.use(passport.initialize());
-// Routes
 
+// Debugging middleware
+app.use((req, res, next) => {
+  console.log(`Received request: ${req.method} ${req.url}`);
+  next();
+});
+
+// Test route
+app.get('/test', (req, res) => {
+  console.log('Main server test route accessed');
+  res.json({ message: 'Main server test route working' });
+});
+
+// Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/wallet', walletRoutes);
+
+// 404 handler
+app.use((req, res, next) => {
+  res.status(404).json({ message: 'Route not found' });
+});
+
+// Error handling middleware
+app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  console.error('Error:', err.message);
+  res.status(500).json({ message: 'Something went wrong', error: err.message });
+});
 
 const PORT = process.env.PORT || 5001;
 const MONGODB_URI = process.env.MONGODB_URI || '';
