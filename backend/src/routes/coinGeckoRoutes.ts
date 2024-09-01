@@ -1,44 +1,35 @@
+// backend/src/routes/coinGeckoRoutes.ts
 import express from 'express';
 import axios from 'axios';
+import rateLimit from 'express-rate-limit';
 
 const router = express.Router();
 const COINGECKO_API_URL = 'https://api.coingecko.com/api/v3';
 
-router.get('/markets', async (req, res) => {
-  try {
-    const response = await axios.get(`${COINGECKO_API_URL}/coins/markets`, { params: req.query });
-    res.json(response.data);
-  } catch (error) {
-    res.status(500).json({ message: 'Error fetching market data' });
-  }
+// Rate limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100 // limit each IP to 100 requests per windowMs
 });
 
-router.get('/market_chart', async (req, res) => {
-  try {
-    const { id, ...params } = req.query;
-    const response = await axios.get(`${COINGECKO_API_URL}/coins/${id}/market_chart`, { params });
-    res.json(response.data);
-  } catch (error) {
-    res.status(500).json({ message: 'Error fetching market chart data' });
-  }
-});
+router.use(limiter);
 
-router.get('/search/trending', async (req, res) => {
+const handleCoinGeckoRequest = async (req: express.Request, res: express.Response, endpoint: string) => {
   try {
-    const response = await axios.get(`${COINGECKO_API_URL}/search/trending`);
+    const response = await axios.get(`${COINGECKO_API_URL}${endpoint}`, { params: req.query });
     res.json(response.data);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching trending data' });
+    console.error(`Error fetching data from CoinGecko: ${endpoint}`, error);
+    res.status(500).json({ message: 'Error fetching data from CoinGecko' });
   }
-});
+};
 
-router.get('/global', async (req, res) => {
-  try {
-    const response = await axios.get(`${COINGECKO_API_URL}/global`);
-    res.json(response.data);
-  } catch (error) {
-    res.status(500).json({ message: 'Error fetching global data' });
-  }
+router.get('/markets', (req, res) => handleCoinGeckoRequest(req, res, '/coins/markets'));
+router.get('/market_chart', (req, res) => {
+  const { id, ...params } = req.query;
+  handleCoinGeckoRequest(req, res, `/coins/${id}/market_chart`);
 });
+router.get('/search/trending', (req, res) => handleCoinGeckoRequest(req, res, '/search/trending'));
+router.get('/global', (req, res) => handleCoinGeckoRequest(req, res, '/global'));
 
 export default router;

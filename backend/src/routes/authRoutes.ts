@@ -1,74 +1,60 @@
 // backend/src/routes/authRoutes.ts
-import express, { Request, Response, NextFunction } from 'express';
-import passport from '../middleware/googleAuth';
-import { registerUser, loginUser, getUserProfile } from '../controllers/authController';
-import User, { IUser } from '../models/User';
-import jwt from 'jsonwebtoken';
-import { authenticateToken } from '../middleware/authMiddleware';
 
+import express, { Request, Response } from 'express';
+import passport from '../middleware/googleAuth';
+import { registerUser, loginUser } from '../controllers/authController';
+import { authenticateToken } from '../middleware/authMiddleware';
+import UserController from '../controllers/UserController'; // Ensure UserController is correctly implemented
 
 const router = express.Router();
 
+console.log('Defining routes in authRoutes.ts');
+
 // Registration route
+console.log('Defining /register route');
 router.post('/register', registerUser);
 
 // Login route
-router.post('/login', (req: Request, res: Response, next: NextFunction) => {
-  console.log('Login attempt received:', req.body);
-  loginUser(req, res);
-});
+console.log('Defining /login route');
+router.post('/login', loginUser);
 
 // Google OAuth login
+console.log('Defining /google route');
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
 // Google OAuth callback
-router.get(
-  '/google/callback',
-  (req, res, next) => {
-    passport.authenticate('google', { failureRedirect: '/login', session: false }, (err, user, info) => {
-      if (err) {
-        console.error('Error in Google authentication:', err);
-        return res.status(500).json({ error: 'Authentication failed' });
-      }
-      if (!user) {
-        console.error('No user returned from Google authentication');
-        return res.status(401).json({ error: 'Authentication failed' });
-      }
-      req.user = user;
-      next();
-    })(req, res, next);
-  },
+console.log('Defining /google/callback route');
+router.get('/google/callback', passport.authenticate('google', { failureRedirect: '/login', session: false }),
   (req: Request, res: Response) => {
-    const user = req.user as IUser;
+    const user = req.user as any; // Cast to any to access custom methods
     const token = user.generateAuthToken();
     res.redirect(`${process.env.FRONTEND_URL}/?token=${token}`);
   }
 );
 
-router.get('/checkuser/:email', async (req, res) => {
-  console.log('Checking user for email:', req.params.email);
-  try {
-    const user = await User.findOne({ email: req.params.email });
-    if (user) {
-      console.log('User found:', user.email);
-      res.json({ exists: true, hasPassword: !!user.password });
-    } else {
-      console.log('User not found');
-      res.json({ exists: false });
-    }
-  } catch (error) {
-    console.error('Error checking user:', error);
-    res.status(500).json({ message: 'Error checking user' });
+// User profile route with authentication
+console.log('Defining /user route with authentication');
+router.get('/user', authenticateToken, (req, res) => {
+  console.log('Reached /user route');
+  if (!req.user) {
+    console.log('No user attached to request');
+    return res.status(404).json({ message: 'User not found' });
   }
+  UserController.getUserProfile(req, res);
 });
 
-router.get('/test', (req, res) => {
-  console.log('Auth test route accessed');
-  res.json({ message: 'Auth test route working' });
+// Debug route
+console.log('Defining /debug route');
+router.get('/debug', (req, res) => {
+  console.log('Debug route accessed');
+  res.json({
+    message: 'Debug route working',
+    routes: router.stack.map((r: any) => ({
+      path: r.route?.path,
+      method: r.route?.stack[0]?.method
+    }))
+  });
 });
 
-// Updated /user route
-router.get('/user', authenticateToken, getUserProfile);
-
-
+console.log('Exporting auth routes');
 export default router;

@@ -2,17 +2,14 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-import authRoutes from './routes/authRoutes';
-import walletRoutes from './routes/walletRoutes';
-import mongoose from 'mongoose';
-import cors from 'cors';
 import express from 'express';
+import cors from 'cors';
+import mongoose from 'mongoose';
 import passport from './middleware/googleAuth';
-import coinGeckoRoutes from './routes/coinGeckoRoutes';
+import authRoutes from './routes/authRoutes';
 
 const app = express();
 
-// Middleware
 app.use(express.json());
 app.use(cors({
   origin: process.env.FRONTEND_URL || 'http://localhost:3000',
@@ -20,45 +17,27 @@ app.use(cors({
 }));
 app.use(passport.initialize());
 
-// Debugging middleware
-app.use((req, res, next) => {
-  console.log(`Received request: ${req.method} ${req.url}`);
-  console.log('Headers:', req.headers);
-  next();
-});
+async function startServer() {
+  app.use('/api/auth', authRoutes);
 
-// Test route
-app.get('/test', (req, res) => {
-  console.log('Main server test route accessed');
-  res.json({ message: 'Main server test route working' });
-});
+  const PORT = process.env.PORT || 5001;
+  const MONGODB_URI = process.env.MONGODB_URI || '';
 
-// Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/wallet', walletRoutes);
-app.use('/api/coinGecko', coinGeckoRoutes);
+  console.log(`Attempting to connect to MongoDB at URI: ${MONGODB_URI}`);
 
-// 404 handler
-app.use((req, res, next) => {
-  res.status(404).json({ message: 'Route not found' });
-});
-
-// Error handling middleware
-app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  console.error('Error:', err.message);
-  res.status(500).json({ message: 'Something went wrong', error: err.message });
-});
-
-const PORT = process.env.PORT || 5001;
-const MONGODB_URI = process.env.MONGODB_URI || '';
-
-mongoose.connect(MONGODB_URI)
-  .then(() => console.log('Connected to MongoDB'))
-  .catch(err => {
-    console.error('MongoDB connection error:', err);
+  try {
+    await mongoose.connect(MONGODB_URI); // Ensure your MongoDB URI is correctly formatted and accessible
+    console.log('Successfully connected to MongoDB');
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error('Failed to connect to MongoDB:', error);
     process.exit(1);
-  });
+  }
+}
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+startServer().catch(error => {
+  console.error('Failed to start server:', error);
+  process.exit(1);
 });

@@ -1,3 +1,4 @@
+// src/components/wallet/Wallet.tsx
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { fetchBalance } from '../../services/api';
@@ -26,6 +27,7 @@ const Wallet: React.FC = () => {
 
   const fetchBalanceData = async () => {
     try {
+      setLoading(true);
       const data = await fetchBalance();
       setBalance(prevBalance => ({
         ...prevBalance,

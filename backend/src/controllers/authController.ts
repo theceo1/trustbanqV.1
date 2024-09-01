@@ -1,6 +1,7 @@
 //backend/src/controllers/authController.ts
 import { Request, Response } from 'express';
 import User from '../models/User';
+import bcrypt from 'bcryptjs';
 
 // Register a new user
 export const registerUser = async (req: Request, res: Response) => {
@@ -16,7 +17,11 @@ export const registerUser = async (req: Request, res: Response) => {
       return res.status(400).json({ message: 'User already exists' });
     }
 
-    const user = new User({ email, password });
+    // Hash the password before saving
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    const user = new User({ email, password: hashedPassword });
     await user.save();
 
     const token = user.generateAuthToken();
@@ -44,7 +49,7 @@ export const loginUser = async (req: Request, res: Response) => {
       return res.status(400).json({ message: 'Invalid email or password' });
     }
 
-    console.log('User found:', user.email); // Only log the email, not the entire user object
+    console.log('User found:', user.email);
     console.log('User has password:', !!user.password);
 
     if (!user.password) {
@@ -52,7 +57,8 @@ export const loginUser = async (req: Request, res: Response) => {
       return res.status(400).json({ message: 'Invalid login method' });
     }
 
-    const isMatch = await user.comparePassword(password);
+    // Use bcrypt to compare passwords
+    const isMatch = await bcrypt.compare(password, user.password);
     console.log('Password match result:', isMatch);
 
     if (!isMatch) {
@@ -74,8 +80,13 @@ export const loginUser = async (req: Request, res: Response) => {
   }
 };
 
-// Get user profile
 export const getUserProfile = (req: Request, res: Response) => {
+  console.log('getUserProfile function called');
   const user = (req as any).user;
+  if (!user) {
+    console.log('No user found in request');
+    return res.status(401).json({ message: 'Unauthorized' });
+  }
+  console.log('Returning user profile:', user.email);
   res.json({ user: { id: user._id, email: user.email, name: user.name } });
 };

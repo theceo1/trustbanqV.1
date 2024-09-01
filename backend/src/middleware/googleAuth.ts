@@ -1,3 +1,4 @@
+// backend/src/middleware/googleAuth.ts
 import passport from 'passport';
 import { Strategy as GoogleStrategy, Profile, VerifyCallback } from 'passport-google-oauth20';
 import User, { IUser } from '../models/User';
@@ -22,6 +23,7 @@ passport.use(
       done: VerifyCallback
     ) => {
       console.log('Google OAuth callback triggered');
+      console.log('Access Token:', accessToken); // Log access token for debugging
       console.log('Profile:', JSON.stringify(profile, null, 2));
 
       try {

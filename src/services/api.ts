@@ -8,6 +8,27 @@ export const axiosInstance = axios.create({
   withCredentials: true,
 });
 
+// Add a request interceptor
+axiosInstance.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token && config.headers) {
+    config.headers['Authorization'] = `Bearer ${token}`;
+  }
+  return config;
+}, (error) => {
+  return Promise.reject(error);
+});
+
+const handleError = (error: unknown) => {
+  if (error && typeof error === 'object' && 'response' in error) {
+    const axiosError = error as { response?: { data?: { message?: string } } };
+    console.error('API Error:', axiosError.response?.data || 'An error occurred');
+    throw new Error(axiosError.response?.data?.message || 'An error occurred');
+  }
+  console.error('Unexpected error:', error);
+  throw new Error('An unexpected error occurred');
+};
+
 interface AxiosErrorResponse {
   response?: {
     data: {
@@ -101,120 +122,140 @@ export const login = async (email: string, password: string) => {
   try {
     const response = await axiosInstance.post('/auth/login', { email, password });
     return response.data;
-  } catch (error: unknown) {
-    if (error && typeof error === 'object' && 'isAxiosError' in error) {
-      const axiosError = error as AxiosErrorResponse;
-      if (axiosError.response) {
-        console.error('Login error:', axiosError.response.data);
-        throw new Error(axiosError.response.data.message || 'An error occurred during login');
-      } else if (axiosError.request) {
-        console.error('No response received:', axiosError.request);
-        throw new Error('No response received from server');
-      } else {
-        console.error('Error setting up request:', axiosError.message);
-        throw new Error('Error setting up request');
-      }
-    } else if (error instanceof Error) {
-      console.error('Unexpected error:', error.message);
-      throw new Error('An unexpected error occurred');
-    } else {
-      console.error('Unknown error:', error);
-      throw new Error('An unknown error occurred');
-    }
+  } catch (error) {
+    return handleError(error);
+  }
+};
+
+export const register = async (email: string, password: string) => {
+  try {
+    const response = await axiosInstance.post('/auth/register', { email, password });
+    return response.data;
+  } catch (error) {
+    return handleError(error);
   }
 };
 
 export const requestPasswordReset = async (email: string) => {
-  const response = await axios.post(`${API_URL}/users/request-password-reset`, { email });
-  return response.data;
+  try {
+    const response = await axiosInstance.post('/users/request-password-reset', { email });
+    return response.data;
+  } catch (error) {
+    return handleError(error);
+  }
 };
 
 export const resetPassword = async (token: string, password: string) => {
-  const response = await axios.post(`${API_URL}/users/reset-password`, { token, password });
-  return response.data;
+  try {
+    const response = await axiosInstance.post('/users/reset-password', { token, password });
+    return response.data;
+  } catch (error) {
+    return handleError(error);
+  }
 };
 
-
-
 export const fetchMarketOverview = async () => {
-  const response = await axiosInstance.get<Coin[]>(`/coingecko/markets`, {
-    params: {
-      vs_currency: 'usd',
-      order: 'market_cap_desc',
-      per_page: 10,
-      page: 1,
-      sparkline: false,
-    },
-  });
-  return response.data;
+  try {
+    const response = await axiosInstance.get<Coin[]>('/coingecko/markets', {
+      params: {
+        vs_currency: 'usd',
+        order: 'market_cap_desc',
+        per_page: 10,
+        page: 1,
+        sparkline: false,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    return handleError(error);
+  }
 };
 
 
 export const fetchBitcoinPriceData = async () => {
-  const response = await axiosInstance.get<ChartData>(`/coingecko/market_chart`, {
-    params: {
-      id: 'bitcoin',
-      vs_currency: 'usd',
-      days: '30',
-    },
-  });
-  return response.data;
+  try {
+    const response = await axiosInstance.get<ChartData>('/coingecko/market_chart', {
+      params: {
+        id: 'bitcoin',
+        vs_currency: 'usd',
+        days: '30',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    return handleError(error);
+  }
 };
 
 export const fetchPriceChartData = async (coin: string) => {
-  const response = await axiosInstance.get<ChartData>(`/coingecko/market_chart`, {
-    params: {
-      id: coin,
-      vs_currency: 'usd',
-      days: '30',
-    },
-  });
-  return response.data;
+  try {
+    const response = await axiosInstance.get<ChartData>('/coingecko/market_chart', {
+      params: {
+        id: coin,
+        vs_currency: 'usd',
+        days: '30',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    return handleError(error);
+  }
 };
 
 export const fetchMarketTrends = async () => {
-  const response = await axiosInstance.get<{ coins: MarketTrend[] }>(`/coingecko/search/trending`);
-  const gainers = response.data.coins.filter((coin) => coin.item.price_change_percentage_24h > 0);
-  const losers = response.data.coins.filter((coin) => coin.item.price_change_percentage_24h < 0);
-  return { gainers, losers };
+  try {
+    const response = await axiosInstance.get<{ coins: MarketTrend[] }>('/coingecko/search/trending');
+    const gainers = response.data.coins.filter((coin) => coin.item.price_change_percentage_24h > 0);
+    const losers = response.data.coins.filter((coin) => coin.item.price_change_percentage_24h < 0);
+    return { gainers, losers };
+  } catch (error) {
+    return handleError(error);
+  }
 };
 
-
-
 export const fetchCryptoNews = async () => {
-  const response = await axios.get<{ articles: NewsArticle[] }>(`https://newsapi.org/v2/everything`, {
-    params: {
-      q: 'cryptocurrency',
-      sortBy: 'publishedAt',
-      apiKey: process.env.NEXT_PUBLIC_NEWS_API_KEY,
-    },
-  });
-  return response.data;
+  try {
+    const response = await axios.get<{ articles: NewsArticle[] }>('https://newsapi.org/v2/everything', {
+      params: {
+        q: 'cryptocurrency',
+        sortBy: 'publishedAt',
+        apiKey: process.env.NEXT_PUBLIC_NEWS_API_KEY,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    return handleError(error);
+  }
 };
 
 export const fetchMarketStats = async () => {
-  const response = await axiosInstance.get<{ data: MarketStats }>(`/coingecko/global`);
-  return response.data.data;
+  try {
+    const response = await axiosInstance.get<{ data: MarketStats }>('/coingecko/global');
+    return response.data.data;
+  } catch (error) {
+    return handleError(error);
+  }
 };
 
 export const fetchWatchlist = async () => {
-  const response = await axiosInstance.get<Coin[]>(`/coingecko/markets`, {
-    params: {
-      vs_currency: 'usd',
-      ids: 'bitcoin,ethereum,tether',
-    },
-  });
-  return response.data;
+  try {
+    const response = await axiosInstance.get<Coin[]>('/coingecko/markets', {
+      params: {
+        vs_currency: 'usd',
+        ids: 'bitcoin,ethereum,tether',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    return handleError(error);
+  }
 };
-
-
 
 export const fetchBalance = async (): Promise<Balance> => {
   try {
     const response = await axiosInstance.get<Balance>('/wallet/balance');
     return response.data;
   } catch (error) {
-    console.error('Error fetching balance:', error);
-    throw error;
+    return handleError(error);
   }
 };
