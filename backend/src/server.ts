@@ -3,41 +3,33 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import express from 'express';
-import cors from 'cors';
-import mongoose from 'mongoose';
-import passport from './middleware/googleAuth';
-import authRoutes from './routes/authRoutes';
+import cors from 'cors';  // Import CORS middleware
+import mongoose from 'mongoose';  // Import MongoDB connection
+import passport from './middleware/googleAuth';  // Import Passport configuration
+import authRoutes from './routes/authRoutes';  // Import routes
 
 const app = express();
 
-app.use(express.json());
+app.use(express.json());  // Middleware for parsing JSON bodies
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: process.env.FRONTEND_URL || 'http://localhost:3000',  // Configure CORS
   credentials: true,
 }));
-app.use(passport.initialize());
+app.use(passport.initialize());  // Initialize Passport middleware
 
-async function startServer() {
-  app.use('/api/auth', authRoutes);
+// Simplified MongoDB connection setup
+mongoose.connect(process.env.MONGODB_URI || '')
+  .then(() => console.log('MongoDB connected'))
+  .catch(err => console.error('MongoDB connection error:', err));
 
-  const PORT = process.env.PORT || 5001;
-  const MONGODB_URI = process.env.MONGODB_URI || '';
+app.use('/api/auth', authRoutes);  // Use the auth routes
 
-  console.log(`Attempting to connect to MongoDB at URI: ${MONGODB_URI}`);
+// Temporary test route directly in server.ts to ensure basic routing works
+app.get('/api/auth/test', (req, res) => {
+  res.status(200).send('Test route is working');
+});
 
-  try {
-    await mongoose.connect(MONGODB_URI); // Ensure your MongoDB URI is correctly formatted and accessible
-    console.log('Successfully connected to MongoDB');
-    app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
-    });
-  } catch (error) {
-    console.error('Failed to connect to MongoDB:', error);
-    process.exit(1);
-  }
-}
-
-startServer().catch(error => {
-  console.error('Failed to start server:', error);
-  process.exit(1);
+const PORT = process.env.PORT || 5001;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });

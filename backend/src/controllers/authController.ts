@@ -7,24 +7,28 @@ import bcrypt from 'bcryptjs';
 export const registerUser = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
+    console.log(`Attempting to register user with email: ${email}`);
 
     if (!email || !password) {
+      console.log('Registration error: Email and password are required');
       return res.status(400).json({ message: 'Email and password are required' });
     }
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
+      console.log('Registration error: User already exists');
       return res.status(400).json({ message: 'User already exists' });
     }
 
-    // Hash the password before saving
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
     const user = new User({ email, password: hashedPassword });
     await user.save();
+    console.log(`User registered: ${email}`);
 
     const token = user.generateAuthToken();
+    console.log(`Token generated for new registration: ${token}`);
     res.status(201).json({ token });
   } catch (error) {
     console.error('Error registering user:', error);
@@ -36,7 +40,7 @@ export const registerUser = async (req: Request, res: Response) => {
 export const loginUser = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
-    console.log('Login attempt for email:', email);
+    console.log(`Login attempt for email: ${email}`);
 
     if (!email || !password) {
       console.log('Missing email or password');
@@ -52,6 +56,7 @@ export const loginUser = async (req: Request, res: Response) => {
     console.log('User found:', user.email);
     console.log('User has password:', !!user.password);
 
+    // Ensure user has a password before comparing
     if (!user.password) {
       console.log('User has no password set (possibly a Google OAuth user)');
       return res.status(400).json({ message: 'Invalid login method' });

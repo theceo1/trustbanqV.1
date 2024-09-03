@@ -1,12 +1,17 @@
 // backend/src/routes/authRoutes.ts
 
-import express, { Request, Response } from 'express';
+import express from 'express';
 import passport from '../middleware/googleAuth';
 import { registerUser, loginUser } from '../controllers/authController';
 import { authenticateToken } from '../middleware/authMiddleware';
-import UserController from '../controllers/UserController'; // Ensure UserController is correctly implemented
+import UserController from '../controllers/UserController';
 
 const router = express.Router();
+
+// Simple test route to confirm routing works
+router.get('/test', (req, res) => {
+  res.status(200).send('Test route is working');
+});
 
 console.log('Defining routes in authRoutes.ts');
 
@@ -25,22 +30,18 @@ router.get('/google', passport.authenticate('google', { scope: ['profile', 'emai
 // Google OAuth callback
 console.log('Defining /google/callback route');
 router.get('/google/callback', passport.authenticate('google', { failureRedirect: '/login', session: false }),
-  (req: Request, res: Response) => {
+  (req, res) => {
     const user = req.user as any; // Cast to any to access custom methods
     const token = user.generateAuthToken();
+    console.log(`Token generated for user: ${user.email}`);
     res.redirect(`${process.env.FRONTEND_URL}/?token=${token}`);
   }
 );
 
 // User profile route with authentication
 console.log('Defining /user route with authentication');
-router.get('/user', authenticateToken, (req, res) => {
-  console.log('Reached /user route');
-  if (!req.user) {
-    console.log('No user attached to request');
-    return res.status(404).json({ message: 'User not found' });
-  }
-  UserController.getUserProfile(req, res);
+router.get('/user', (req, res) => {
+  res.send('User route is working');
 });
 
 // Debug route
@@ -55,6 +56,8 @@ router.get('/debug', (req, res) => {
     }))
   });
 });
+
+console.log('Auth routes module loaded');
 
 console.log('Exporting auth routes');
 export default router;
