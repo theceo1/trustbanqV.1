@@ -1,5 +1,4 @@
 // backend/src/routes/authRoutes.ts
-
 import express from 'express';
 import passport from '../middleware/googleAuth';
 import { registerUser, loginUser } from '../controllers/authController';
@@ -10,11 +9,30 @@ const router = express.Router();
 
 console.log('Defining routes in authRoutes.ts');
 
-router.post('/register', registerUser);
-router.post('/login', loginUser);
-router.get('/user', authenticateToken, UserController.getUserProfile); // Ensure this controller method exists and is properly exported
+// Register Route
+router.post('/register', (req, res, next) => {
+  console.log('POST /register called');
+  registerUser(req, res, next);
+});
 
-router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+// Login Route
+router.post('/login', (req, res, next) => {
+  console.log('POST /login called');
+  loginUser(req, res, next);
+});
+
+// User Profile Route
+router.get('/user', authenticateToken, (req, res, next) => {
+  console.log('GET /user called');
+  UserController.getUserProfile(req, res);
+});
+
+// Google OAuth Routes
+router.get('/google', (req, res, next) => {
+  console.log('GET /google called');
+  passport.authenticate('google', { scope: ['profile', 'email'] })(req, res, next);
+});
+
 router.get('/google/callback', passport.authenticate('google', { failureRedirect: '/login', session: false }),
   (req, res) => {
     const user = req.user as any;
@@ -24,19 +42,23 @@ router.get('/google/callback', passport.authenticate('google', { failureRedirect
   }
 );
 
-// Route to get user profile, using authenticateToken middleware
-router.get('/user', authenticateToken, UserController.getUserProfile);
-
+// Debug Route to List Registered Routes
 router.get('/debug', (req, res) => {
   console.log('Debug route accessed');
+  const registeredRoutes = router.stack
+    .filter((layer: any) => layer.route)
+    .map((layer: any) => ({
+      path: layer.route.path,
+      method: Object.keys(layer.route.methods)[0].toUpperCase()
+    }));
+  
+  console.log('Registered Routes:', registeredRoutes);
   res.json({
     message: 'Debug route working',
-    routes: router.stack.map((r: any) => ({
-      path: r.route?.path,
-      method: r.route?.stack[0]?.method
-    }))
+    routes: registeredRoutes
   });
 });
 
 console.log('Auth routes module loaded');
 export default router;
+

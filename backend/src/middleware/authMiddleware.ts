@@ -5,6 +5,7 @@ import User from '../models/User';
 
 export const authenticateToken = async (req: Request, res: Response, next: NextFunction) => {
   console.log('authenticateToken middleware called');
+
   const authHeader = req.headers['authorization'];
   console.log('Authorization Header:', authHeader);
 
@@ -14,7 +15,7 @@ export const authenticateToken = async (req: Request, res: Response, next: NextF
   }
 
   const token = authHeader.split(' ')[1];
-  console.log('Token:', token);
+  console.log('Extracted Token:', token);
 
   if (!token) {
     console.log('Token not provided');
@@ -31,11 +32,12 @@ export const authenticateToken = async (req: Request, res: Response, next: NextF
     console.log('Token decoded:', decoded);
 
     const user = await User.findById(decoded._id);
-    console.log('User found:', user ? user.email : 'No user found');
     if (!user) {
+      console.log('User not found with ID:', decoded._id);
       return res.status(401).json({ message: 'User not found' });
     }
 
+    console.log('User authenticated:', user.email);
     req.user = user; // Attach user to request object
     next(); // Proceed to next middleware or route handler
   } catch (error) {
@@ -46,3 +48,4 @@ export const authenticateToken = async (req: Request, res: Response, next: NextF
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
+

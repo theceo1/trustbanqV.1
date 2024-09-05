@@ -23,13 +23,37 @@ app.use(morgan('dev')); // Add request logging
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI || '')
-  .then(() => console.log('MongoDB connected'))
-  .catch(err => console.error('MongoDB connection error:', err));
+  .then(() => {
+    console.log('MongoDB connected');
+    // Optionally, you can list connected databases or collections here
+  })
+  .catch(err => {
+    console.error('MongoDB connection error:', err);
+    process.exit(1); // Exit process with failure
+  });
 
 console.log('Adding auth routes...');
 
 // Mount auth routes under /api/auth
 app.use('/api/auth', authRoutes);
+
+// Optional: Add a root route for testing
+app.get('/', (req, res) => {
+  console.log('GET / called');
+  res.send('TrustBanq API is running.');
+});
+
+// Optional: Catch-all route for undefined endpoints
+app.use((req, res) => {
+  console.warn(`Undefined route accessed: ${req.method} ${req.originalUrl}`);
+  res.status(404).json({ message: 'Route not found' });
+});
+
+// Optional: Error-handling middleware
+app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  console.error('Unhandled error:', err);
+  res.status(500).json({ message: 'Internal server error' });
+});
 
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
