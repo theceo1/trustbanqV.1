@@ -1,4 +1,3 @@
-// backend/src/routes/authRoutes.ts
 import express from 'express';
 import passport from '../middleware/googleAuth';
 import { registerUser, loginUser } from '../controllers/authController';
@@ -8,6 +7,11 @@ import UserController from '../controllers/UserController';
 const router = express.Router();
 
 console.log('Defining routes in authRoutes.ts');
+
+router.use((req, res, next) => {
+  console.log(`Auth route accessed: ${req.method} ${req.url}`);
+  next();
+});
 
 // Register Route
 router.post('/register', (req, res, next) => {
@@ -22,9 +26,16 @@ router.post('/login', (req, res, next) => {
 });
 
 // User Profile Route
-router.get('/user', authenticateToken, (req, res, next) => {
-  console.log('GET /user called');
-  UserController.getUserProfile(req, res);
+router.get('/user', (req, res, next) => {
+  console.log('GET /user route handler called');
+  authenticateToken(req, res, (err) => {
+    if (err) {
+      console.log('Authentication failed:', err);
+      return res.status(401).json({ message: 'Authentication failed' });
+    }
+    console.log('Authentication successful, calling getUserProfile');
+    UserController.getUserProfile(req, res);
+  });
 });
 
 // Google OAuth Routes
@@ -42,23 +53,5 @@ router.get('/google/callback', passport.authenticate('google', { failureRedirect
   }
 );
 
-// Debug Route to List Registered Routes
-router.get('/debug', (req, res) => {
-  console.log('Debug route accessed');
-  const registeredRoutes = router.stack
-    .filter((layer: any) => layer.route)
-    .map((layer: any) => ({
-      path: layer.route.path,
-      method: Object.keys(layer.route.methods)[0].toUpperCase()
-    }));
-  
-  console.log('Registered Routes:', registeredRoutes);
-  res.json({
-    message: 'Debug route working',
-    routes: registeredRoutes
-  });
-});
-
-console.log('Auth routes module loaded');
 export default router;
 

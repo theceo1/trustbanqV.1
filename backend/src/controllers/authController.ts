@@ -1,4 +1,3 @@
-// backend/src/controllers/authController.ts
 import { Request, Response, NextFunction } from 'express';
 import User from '../models/User';
 import bcrypt from 'bcrypt';
@@ -71,4 +70,3 @@ export const loginUser = async (req: Request, res: Response, next: NextFunction)
     res.status(500).json({ message: 'Server error' });
   }
 };
-

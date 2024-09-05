@@ -1,4 +1,3 @@
-// backend/src/middleware/authMiddleware.ts
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import User from '../models/User';
@@ -11,7 +10,7 @@ export const authenticateToken = async (req: Request, res: Response, next: NextF
 
   if (!authHeader) {
     console.log('Authorization header is missing');
-    return res.status(401).json({ message: 'Authorization header is required' });
+    return next('Authorization header is required');
   }
 
   const token = authHeader.split(' ')[1];
@@ -19,13 +18,13 @@ export const authenticateToken = async (req: Request, res: Response, next: NextF
 
   if (!token) {
     console.log('Token not provided');
-    return res.status(401).json({ message: 'Token is required' });
+    return next('Token is required');
   }
 
   try {
     if (!process.env.JWT_SECRET) {
       console.error('JWT_SECRET is not set');
-      return res.status(500).json({ message: 'Internal server error: JWT secret is not configured' });
+      return next('Internal server error: JWT secret is not configured');
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET) as { _id: string };
@@ -34,7 +33,7 @@ export const authenticateToken = async (req: Request, res: Response, next: NextF
     const user = await User.findById(decoded._id);
     if (!user) {
       console.log('User not found with ID:', decoded._id);
-      return res.status(401).json({ message: 'User not found' });
+      return next('User not found');
     }
 
     console.log('User authenticated:', user.email);
@@ -43,9 +42,8 @@ export const authenticateToken = async (req: Request, res: Response, next: NextF
   } catch (error) {
     console.error('Error authenticating token:', error);
     if (error instanceof jwt.JsonWebTokenError) {
-      return res.status(403).json({ message: 'Invalid token' });
+      return next('Invalid token');
     }
-    return res.status(500).json({ message: 'Internal server error' });
+    return next('Internal server error');
   }
 };
-
