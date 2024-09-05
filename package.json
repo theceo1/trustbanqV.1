@@ -50,6 +50,7 @@
     "@types/cors": "^2.8.17",
     "@types/jsonwebtoken": "^9.0.6",
     "@types/mongoose": "^5.11.96",
+    "@types/morgan": "^1.9.9",
     "@types/node": "^20",
     "@types/passport": "^1.0.16",
     "@types/passport-google-oauth20": "^2.0.16",

@@ -1,54 +1,27 @@
-//backend/src/models/Users.ts
+// backend/src/models/User.ts
 import mongoose, { Document, Schema, Model } from 'mongoose';
-import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
 export interface IUser extends Document {
   _id: mongoose.Types.ObjectId;
   email: string;
-  password?: string;
+  password: string;
   balance: number;
-  comparePassword(candidatePassword: string): Promise<boolean>;
   generateAuthToken(): string;
   googleId?: string;
   name?: string;
 }
 
-const userSchema = new mongoose.Schema<IUser>({
+const userSchema = new Schema<IUser>({
   email: { type: String, required: true, unique: true },
-  password: { type: String },
+  password: { type: String, required: true }, // Password is required and stored as plain text
   balance: { type: Number, default: 0 },
   googleId: { type: String, sparse: true },
   name: { type: String },
 });
 
-// Hash the password before saving the user
-userSchema.pre('save', async function (next) {
-  if (this.password && this.isModified('password')) {
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
-  }
-  next();
-});
-
-// Compare passwords
-userSchema.methods.comparePassword = async function (candidatePassword: string) {
-  if (!this.password) {
-    console.log('User has no password set');
-    return false;
-  }
-  try {
-    const isMatch = await bcrypt.compare(candidatePassword, this.password);
-    console.log('Password comparison result:', isMatch);
-    return isMatch;
-  } catch (error) {
-    console.error('Error comparing passwords:', error);
-    return false;
-  }
-};
-
 // Generate JWT token
-userSchema.methods.generateAuthToken = function () {
+userSchema.methods.generateAuthToken = function (): string {
   const token = jwt.sign({ _id: this._id }, process.env.JWT_SECRET as string, {
     expiresIn: '1h',
   });

@@ -5,14 +5,18 @@ import { fetchMarketOverview, Coin } from '../../services/api';
 const MarketOverview: React.FC = () => {
   const [coins, setCoins] = useState<Coin[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
         const data = await fetchMarketOverview();
         setCoins(data);
+        setError(null);
       } catch (error) {
-        console.error('Failed to fetch market overview', error);
+        setError('Failed to fetch market overview');
+        console.error(error);
       } finally {
         setLoading(false);
       }
@@ -23,6 +27,9 @@ const MarketOverview: React.FC = () => {
 
   if (loading) {
     return <div>Loading market overview...</div>;
+  }
+  if (error) {
+    return <div>Error: {error}</div>;
   }
 
   return (

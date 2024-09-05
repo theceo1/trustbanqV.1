@@ -35,45 +35,18 @@ const LoginPage: React.FC = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
     setIsLoading(true);
     try {
-      console.log('Attempting login with credentials:', { email, password });
       const response = await axios.post<AuthResponse>('/api/auth/login', { email, password });
-      console.log('Login response data:', response.data);
-      
       if (response.data.token) {
-        await login(response.data.token);
+        console.log('Login successful:', response.data);
+        // Handle successful login, e.g., store token, redirect user
       } else {
-        console.warn('No token received in login response, response message:', response.data.message);
-        setError('Login successful, but no token received. Please try again.');
+        setError('Login failed: No token received');
       }
-    } catch (err: any) {
-      console.error('Login error caught in catch block:', err);
-      
-      if (err.response) {
-        console.error('Error response data:', err.response.data);
-        console.error('Error response status:', err.response.status);
-        console.error('Error response headers:', err.response.headers);
-        
-        if (err.response.status === 400) {
-          setError(`Bad Request: ${err.response.data?.message || 'Invalid input'}`);
-        } else if (err.response.status === 401) {
-          setError('Authentication failed. Please check your credentials.');
-        } else if (err.response.status === 404) {
-          setError('User not found. Please check your email or register a new account.');
-        } else {
-          setError(`An error occurred: ${err.response.data?.message || 'Please try again later.'}`);
-        }
-      } else if (err.request) {
-        console.error('Error request (no response received):', err.request);
-        setError('No response received from the server. Please check your internet connection.');
-      } else {
-        console.error('Error message:', err.message);
-        setError('An unexpected error occurred. Please try again later.');
-      }
+    } catch (error: any) {
+      setError('Login failed: ' + error.response?.data?.message || 'Unexpected error');
     } finally {
-      console.log('Login process complete, setting isLoading to false');
       setIsLoading(false);
     }
   };

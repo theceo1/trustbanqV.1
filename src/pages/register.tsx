@@ -30,13 +30,14 @@ const RegisterPage: React.FC = () => {
     e.preventDefault();
     try {
       const response = await axios.post<AuthResponse>('/api/auth/register', { email, password });
-      localStorage.setItem('token', response.data.token);
-      console.log('Registration successful:', response.data);
-      setSuccess('Registration successful! Redirecting to home...');
-      router.push('/');
-    } catch (err) {
-      const errorMessage = (err as any).response?.data?.message || 'Registration failed';
-      setError(errorMessage);
+      if (response.data.token) {
+        console.log('Registration successful:', response.data);
+        // Handle successful registration, e.g., store token, redirect user
+      } else {
+        setError('Registration failed: No token received');
+      }
+    } catch (error: any) {
+      setError('Registration failed: ' + error.response?.data?.message || 'Unexpected error');
     }
   };
 

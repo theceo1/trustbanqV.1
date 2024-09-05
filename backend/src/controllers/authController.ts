@@ -1,7 +1,7 @@
-//backend/src/controllers/authController.ts
+// backend/src/controllers/authController.ts
 import { Request, Response } from 'express';
-import User from '../models/User';
 import bcrypt from 'bcryptjs';
+import User from '../models/User';
 
 // Register a new user
 export const registerUser = async (req: Request, res: Response) => {
@@ -20,14 +20,12 @@ export const registerUser = async (req: Request, res: Response) => {
       return res.status(400).json({ message: 'User already exists' });
     }
 
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-
+    const hashedPassword = await bcrypt.hash(password, 10);
     const user = new User({ email, password: hashedPassword });
     await user.save();
     console.log(`User registered: ${email}`);
 
-    const token = user.generateAuthToken();
+    const token = user.generateAuthToken(); // Ensure this method is correctly implemented
     console.log(`Token generated for new registration: ${token}`);
     res.status(201).json({ token });
   } catch (error) {
@@ -48,26 +46,8 @@ export const loginUser = async (req: Request, res: Response) => {
     }
 
     const user = await User.findOne({ email });
-    if (!user) {
-      console.log('User not found for email:', email);
-      return res.status(400).json({ message: 'Invalid email or password' });
-    }
-
-    console.log('User found:', user.email);
-    console.log('User has password:', !!user.password);
-
-    // Ensure user has a password before comparing
-    if (!user.password) {
-      console.log('User has no password set (possibly a Google OAuth user)');
-      return res.status(400).json({ message: 'Invalid login method' });
-    }
-
-    // Use bcrypt to compare passwords
-    const isMatch = await bcrypt.compare(password, user.password);
-    console.log('Password match result:', isMatch);
-
-    if (!isMatch) {
-      console.log('Password mismatch for email:', email);
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      console.log('Invalid email or password');
       return res.status(400).json({ message: 'Invalid email or password' });
     }
 
@@ -76,15 +56,11 @@ export const loginUser = async (req: Request, res: Response) => {
     res.status(200).json({ token });
   } catch (error) {
     console.error('Error logging in user:', error);
-    if (error instanceof Error) {
-      console.error('Error name:', error.name);
-      console.error('Error message:', error.message);
-      console.error('Error stack:', error.stack);
-    }
-    res.status(500).json({ message: 'Server error', error: error instanceof Error ? error.message : String(error) });
+    res.status(500).json({ message: 'Server error' });
   }
 };
 
+// Get user profile (requires authentication)
 export const getUserProfile = (req: Request, res: Response) => {
   console.log('getUserProfile function called');
   const user = (req as any).user;

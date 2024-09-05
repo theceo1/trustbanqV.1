@@ -19,14 +19,9 @@ axiosInstance.interceptors.request.use((config) => {
   return Promise.reject(error);
 });
 
-const handleError = (error: unknown) => {
-  if (error && typeof error === 'object' && 'response' in error) {
-    const axiosError = error as { response?: { data?: { message?: string } } };
-    console.error('API Error:', axiosError.response?.data || 'An error occurred');
-    throw new Error(axiosError.response?.data?.message || 'An error occurred');
-  }
-  console.error('Unexpected error:', error);
-  throw new Error('An unexpected error occurred');
+const handleError = (error: any) => {
+  console.error('API Error:', error.response?.data?.message || error.message || 'An error occurred');
+  throw new Error(error.response?.data?.message || 'An error occurred');
 };
 
 interface AxiosErrorResponse {

@@ -3,31 +3,33 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import express from 'express';
-import cors from 'cors';  // Import CORS middleware
-import mongoose from 'mongoose';  // Import MongoDB connection
-import passport from './middleware/googleAuth';  // Import Passport configuration
-import authRoutes from './routes/authRoutes';  // Import routes
+import cors from 'cors';
+import mongoose from 'mongoose';
+import morgan from 'morgan';
+import passport from './middleware/googleAuth';
+import authRoutes from './routes/authRoutes';
 
 const app = express();
 
-app.use(express.json());  // Middleware for parsing JSON bodies
+console.log('Starting server setup...');
+
+app.use(express.json());
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',  // Configure CORS
+  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
   credentials: true,
 }));
-app.use(passport.initialize());  // Initialize Passport middleware
+app.use(passport.initialize());
+app.use(morgan('dev')); // Add request logging
 
-// Simplified MongoDB connection setup
+// Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI || '')
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.error('MongoDB connection error:', err));
 
-app.use('/api/auth', authRoutes);  // Use the auth routes
+console.log('Adding auth routes...');
 
-// Temporary test route directly in server.ts to ensure basic routing works
-app.get('/api/auth/test', (req, res) => {
-  res.status(200).send('Test route is working');
-});
+// Mount auth routes under /api/auth
+app.use('/api/auth', authRoutes);
 
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
