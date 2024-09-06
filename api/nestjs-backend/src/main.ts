@@ -7,6 +7,7 @@ import { LoggerService } from './common/services/logger.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.setGlobalPrefix('api');
   const logger = new LoggerService();
 
   app.useGlobalFilters(new HttpExceptionFilter());
@@ -14,7 +15,7 @@ async function bootstrap() {
   app.useLogger(logger);
 
   app.enableCors({
-    origin: process.env.FRONTEND_URL,
+    origin: process.env.FRONTEND_URL || 'http://localhost:3000' || 'https://trustbank1.vercel.app/',
     credentials: true,
   });
 
