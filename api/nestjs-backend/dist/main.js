@@ -7,12 +7,13 @@ const common_1 = require("@nestjs/common");
 const logger_service_1 = require("./common/services/logger.service");
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
+    app.setGlobalPrefix('api');
     const logger = new logger_service_1.LoggerService();
     app.useGlobalFilters(new http_exception_filter_1.HttpExceptionFilter());
     app.useGlobalPipes(new common_1.ValidationPipe());
     app.useLogger(logger);
     app.enableCors({
-        origin: process.env.FRONTEND_URL,
+        origin: process.env.FRONTEND_URL || 'http://localhost:3000' || 'https://trustbank1.vercel.app/',
         credentials: true,
     });
     const port = process.env.PORT || 5001;
