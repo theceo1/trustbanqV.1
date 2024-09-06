@@ -11,6 +11,10 @@ async function bootstrap() {
     app.useGlobalFilters(new http_exception_filter_1.HttpExceptionFilter());
     app.useGlobalPipes(new common_1.ValidationPipe());
     app.useLogger(logger);
+    app.enableCors({
+        origin: process.env.FRONTEND_URL,
+        credentials: true,
+    });
     const port = process.env.PORT || 5001;
     await app.listen(port);
     logger.log(`Application is running on: http://localhost:${port}`);
