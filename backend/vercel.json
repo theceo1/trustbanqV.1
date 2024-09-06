@@ -1,11 +1,9 @@
 {
   "version": 2,
   "builds": [
-    { "src": "package.json", "use": "@vercel/next" },
-    { "src": "api/nestjs-backend/src/main.ts", "use": "@vercel/node" }
+    { "src": "dist/main.js", "use": "@vercel/node" }
   ],
   "routes": [
-    { "src": "/api/(.*)", "dest": "api/nestjs-backend/src/main.ts" },
-    { "src": "/(.*)", "dest": "/$1" }
+    { "src": "/(.*)", "dest": "dist/main.js" }
   ]
 }
