@@ -8,18 +8,21 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LoggerService = void 0;
 const common_1 = require("@nestjs/common");
-let LoggerService = class LoggerService extends common_1.Logger {
-    error(message, trace) {
-        super.error(message, trace);
+let LoggerService = class LoggerService extends common_1.ConsoleLogger {
+    error(message, stack, context) {
+        super.error(message, stack, context);
     }
-    warn(message) {
-        super.warn(message);
+    warn(message, context) {
+        super.warn(message, context);
     }
-    log(message) {
-        super.log(message);
+    log(message, context) {
+        super.log(message, context);
     }
-    debug(message) {
-        super.debug(message);
+    debug(message, context) {
+        super.debug(message, context);
+    }
+    verbose(message, context) {
+        super.verbose(message, context);
     }
 };
 exports.LoggerService = LoggerService;
