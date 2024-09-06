@@ -1,4 +1,3 @@
-//trustbank/api/nestjs-backend/src/auth/auth.controller.ts
 import { Controller, Post, Body, Get, UseGuards, Req } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';

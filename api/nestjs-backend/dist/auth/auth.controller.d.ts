@@ -1,14 +1,17 @@
 import { AuthService } from './auth.service';
+import { Request } from 'express';
+import { RegisterDto } from './dto/register.dto';
+import { LoginDto } from './dto/login.dto';
 export declare class AuthController {
     private authService;
     constructor(authService: AuthService);
-    register(registerDto: any): Promise<import("../user/schemas/user.schema").User>;
-    login(loginDto: any): Promise<{
+    register(registerDto: RegisterDto): Promise<import("../user/schemas/user.schema").User>;
+    login(loginDto: LoginDto): Promise<{
         access_token: string;
     }>;
-    googleAuth(req: any): Promise<void>;
-    googleAuthRedirect(req: any): Promise<"No user from google" | {
+    googleAuth(req: Request): Promise<void>;
+    googleAuthRedirect(req: Request): Promise<"No user from google" | {
         message: string;
-        user: any;
+        user: Express.User;
     }>;
 }

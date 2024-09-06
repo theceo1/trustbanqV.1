@@ -12,14 +12,19 @@ let HttpExceptionFilter = class HttpExceptionFilter {
     catch(exception, host) {
         const ctx = host.switchToHttp();
         const response = ctx.getResponse();
+        const request = ctx.getRequest();
         const status = exception.getStatus();
-        const exceptionResponse = exception.getResponse();
+        const errorResponse = exception.getResponse();
+        const errorMessage = typeof errorResponse === 'object' && 'message' in errorResponse
+            ? errorResponse.message
+            : exception.message;
         response
             .status(status)
             .json({
             statusCode: status,
             timestamp: new Date().toISOString(),
-            message: exceptionResponse['message'] || exception.message,
+            path: request.url,
+            message: errorMessage,
         });
     }
 };
