@@ -10,7 +10,7 @@ export declare class AuthService {
     register(registerDto: RegisterDto): Promise<import("../user/schemas/user.schema").User>;
     login(loginDto: LoginDto): Promise<{
         access_token: string;
-    }>;
+    } | null>;
     googleLogin(req: Request): Promise<"No user from google" | {
         message: string;
         user: Express.User;

@@ -10,7 +10,7 @@ export const axiosInstance = axios.create({
 
 // Add a request interceptor
 axiosInstance.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
+  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
   if (token && config.headers) {
     config.headers['Authorization'] = `Bearer ${token}`;
   }
@@ -20,8 +20,20 @@ axiosInstance.interceptors.request.use((config) => {
 });
 
 const handleError = (error: any) => {
-  console.error('API Error:', error.response?.data?.message || error.message || 'An error occurred');
-  throw new Error(error.response?.data?.message || 'An error occurred');
+  if (error.response) {
+    // The request was made and the server responded with a status code
+    // that falls out of the range of 2xx
+    console.error('API Error:', error.response.data.message || 'An error occurred');
+    throw new Error(error.response.data.message || 'An error occurred');
+  } else if (error.request) {
+    // The request was made but no response was received
+    console.error('No response received:', error.request);
+    throw new Error('No response received from server');
+  } else {
+    // Something happened in setting up the request that triggered an Error
+    console.error('Error:', error.message);
+    throw error;
+  }
 };
 
 interface AxiosErrorResponse {
@@ -166,7 +178,6 @@ export const fetchMarketOverview = async () => {
   }
 };
 
-
 export const fetchBitcoinPriceData = async () => {
   try {
     const response = await axiosInstance.get<ChartData>('/coingecko/market_chart', {
@@ -210,13 +221,7 @@ export const fetchMarketTrends = async () => {
 
 export const fetchCryptoNews = async () => {
   try {
-    const response = await axios.get<{ articles: NewsArticle[] }>('https://newsapi.org/v2/everything', {
-      params: {
-        q: 'cryptocurrency',
-        sortBy: 'publishedAt',
-        apiKey: process.env.NEXT_PUBLIC_NEWS_API_KEY,
-      },
-    });
+    const response = await axiosInstance.get<{ articles: NewsArticle[] }>('/news');
     return response.data;
   } catch (error) {
     return handleError(error);

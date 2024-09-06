@@ -3,6 +3,6 @@ import { CreateUserDto } from './dto/create-user.dto';
 export declare class UserController {
     private readonly userService;
     constructor(userService: UserService);
-    getProfile(id: string): Promise<import("./schemas/user.schema").User>;
+    getProfile(id: string): Promise<import("./schemas/user.schema").User | null>;
     create(createUserDto: CreateUserDto): Promise<import("./schemas/user.schema").User>;
 }

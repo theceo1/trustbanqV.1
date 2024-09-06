@@ -1,6 +1,7 @@
 // trustbank/tsconfig.json
 {
   "compilerOptions": {
+    "target": "es5",
     "lib": [
       "dom",
       "dom.iterable",
@@ -9,6 +10,7 @@
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
+    "forceConsistentCasingInFileNames": true,
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
@@ -19,12 +21,6 @@
     "incremental": true,
     "baseUrl": ".",
     "paths": {
-      "@models/*": [
-        "backend/src/models/*"
-      ],
-      "@utils/*": [
-        "backend/src/utils/*"
-      ],
       "@/*": [
         "src/*"
       ]
@@ -42,6 +38,7 @@
     ".next/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "backend"
   ]
 }

@@ -8,7 +8,7 @@ export declare class AuthController {
     register(registerDto: RegisterDto): Promise<import("../user/schemas/user.schema").User>;
     login(loginDto: LoginDto): Promise<{
         access_token: string;
-    }>;
+    } | null>;
     googleAuth(req: Request): Promise<void>;
     googleAuthRedirect(req: Request): Promise<"No user from google" | {
         message: string;
