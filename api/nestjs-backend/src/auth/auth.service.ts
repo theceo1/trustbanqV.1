@@ -1,7 +1,11 @@
+//trustbank/api/nestjs-backend/src/auth/auth.service.ts
 import { Injectable } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { RegisterDto } from './dto/register.dto';
+import { LoginDto } from './dto/login.dto';
+import { Request } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -10,13 +14,13 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async register(registerDto: any) {
+  async register(registerDto: RegisterDto) {
     const { email, password, name } = registerDto;
     const hashedPassword = await bcrypt.hash(password, 10);
     return this.userService.create({ email, password: hashedPassword, name });
   }
 
-  async login(loginDto: any) {
+  async login(loginDto: LoginDto) {
     const { email, password } = loginDto;
     const user = await this.userService.findByEmail(email);
     if (user && await bcrypt.compare(password, user.password)) {
@@ -28,7 +32,7 @@ export class AuthService {
     return null;
   }
 
-  async googleLogin(req) {
+  async googleLogin(req: Request) {
     if (!req.user) {
       return 'No user from google';
     }
