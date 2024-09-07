@@ -9,7 +9,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     logger: new LoggerService(),
   });
-  app.setGlobalPrefix('api');
+  // Remove this line: app.setGlobalPrefix('api');
 
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalPipes(new ValidationPipe());
@@ -19,10 +19,8 @@ async function bootstrap() {
     credentials: true,
   });
 
-  // Remove the port variable and use 3000 as default
-  await app.listen(process.env.PORT || 3000);
-  
-  // Log the actual URL, not localhost
-  app.get(LoggerService).log(`Application is running`);
+  const port = process.env.PORT || 3000;
+  await app.listen(port);
+  console.log(`Application is running on port ${port}`);
 }
 bootstrap();

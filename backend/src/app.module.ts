@@ -5,7 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { WalletModule } from './wallet/wallet.module';
-import { AppController } from './app.controller';
+import { AppController } from './app.controller';  // Make sure this is imported
 
 @Module({
   imports: [
@@ -21,6 +21,6 @@ import { AppController } from './app.controller';
     UserModule,
     WalletModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController],  // Make sure AppController is included here
 })
 export class AppModule {}

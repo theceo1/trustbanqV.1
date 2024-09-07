@@ -15,6 +15,9 @@ let AppController = class AppController {
     getHello() {
         return 'TrustBank API is running!';
     }
+    getApi() {
+        return 'TrustBank API endpoint';
+    }
 };
 exports.AppController = AppController;
 __decorate([
@@ -23,6 +26,12 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", String)
 ], AppController.prototype, "getHello", null);
+__decorate([
+    (0, common_1.Get)('api'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", String)
+], AppController.prototype, "getApi", null);
 exports.AppController = AppController = __decorate([
     (0, common_1.Controller)()
 ], AppController);

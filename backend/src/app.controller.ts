@@ -6,4 +6,9 @@ export class AppController {
   getHello(): string {
     return 'TrustBank API is running!';
   }
+
+  @Get('api')
+  getApi(): string {
+    return 'TrustBank API endpoint';
+  }
 }
