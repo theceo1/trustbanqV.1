@@ -15,12 +15,14 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
 
   app.enableCors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000' || 'https://trustbank1.vercel.app/',
+    origin: process.env.FRONTEND_URL || 'http://localhost:3000' || 'https://trustbank1.vercel.app',
     credentials: true,
   });
 
-  const port = process.env.PORT || 5001;
-  await app.listen(port);
-  app.get(LoggerService).log(`Application is running on: http://localhost:${port}`);
+  // Remove the port variable and use 3000 as default
+  await app.listen(process.env.PORT || 3000);
+  
+  // Log the actual URL, not localhost
+  app.get(LoggerService).log(`Application is running`);
 }
 bootstrap();

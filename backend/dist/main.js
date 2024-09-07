@@ -13,12 +13,11 @@ async function bootstrap() {
     app.useGlobalFilters(new http_exception_filter_1.HttpExceptionFilter());
     app.useGlobalPipes(new common_1.ValidationPipe());
     app.enableCors({
-        origin: process.env.FRONTEND_URL || 'http://localhost:3000' || 'https://trustbank1.vercel.app/',
+        origin: process.env.FRONTEND_URL || 'http://localhost:3000' || 'https://trustbank1.vercel.app',
         credentials: true,
     });
-    const port = process.env.PORT || 5001;
-    await app.listen(port);
-    app.get(logger_service_1.LoggerService).log(`Application is running on: http://localhost:${port}`);
+    await app.listen(process.env.PORT || 3000);
+    app.get(logger_service_1.LoggerService).log(`Application is running`);
 }
 bootstrap();
 //# sourceMappingURL=main.js.map
