@@ -1,7 +1,7 @@
 // src/services/api.ts
 import axios from 'axios';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://trustbank-backend-29vqk1u70-anthony-oguguas-projects.vercel.app/api';
 
 export const axiosInstance = axios.create({
   baseURL: API_URL,
@@ -259,3 +259,5 @@ export const fetchBalance = async (): Promise<Balance> => {
     return handleError(error);
   }
 };
+
+console.log('API_URL:', API_URL);
