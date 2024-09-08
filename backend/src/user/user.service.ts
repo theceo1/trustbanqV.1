@@ -1,3 +1,4 @@
+//backend/src/user/user.service.ts
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -7,7 +8,7 @@ import { User } from './schemas/user.schema';
 export class UserService {
   constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
-  async create(createUserDto: any): Promise<User> {
+  async create(createUserDto: Partial<User>): Promise<User> {
     const createdUser = new this.userModel(createUserDto);
     return createdUser.save();
   }

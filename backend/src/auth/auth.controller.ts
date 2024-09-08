@@ -1,10 +1,9 @@
 import { Controller, Post, Body, Get, UseGuards, Req } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
-import { Request } from 'express';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
-import { GoogleAuthDto } from './dto/google-auth.dto';
+import { Request } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -20,9 +19,14 @@ export class AuthController {
     return this.authService.login(loginDto);
   }
 
+  @Get('login-test')
+  loginTest(): string {
+    return 'Login endpoint is working!';
+  }
+
   @Get('google')
   @UseGuards(AuthGuard('google'))
-  async googleAuth(@Req() req: Request) {}
+  async googleAuth() {}
 
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))

@@ -9,13 +9,14 @@ async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule, {
         logger: new logger_service_1.LoggerService(),
     });
+    app.setGlobalPrefix('api');
     app.useGlobalFilters(new http_exception_filter_1.HttpExceptionFilter());
     app.useGlobalPipes(new common_1.ValidationPipe());
     app.enableCors({
         origin: process.env.FRONTEND_URL || 'http://localhost:3000' || 'https://trustbank1.vercel.app',
         credentials: true,
     });
-    const port = process.env.PORT || 3000;
+    const port = process.env.PORT || 5001;
     await app.listen(port);
     console.log(`Application is running on port ${port}`);
 }

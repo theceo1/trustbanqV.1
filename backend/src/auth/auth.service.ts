@@ -1,14 +1,15 @@
 //trustbank/api/nestjs-backend/src/auth/auth.service.ts
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
-import { Request } from 'express';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private userService: UserService,
     private jwtService: JwtService,
@@ -29,16 +30,40 @@ export class AuthService {
         access_token: this.jwtService.sign(payload),
       };
     }
-    return null;
+    throw new UnauthorizedException('Invalid credentials');
   }
 
-  async googleLogin(req: Request) {
+  async googleLogin(req: any) {
     if (!req.user) {
-      return 'No user from google';
+      this.logger.warn('No user data received from Google');
+      throw new UnauthorizedException('No user from Google');
     }
-    return {
-      message: 'User information from google',
-      user: req.user,
-    };
+
+    try {
+      const { email, firstName } = req.user;
+      
+      let user = await this.userService.findByEmail(email);
+
+      if (!user) {
+        const randomPassword = Math.random().toString(36).slice(-8);
+        const hashedPassword = await bcrypt.hash(randomPassword, 10);
+        
+        user = await this.userService.create({
+          email,
+          name: firstName,
+          password: hashedPassword,
+          googleId: email, // Using email as googleId for simplicity
+        });
+        this.logger.log(`New user created via Google login: ${email}`);
+      }
+
+      const payload = { email: user.email, sub: user._id };
+      return {
+        access_token: this.jwtService.sign(payload),
+      };
+    } catch (error) {
+      this.logger.error(`Error during Google login: ${error.message}`, error.stack);
+      throw new UnauthorizedException('Failed to process Google login');
+    }
   }
 }

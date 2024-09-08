@@ -8,16 +8,18 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var AuthService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthService = void 0;
 const common_1 = require("@nestjs/common");
 const user_service_1 = require("../user/user.service");
 const jwt_1 = require("@nestjs/jwt");
 const bcrypt = require("bcrypt");
-let AuthService = class AuthService {
+let AuthService = AuthService_1 = class AuthService {
     constructor(userService, jwtService) {
         this.userService = userService;
         this.jwtService = jwtService;
+        this.logger = new common_1.Logger(AuthService_1.name);
     }
     async register(registerDto) {
         const { email, password, name } = registerDto;
@@ -33,20 +35,40 @@ let AuthService = class AuthService {
                 access_token: this.jwtService.sign(payload),
             };
         }
-        return null;
+        throw new common_1.UnauthorizedException('Invalid credentials');
     }
     async googleLogin(req) {
         if (!req.user) {
-            return 'No user from google';
+            this.logger.warn('No user data received from Google');
+            throw new common_1.UnauthorizedException('No user from Google');
         }
-        return {
-            message: 'User information from google',
-            user: req.user,
-        };
+        try {
+            const { email, firstName } = req.user;
+            let user = await this.userService.findByEmail(email);
+            if (!user) {
+                const randomPassword = Math.random().toString(36).slice(-8);
+                const hashedPassword = await bcrypt.hash(randomPassword, 10);
+                user = await this.userService.create({
+                    email,
+                    name: firstName,
+                    password: hashedPassword,
+                    googleId: email,
+                });
+                this.logger.log(`New user created via Google login: ${email}`);
+            }
+            const payload = { email: user.email, sub: user._id };
+            return {
+                access_token: this.jwtService.sign(payload),
+            };
+        }
+        catch (error) {
+            this.logger.error(`Error during Google login: ${error.message}`, error.stack);
+            throw new common_1.UnauthorizedException('Failed to process Google login');
+        }
     }
 };
 exports.AuthService = AuthService;
-exports.AuthService = AuthService = __decorate([
+exports.AuthService = AuthService = AuthService_1 = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [user_service_1.UserService,
         jwt_1.JwtService])

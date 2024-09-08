@@ -9,7 +9,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     logger: new LoggerService(),
   });
-  // Remove this line: app.setGlobalPrefix('api');
+  app.setGlobalPrefix('api');
 
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalPipes(new ValidationPipe());
@@ -19,7 +19,7 @@ async function bootstrap() {
     credentials: true,
   });
 
-  const port = process.env.PORT || 3000;
+  const port = process.env.PORT || 5001;
   await app.listen(port);
   console.log(`Application is running on port ${port}`);
 }
