@@ -5,5 +5,5 @@ export declare class UserService {
     constructor(userModel: Model<User>);
     create(createUserDto: Partial<User>): Promise<User>;
     findByEmail(email: string): Promise<User | null>;
-    findById(id: string): Promise<User | null>;
+    findById(id: string): Promise<Partial<User>>;
 }

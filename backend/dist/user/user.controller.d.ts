@@ -5,6 +5,6 @@ export declare class UserController {
     private readonly userService;
     private readonly logger;
     constructor(userService: UserService);
-    getProfile(req: RequestWithUser): Promise<import("./schemas/user.schema").User | null>;
+    getProfile(req: RequestWithUser): Promise<Partial<import("./schemas/user.schema").User>>;
     create(createUserDto: CreateUserDto): Promise<import("./schemas/user.schema").User>;
 }
