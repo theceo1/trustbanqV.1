@@ -1,3 +1,4 @@
+//backend/src/auth/auth.controller.ts
 import { Controller, Post, Body, Get, UseGuards, Req } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
@@ -16,6 +17,7 @@ export class AuthController {
 
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
+    console.log('Received login data:', loginDto);
     return this.authService.login(loginDto);
   }
 
