@@ -11,17 +11,21 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var UserController_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserController = void 0;
 const common_1 = require("@nestjs/common");
 const user_service_1 = require("./user.service");
 const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 const create_user_dto_1 = require("./dto/create-user.dto");
-let UserController = class UserController {
+let UserController = UserController_1 = class UserController {
     constructor(userService) {
         this.userService = userService;
+        this.logger = new common_1.Logger(UserController_1.name);
     }
     async getProfile(req) {
+        this.logger.log('getProfile method called');
+        this.logger.log(`User ID: ${req.user.userId}`);
         return this.userService.findById(req.user.userId);
     }
     async create(createUserDto) {
@@ -44,7 +48,7 @@ __decorate([
     __metadata("design:paramtypes", [create_user_dto_1.CreateUserDto]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "create", null);
-exports.UserController = UserController = __decorate([
+exports.UserController = UserController = UserController_1 = __decorate([
     (0, common_1.Controller)('user'),
     __metadata("design:paramtypes", [user_service_1.UserService])
 ], UserController);
