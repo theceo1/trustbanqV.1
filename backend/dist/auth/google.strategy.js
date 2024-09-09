@@ -19,7 +19,7 @@ let GoogleStrategy = class GoogleStrategy extends (0, passport_1.PassportStrateg
         super({
             clientID: configService.get('GOOGLE_CLIENT_ID'),
             clientSecret: configService.get('GOOGLE_CLIENT_SECRET'),
-            callbackURL: 'http://localhost:5001/api/auth/google/callback',
+            callbackURL: 'https://trustbank-backend-fbyucxqfa-anthony-oguguas-projects.vercel.app/api/auth/google/callback',
             scope: ['email', 'profile'],
         });
         this.configService = configService;
