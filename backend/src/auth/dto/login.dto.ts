@@ -8,8 +8,6 @@ export class LoginDto {
   @IsString()
   password: string;
 
-  @IsString()
-  name?: string;
 
   @IsOptional()
   @IsString()
