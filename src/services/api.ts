@@ -1,7 +1,7 @@
 // src/services/api.ts
 import axios from 'axios';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://trustbank-backend-29vqk1u70-anthony-oguguas-projects.vercel.app/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://trustbank-backend.vercel.app/api';
 
 export const axiosInstance = axios.create({
   baseURL: API_URL,
