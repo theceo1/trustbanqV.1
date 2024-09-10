@@ -7,7 +7,10 @@ export declare class AuthService {
     private jwtService;
     private readonly logger;
     constructor(userService: UserService, jwtService: JwtService);
-    register(registerDto: RegisterDto): Promise<import("../user/schemas/user.schema").User>;
+    register(registerDto: RegisterDto): Promise<{
+        message: string;
+        userId: any;
+    }>;
     login(loginDto: LoginDto): Promise<{
         access_token: string;
         refresh_token: string;

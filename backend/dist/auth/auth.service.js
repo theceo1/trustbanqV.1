@@ -22,9 +22,23 @@ let AuthService = AuthService_1 = class AuthService {
         this.logger = new common_1.Logger(AuthService_1.name);
     }
     async register(registerDto) {
-        const { email, password, name } = registerDto;
-        const hashedPassword = await bcrypt.hash(password, 10);
-        return this.userService.create({ email, password: hashedPassword, name });
+        try {
+            const { email, password, name } = registerDto;
+            this.logger.log(`Attempting to register user with email: ${email}`);
+            const existingUser = await this.userService.findByEmail(email);
+            if (existingUser) {
+                this.logger.warn(`Registration failed: Email ${email} already exists`);
+                throw new common_1.BadRequestException('Email already exists');
+            }
+            const hashedPassword = await bcrypt.hash(password, 10);
+            const newUser = await this.userService.create({ email, password: hashedPassword, name });
+            this.logger.log(`User registered successfully: ${newUser.email}`);
+            return { message: 'User registered successfully', userId: newUser._id };
+        }
+        catch (error) {
+            this.logger.error(`Registration failed: ${error.message}`, error.stack);
+            throw new common_1.BadRequestException(error.message || 'Registration failed');
+        }
     }
     async login(loginDto) {
         const { email, password } = loginDto;

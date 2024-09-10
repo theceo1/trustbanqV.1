@@ -12,13 +12,21 @@ async function bootstrap() {
     app.setGlobalPrefix('api');
     app.useGlobalFilters(new http_exception_filter_1.HttpExceptionFilter());
     app.useGlobalPipes(new common_1.ValidationPipe());
+    const allowedOrigins = [
+        'http://localhost:3000',
+        'https://trustbank1.vercel.app',
+        process.env.FRONTEND_URL,
+    ].filter((origin) => !!origin);
     app.enableCors({
-        origin: process.env.FRONTEND_URL || 'http://localhost:3000' || 'https://trustbank1.vercel.app',
+        origin: allowedOrigins,
         credentials: true,
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+        allowedHeaders: ['Content-Type', 'Authorization'],
     });
     const port = process.env.PORT || 5001;
     await app.listen(port);
     console.log(`Application is running on port ${port}`);
+    console.log(`Allowed origins: ${allowedOrigins.join(', ')}`);
 }
 bootstrap();
 //# sourceMappingURL=main.js.map
