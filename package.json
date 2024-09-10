@@ -19,6 +19,7 @@
     "@nestjs/jwt": "^10.2.0",
     "@nestjs/mongoose": "^10.0.10",
     "@nestjs/passport": "^10.0.3",
+    "@nestjs/throttler": "^6.2.1",
     "@sendinblue/client": "^3.3.1",
     "@tailwindcss/forms": "^0.5.7",
     "@types/express": "^4.17.21",

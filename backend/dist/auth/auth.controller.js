@@ -18,6 +18,8 @@ const auth_service_1 = require("./auth.service");
 const passport_1 = require("@nestjs/passport");
 const register_dto_1 = require("./dto/register.dto");
 const login_dto_1 = require("./dto/login.dto");
+const refresh_token_dto_1 = require("./dto/refresh-token.dto");
+const jwt_auth_guard_1 = require("./jwt-auth.guard");
 let AuthController = class AuthController {
     constructor(authService) {
         this.authService = authService;
@@ -26,7 +28,6 @@ let AuthController = class AuthController {
         return this.authService.register(registerDto);
     }
     async login(loginDto) {
-        console.log('Received login data:', loginDto);
         return this.authService.login(loginDto);
     }
     loginTest() {
@@ -35,6 +36,15 @@ let AuthController = class AuthController {
     async googleAuth() { }
     googleAuthRedirect(req) {
         return this.authService.googleLogin(req);
+    }
+    async refreshToken(refreshTokenDto) {
+        return this.authService.refreshToken(refreshTokenDto.refreshToken);
+    }
+    async logout(req) {
+        if (!req.user) {
+            throw new Error('User not found in request');
+        }
+        return this.authService.logout(req.user._id.toString());
     }
 };
 exports.AuthController = AuthController;
@@ -73,6 +83,21 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], AuthController.prototype, "googleAuthRedirect", null);
+__decorate([
+    (0, common_1.Post)('refresh'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [refresh_token_dto_1.RefreshTokenDto]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "refreshToken", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Get)('logout'),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "logout", null);
 exports.AuthController = AuthController = __decorate([
     (0, common_1.Controller)('auth'),
     __metadata("design:paramtypes", [auth_service_1.AuthService])

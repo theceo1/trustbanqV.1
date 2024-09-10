@@ -10,8 +10,17 @@ export declare class AuthService {
     register(registerDto: RegisterDto): Promise<import("../user/schemas/user.schema").User>;
     login(loginDto: LoginDto): Promise<{
         access_token: string;
+        refresh_token: string;
     }>;
     googleLogin(req: any): Promise<{
         access_token: string;
+        refresh_token: string;
+    }>;
+    refreshToken(refreshToken: string): Promise<{
+        access_token: string;
+        refresh_token: string;
+    }>;
+    logout(userId: string): Promise<{
+        message: string;
     }>;
 }

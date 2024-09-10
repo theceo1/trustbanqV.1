@@ -33,6 +33,7 @@ let AuthService = AuthService_1 = class AuthService {
             const payload = { email: user.email, sub: user._id };
             return {
                 access_token: this.jwtService.sign(payload),
+                refresh_token: this.jwtService.sign(payload, { expiresIn: '7d' }),
             };
         }
         throw new common_1.UnauthorizedException('Invalid credentials');
@@ -59,12 +60,31 @@ let AuthService = AuthService_1 = class AuthService {
             const payload = { email: user.email, sub: user._id };
             return {
                 access_token: this.jwtService.sign(payload),
+                refresh_token: this.jwtService.sign(payload, { expiresIn: '7d' }),
             };
         }
         catch (error) {
             this.logger.error(`Error during Google login: ${error.message}`, error.stack);
             throw new common_1.UnauthorizedException('Failed to process Google login');
         }
+    }
+    async refreshToken(refreshToken) {
+        try {
+            const payload = this.jwtService.verify(refreshToken);
+            const user = await this.userService.findById(payload.sub);
+            const newPayload = { email: user.email, sub: user._id };
+            return {
+                access_token: this.jwtService.sign(newPayload),
+                refresh_token: this.jwtService.sign(newPayload, { expiresIn: '7d' }),
+            };
+        }
+        catch (error) {
+            throw new common_1.UnauthorizedException('Invalid refresh token');
+        }
+    }
+    async logout(userId) {
+        this.logger.log(`User ${userId} logged out`);
+        return { message: 'Logged out successfully' };
     }
 };
 exports.AuthService = AuthService;

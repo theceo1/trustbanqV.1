@@ -4,7 +4,14 @@ import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { RefreshTokenDto } from './dto/refresh-token.dto';
+import { JwtAuthGuard } from './jwt-auth.guard';
 import { Request } from 'express';
+import { User } from '../user/schemas/user.schema';
+
+interface RequestWithUser extends Request {
+  user?: User;
+}
 
 @Controller('auth')
 export class AuthController {
@@ -17,7 +24,6 @@ export class AuthController {
 
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
-    console.log('Received login data:', loginDto);
     return this.authService.login(loginDto);
   }
 
@@ -32,7 +38,21 @@ export class AuthController {
 
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
-  googleAuthRedirect(@Req() req: Request) {
+  googleAuthRedirect(@Req() req: RequestWithUser) {
     return this.authService.googleLogin(req);
+  }
+
+  @Post('refresh')
+  async refreshToken(@Body() refreshTokenDto: RefreshTokenDto) {
+    return this.authService.refreshToken(refreshTokenDto.refreshToken);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('logout')
+  async logout(@Req() req: RequestWithUser) {
+    if (!req.user) {
+      throw new Error('User not found in request');
+    }
+    return this.authService.logout(req.user._id.toString());
   }
 }

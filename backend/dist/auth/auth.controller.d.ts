@@ -1,17 +1,32 @@
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { Request } from 'express';
+import { User } from '../user/schemas/user.schema';
+interface RequestWithUser extends Request {
+    user?: User;
+}
 export declare class AuthController {
     private authService;
     constructor(authService: AuthService);
-    register(registerDto: RegisterDto): Promise<import("../user/schemas/user.schema").User>;
+    register(registerDto: RegisterDto): Promise<User>;
     login(loginDto: LoginDto): Promise<{
         access_token: string;
+        refresh_token: string;
     }>;
     loginTest(): string;
     googleAuth(): Promise<void>;
-    googleAuthRedirect(req: Request): Promise<{
+    googleAuthRedirect(req: RequestWithUser): Promise<{
         access_token: string;
+        refresh_token: string;
+    }>;
+    refreshToken(refreshTokenDto: RefreshTokenDto): Promise<{
+        access_token: string;
+        refresh_token: string;
+    }>;
+    logout(req: RequestWithUser): Promise<{
+        message: string;
     }>;
 }
+export {};

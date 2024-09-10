@@ -14,6 +14,8 @@ const auth_module_1 = require("./auth/auth.module");
 const user_module_1 = require("./user/user.module");
 const wallet_module_1 = require("./wallet/wallet.module");
 const app_controller_1 = require("./app.controller");
+const throttler_1 = require("@nestjs/throttler");
+const core_1 = require("@nestjs/core");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -31,8 +33,18 @@ exports.AppModule = AppModule = __decorate([
             user_module_1.UserModule,
             auth_module_1.AuthModule,
             wallet_module_1.WalletModule,
+            throttler_1.ThrottlerModule.forRoot([{
+                    ttl: 60000,
+                    limit: 10,
+                }]),
         ],
         controllers: [app_controller_1.AppController],
+        providers: [
+            {
+                provide: core_1.APP_GUARD,
+                useClass: throttler_1.ThrottlerGuard,
+            },
+        ],
     })
 ], AppModule);
 //# sourceMappingURL=app.module.js.map
