@@ -1,5 +1,5 @@
 //trustbank/api/nestjs-backend/src/auth/auth.service.ts
-import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException, BadRequestException } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -16,9 +16,25 @@ export class AuthService {
   ) {}
 
   async register(registerDto: RegisterDto) {
-    const { email, password, name } = registerDto;
-    const hashedPassword = await bcrypt.hash(password, 10);
-    return this.userService.create({ email, password: hashedPassword, name });
+    try {
+      const { email, password, name } = registerDto;
+      this.logger.log(`Attempting to register user with email: ${email}`);
+      
+      const existingUser = await this.userService.findByEmail(email);
+      if (existingUser) {
+        this.logger.warn(`Registration failed: Email ${email} already exists`);
+        throw new BadRequestException('Email already exists');
+      }
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const newUser = await this.userService.create({ email, password: hashedPassword, name });
+      
+      this.logger.log(`User registered successfully: ${newUser.email}`);
+      return { message: 'User registered successfully', userId: newUser._id };
+    } catch (error) {
+      this.logger.error(`Registration failed: ${error.message}`, error.stack);
+      throw new BadRequestException(error.message || 'Registration failed');
+    }
   }
 
   async login(loginDto: LoginDto) {

@@ -1,5 +1,5 @@
 //backend/src/auth/auth.controller.ts
-import { Controller, Post, Body, Get, UseGuards, Req } from '@nestjs/common';
+import { Controller, Post, Body, Get, UseGuards, Req, Logger, HttpException, HttpStatus } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
 import { RegisterDto } from './dto/register.dto';
@@ -15,11 +15,21 @@ interface RequestWithUser extends Request {
 
 @Controller('auth')
 export class AuthController {
+  private readonly logger = new Logger(AuthController.name);
+
   constructor(private authService: AuthService) {}
 
   @Post('register')
   async register(@Body() registerDto: RegisterDto) {
-    return this.authService.register(registerDto);
+    try {
+      this.logger.log('Registration attempt received');
+      const result = await this.authService.register(registerDto);
+      this.logger.log('Registration successful');
+      return result;
+    } catch (error) {
+      this.logger.error(`Registration failed: ${error.message}`, error.stack);
+      throw new HttpException(error.message || 'Registration failed', HttpStatus.BAD_REQUEST);
+    }
   }
 
   @Post('login')
