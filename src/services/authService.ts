@@ -18,6 +18,7 @@ export async function registerUser(userData: { email: string; password: string }
     }
   } catch (error: any) {
     console.error('Registration error:', error.response?.data || error.message);
+    console.error('Full error object:', error);
     throw new Error(error.response?.data?.message || 'Unexpected error during registration');
   }
 }

@@ -33,6 +33,7 @@ export class AuthService {
       return { message: 'User registered successfully', userId: newUser._id };
     } catch (error) {
       this.logger.error(`Registration failed: ${error.message}`, error.stack);
+      this.logger.error('Full error object:', JSON.stringify(error));
       throw new BadRequestException(error.message || 'Registration failed');
     }
   }

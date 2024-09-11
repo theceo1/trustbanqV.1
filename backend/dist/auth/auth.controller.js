@@ -29,12 +29,14 @@ let AuthController = AuthController_1 = class AuthController {
     async register(registerDto) {
         try {
             this.logger.log('Registration attempt received');
+            this.logger.log('Registration data:', JSON.stringify(registerDto));
             const result = await this.authService.register(registerDto);
             this.logger.log('Registration successful');
             return result;
         }
         catch (error) {
             this.logger.error(`Registration failed: ${error.message}`, error.stack);
+            this.logger.error('Full error object:', JSON.stringify(error));
             throw new common_1.HttpException(error.message || 'Registration failed', common_1.HttpStatus.BAD_REQUEST);
         }
     }
