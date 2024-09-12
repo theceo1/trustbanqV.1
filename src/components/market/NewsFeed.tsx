@@ -9,8 +9,8 @@ const NewsFeed: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const news = await fetchCryptoNews();
-        setArticles(news.articles);
+        const news = await fetchCryptoNews(); // This should now work correctly
+        setArticles(news.articles); // Access articles from the response
       } catch (error) {
         console.error('Failed to fetch news articles', error);
       } finally {

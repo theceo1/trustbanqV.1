@@ -19,54 +19,23 @@ axiosInstance.interceptors.request.use((config) => {
   return Promise.reject(error);
 });
 
-const handleError = (error: any) => {
+const handleError = (error: any): never => {
   if (error.response) {
-    // The request was made and the server responded with a status code
-    // that falls out of the range of 2xx
     console.error('API Error:', error.response.data.message || 'An error occurred');
     throw new Error(error.response.data.message || 'An error occurred');
   } else if (error.request) {
-    // The request was made but no response was received
     console.error('No response received:', error.request);
     throw new Error('No response received from server');
   } else {
-    // Something happened in setting up the request that triggered an Error
     console.error('Error:', error.message);
     throw error;
   }
 };
 
-interface AxiosErrorResponse {
-  response?: {
-    data: {
-      message?: string;
-    };
-  };
-  request?: unknown;
+// Define interfaces
+export interface AuthResponse {
+  token: string;
   message?: string;
-}
-
-export interface ChartData {
-  prices: [number, number][];
-  market_caps: [number, number][];
-  total_volumes: [number, number][];
-}
-
-export interface MarketTrend {
-  item: {
-    id: string;
-    coin_id: number;
-    name: string;
-    symbol: string;
-    market_cap_rank: number;
-    thumb: string;
-    small: string;
-    large: string;
-    slug: string;
-    price_btc: number;
-    score: number;
-    price_change_percentage_24h: number;
-  };
 }
 
 export interface Coin {
@@ -102,6 +71,29 @@ export interface Coin {
   last_updated: string;
 }
 
+export interface ChartData {
+  prices: [number, number][];
+  market_caps: [number, number][];
+  total_volumes: [number, number][];
+}
+
+export interface MarketTrend {
+  item: {
+    id: string;
+    coin_id: number;
+    name: string;
+    symbol: string;
+    market_cap_rank: number;
+    thumb: string;
+    small: string;
+    large: string;
+    slug: string;
+    price_btc: number;
+    score: number;
+    price_change_percentage_24h: number;
+  };
+}
+
 export interface NewsArticle {
   title: string;
   description: string;
@@ -125,43 +117,66 @@ export interface Balance {
   ETH: number;
 }
 
-export const login = async (email: string, password: string) => {
+// Login function
+export const login = async (email: string, password: string): Promise<AuthResponse> => {
   try {
-    const response = await axiosInstance.post('/auth/login', { email, password });
-    return response.data;
+    const response = await axiosInstance.post<AuthResponse>('/auth/login', { email, password });
+    if (response.data.token) {
+      localStorage.setItem('token', response.data.token);
+      return response.data;
+    } else {
+      throw new Error('Login failed: No token received');
+    }
   } catch (error) {
-    return handleError(error);
+    handleError(error); 
+    return Promise.reject(error);
   }
 };
 
-export const register = async (email: string, password: string) => {
+// Register function
+export const register = async (email: string, password: string, name: string): Promise<AuthResponse> => {
   try {
-    const response = await axiosInstance.post('/auth/register', { email, password });
+    const response = await axiosInstance.post<AuthResponse>('/auth/register', { email, password, name });
     return response.data;
   } catch (error) {
-    return handleError(error);
+    handleError(error); 
+    return Promise.reject(error); 
   }
 };
 
-export const requestPasswordReset = async (email: string) => {
+// Google login function
+export const googleLogin = async (): Promise<AuthResponse> => {
   try {
-    const response = await axiosInstance.post('/users/request-password-reset', { email });
+    const response = await axiosInstance.get<AuthResponse>('/auth/google');
     return response.data;
   } catch (error) {
-    return handleError(error);
+    handleError(error);
+    return Promise.reject(error);
   }
 };
 
-export const resetPassword = async (token: string, password: string) => {
+// Request password reset function
+export const requestPasswordReset = async (email: string): Promise<void> => {
   try {
-    const response = await axiosInstance.post('/users/reset-password', { token, password });
-    return response.data;
+    await axiosInstance.post('/users/request-password-reset', { email });
   } catch (error) {
-    return handleError(error);
+    handleError(error); // Use the generic error handler
+    return Promise.reject(error); // Ensure a rejected promise is returned
   }
 };
 
-export const fetchMarketOverview = async () => {
+// Reset password function
+export const resetPassword = async (token: string, password: string): Promise<void> => {
+  try {
+    await axiosInstance.post('/users/reset-password', { token, password });
+  } catch (error) {
+    handleError(error); // Use the generic error handler
+    return Promise.reject(error); // Ensure a rejected promise is returned
+  }
+};
+
+// Fetch market overview function
+export const fetchMarketOverview = async (): Promise<Coin[]> => {
   try {
     const response = await axiosInstance.get<Coin[]>('/coingecko/markets', {
       params: {
@@ -174,90 +189,85 @@ export const fetchMarketOverview = async () => {
     });
     return response.data;
   } catch (error) {
-    return handleError(error);
+    handleError(error); // Use the generic error handler
+    return Promise.reject(error); // Ensure a rejected promise is returned
   }
 };
 
-export const fetchBitcoinPriceData = async () => {
-  try {
-    const response = await axiosInstance.get<ChartData>('/coingecko/market_chart', {
-      params: {
-        id: 'bitcoin',
-        vs_currency: 'usd',
-        days: '30',
-      },
-    });
-    return response.data;
-  } catch (error) {
-    return handleError(error);
-  }
-};
-
-export const fetchPriceChartData = async (coin: string) => {
-  try {
-    const response = await axiosInstance.get<ChartData>('/coingecko/market_chart', {
-      params: {
-        id: coin,
-        vs_currency: 'usd',
-        days: '30',
-      },
-    });
-    return response.data;
-  } catch (error) {
-    return handleError(error);
-  }
-};
-
-export const fetchMarketTrends = async () => {
-  try {
-    const response = await axiosInstance.get<{ coins: MarketTrend[] }>('/coingecko/search/trending');
-    const gainers = response.data.coins.filter((coin) => coin.item.price_change_percentage_24h > 0);
-    const losers = response.data.coins.filter((coin) => coin.item.price_change_percentage_24h < 0);
-    return { gainers, losers };
-  } catch (error) {
-    return handleError(error);
-  }
-};
-
-export const fetchCryptoNews = async () => {
-  try {
-    const response = await axiosInstance.get<{ articles: NewsArticle[] }>('/news');
-    return response.data;
-  } catch (error) {
-    return handleError(error);
-  }
-};
-
-export const fetchMarketStats = async () => {
-  try {
-    const response = await axiosInstance.get<{ data: MarketStats }>('/coingecko/global');
-    return response.data.data;
-  } catch (error) {
-    return handleError(error);
-  }
-};
-
-export const fetchWatchlist = async () => {
-  try {
-    const response = await axiosInstance.get<Coin[]>('/coingecko/markets', {
-      params: {
-        vs_currency: 'usd',
-        ids: 'bitcoin,ethereum,tether',
-      },
-    });
-    return response.data;
-  } catch (error) {
-    return handleError(error);
-  }
-};
-
+// Fetch balance function
 export const fetchBalance = async (): Promise<Balance> => {
   try {
     const response = await axiosInstance.get<Balance>('/wallet/balance');
     return response.data;
   } catch (error) {
-    return handleError(error);
+    handleError(error); // Use the generic error handler
+    return Promise.reject(error); // Ensure a rejected promise is returned
   }
 };
 
+// Fetch Market Stats function
+export const fetchMarketStats = async (): Promise<MarketStats> => {
+  try {
+    const response = await axiosInstance.get<MarketStats>('/market/stats'); // Adjust the endpoint as needed
+    return response.data;
+  } catch (error) {
+    handleError(error); // Use the generic error handler
+    return Promise.reject(error); // Ensure a rejected promise is returned
+  }
+};
+
+// Define the expected structure of the market trends response
+export interface MarketTrendsResponse {
+  gainers: any[]; // Replace 'any' with a more specific type if available
+  losers: any[]; // Replace 'any' with a more specific type if available
+}
+
+// Fetch Market Trends function
+export const fetchMarketTrends = async (): Promise<MarketTrendsResponse> => {
+  try {
+    const response = await axiosInstance.get<MarketTrendsResponse>('/market/trends'); // Adjust the endpoint as needed
+    return response.data;
+  } catch (error) {
+    handleError(error);
+    return Promise.reject(error);
+  }
+};
+
+// Define the expected structure of the news response
+export interface NewsResponse {
+  articles: NewsArticle[]; // Assuming NewsArticle is already defined
+}
+
+// Fetch Crypto News function
+export const fetchCryptoNews = async (): Promise<NewsResponse> => {
+  try {
+    const response = await axiosInstance.get<NewsResponse>('/news/crypto'); // Adjust the endpoint as needed
+    return response.data;
+  } catch (error) {
+    handleError(error);
+    return Promise.reject(error);
+  }
+};
+
+// Fetch Price Chart Data function
+export const fetchPriceChartData = async (coinId: string): Promise<any> => {
+  try {
+    const response = await axiosInstance.get<any>(`/coins/${coinId}/chart-data`); // Adjust the endpoint as needed
+    return response.data;
+  } catch (error) {
+    handleError(error); // Use the generic error handler
+    return Promise.reject(error); // Ensure a rejected promise is returned
+  }
+};
+
+// Fetch Watchlist function
+export const fetchWatchlist = async (): Promise<any[]> => {
+  try {
+    const response = await axiosInstance.get<any[]>('/user/watchlist'); // Adjust the endpoint as needed
+    return response.data;
+  } catch (error) {
+    handleError(error); // Use the generic error handler
+    return Promise.reject(error); // Ensure a rejected promise is returned
+  }
+};
 console.log('API_URL:', API_URL);

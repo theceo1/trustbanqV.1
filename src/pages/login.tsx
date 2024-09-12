@@ -6,6 +6,7 @@ import Alert from '@/components/common/Alert';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useAuth } from '../context/AuthContext';
+import { googleLogin } from '@/services/api'; // Import the googleLogin function
 
 interface AuthResponse {
   message: string;
@@ -44,16 +45,22 @@ const LoginPage: React.FC = () => {
       } else {
         setError('Login failed: No token received');
       }
-    } catch (error: any) {
-      setError('Login failed: ' + error.response?.data?.message || 'Unexpected error');
+    } catch (error: any) { // Explicitly typing the error
+      setError('Login failed: ' + (error.response?.data?.message || 'Unexpected error'));
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleGoogleLogin = () => {
+  const handleGoogleLogin = async () => {
     console.log('Redirecting to Google login...');
-    window.location.href = '/api/auth/google';
+    try {
+      const response = await googleLogin(); // Call the googleLogin function
+      console.log('Google login successful:', response);
+      // Handle successful Google login, e.g., store token, redirect user
+    } catch (error: any) { // Explicitly typing the error
+      setError('Google login failed: ' + error.message);
+    }
   };
 
   if (loading) {

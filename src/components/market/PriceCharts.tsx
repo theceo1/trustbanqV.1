@@ -12,7 +12,7 @@ import {
   Legend,
 } from 'chart.js';
 import { fetchPriceChartData } from '../../services/api';
-
+ 
 // Register the required components
 ChartJS.register(
   CategoryScale,

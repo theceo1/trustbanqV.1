@@ -4,18 +4,19 @@ import { useRouter } from 'next/router';
 import Alert from '@/components/common/Alert';
 import Head from 'next/head';
 import Link from 'next/link';
-import { registerUser, registerWithGoogle } from '@/services/authService';
+import { register } from '@/services/api';
+import { registerWithGoogle } from '@/services/authService';
 
 const RegisterPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
     if (router.query.token) {
-      console.log('Received token:', router.query.token);
       localStorage.setItem('token', router.query.token as string);
       router.push('/');
     }
@@ -24,10 +25,12 @@ const RegisterPage: React.FC = () => {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await registerUser({ email, password });
+      const response = await register(email, password, name);
       console.log('Registration successful:', response);
       setSuccess('Registration successful! Please check your email to verify your account.');
-      // Optionally, redirect the user or update the UI
+      // Automatically log in the user after registration
+      localStorage.setItem('token', response.token); // Assuming the response contains a token
+      router.push('/'); // Redirect to homepage after successful registration
     } catch (error: any) {
       setError('Registration failed: ' + error.message);
     }
@@ -51,6 +54,17 @@ const RegisterPage: React.FC = () => {
           {error && <Alert type="error" message={error} />}
           {success && <Alert type="success" message={success} />}
           <form onSubmit={handleRegister} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Name</label>
+              <input
+                type="text"
+                placeholder="Name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                className="w-full p-3 mt-1 border rounded-md focus:outline-none focus:ring focus:ring-green-300 dark:bg-gray-700 dark:text-gray-200"
+              />
+            </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Email Address</label>
               <input
@@ -89,7 +103,7 @@ const RegisterPage: React.FC = () => {
             </button>
           </div>
           <p className="text-sm text-center text-gray-400">
-            Already have an account? <Link href="/login" legacyBehavior><a><span className="text-green-600 hover:underline">Login</span></a></Link>
+            Already have an account? <Link href="/login"><span className="text-green-600 hover:underline">Login</span></Link>
           </p>
         </div>
       </div>

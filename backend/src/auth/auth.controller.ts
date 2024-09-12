@@ -10,7 +10,7 @@ import { Request } from 'express';
 import { User } from '../user/schemas/user.schema';
 
 interface RequestWithUser extends Request {
-  user?: User;
+  user?: User & { _id: string }; // Explicitly define _id as a string
 }
 
 @Controller('auth')
@@ -22,14 +22,9 @@ export class AuthController {
   @Post('register')
   async register(@Body() registerDto: RegisterDto) {
     try {
-      this.logger.log('Registration attempt received');
-      this.logger.log('Registration data:', JSON.stringify(registerDto));
       const result = await this.authService.register(registerDto);
-      this.logger.log('Registration successful');
       return result;
     } catch (error) {
-      this.logger.error(`Registration failed: ${error.message}`, error.stack);
-      this.logger.error('Full error object:', JSON.stringify(error));
       throw new HttpException(error.message || 'Registration failed', HttpStatus.BAD_REQUEST);
     }
   }
@@ -50,8 +45,9 @@ export class AuthController {
 
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
-  googleAuthRedirect(@Req() req: RequestWithUser) {
-    return this.authService.googleLogin(req);
+  async googleAuthRedirect(@Req() req: RequestWithUser) {
+    const user = await this.authService.googleLogin(req);
+    return { access_token: user.access_token, refresh_token: user.refresh_token };
   }
 
   @Post('refresh')

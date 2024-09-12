@@ -1,3 +1,4 @@
+// src/components/market/MarketInsights.tsx
 import React from 'react';
 
 const MarketInsights: React.FC = () => {

@@ -3,7 +3,7 @@ import { Document } from 'mongoose';
 
 @Schema()
 export class Wallet extends Document {
-  @Prop({ required: true, unique: true })
+  @Prop({ required: true })
   userId: string;
 
   @Prop({ default: 0 })

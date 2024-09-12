@@ -16,7 +16,7 @@ let Wallet = class Wallet extends mongoose_2.Document {
 };
 exports.Wallet = Wallet;
 __decorate([
-    (0, mongoose_1.Prop)({ required: true, unique: true }),
+    (0, mongoose_1.Prop)({ required: true }),
     __metadata("design:type", String)
 ], Wallet.prototype, "userId", void 0);
 __decorate([

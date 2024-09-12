@@ -24,6 +24,7 @@ export async function registerUser(userData: { email: string; password: string }
 }
 
 export function registerWithGoogle() {
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api';
   window.location.href = `${API_URL}/auth/google`;
 }
 

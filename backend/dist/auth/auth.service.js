@@ -37,7 +37,6 @@ let AuthService = AuthService_1 = class AuthService {
         }
         catch (error) {
             this.logger.error(`Registration failed: ${error.message}`, error.stack);
-            this.logger.error('Full error object:', JSON.stringify(error));
             throw new common_1.BadRequestException(error.message || 'Registration failed');
         }
     }

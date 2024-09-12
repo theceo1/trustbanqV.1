@@ -1,4 +1,4 @@
-//trustbank/api/nestjs-backend/src/auth/auth.service.ts
+//trustbank/backend/src/auth/auth.service.ts
 import { Injectable, Logger, UnauthorizedException, BadRequestException } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
@@ -30,10 +30,9 @@ export class AuthService {
       const newUser = await this.userService.create({ email, password: hashedPassword, name });
       
       this.logger.log(`User registered successfully: ${newUser.email}`);
-      return { message: 'User registered successfully', userId: newUser._id };
+      return { message: 'User registered successfully', userId: newUser._id }; // Ensure this line is present
     } catch (error) {
       this.logger.error(`Registration failed: ${error.message}`, error.stack);
-      this.logger.error('Full error object:', JSON.stringify(error));
       throw new BadRequestException(error.message || 'Registration failed');
     }
   }

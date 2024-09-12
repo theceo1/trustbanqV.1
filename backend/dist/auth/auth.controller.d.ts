@@ -5,7 +5,9 @@ import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { Request } from 'express';
 import { User } from '../user/schemas/user.schema';
 interface RequestWithUser extends Request {
-    user?: User;
+    user?: User & {
+        _id: string;
+    };
 }
 export declare class AuthController {
     private authService;
@@ -13,7 +15,7 @@ export declare class AuthController {
     constructor(authService: AuthService);
     register(registerDto: RegisterDto): Promise<{
         message: string;
-        userId: any;
+        userId: unknown;
     }>;
     login(loginDto: LoginDto): Promise<{
         access_token: string;

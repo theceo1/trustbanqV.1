@@ -28,15 +28,10 @@ let AuthController = AuthController_1 = class AuthController {
     }
     async register(registerDto) {
         try {
-            this.logger.log('Registration attempt received');
-            this.logger.log('Registration data:', JSON.stringify(registerDto));
             const result = await this.authService.register(registerDto);
-            this.logger.log('Registration successful');
             return result;
         }
         catch (error) {
-            this.logger.error(`Registration failed: ${error.message}`, error.stack);
-            this.logger.error('Full error object:', JSON.stringify(error));
             throw new common_1.HttpException(error.message || 'Registration failed', common_1.HttpStatus.BAD_REQUEST);
         }
     }
@@ -47,8 +42,9 @@ let AuthController = AuthController_1 = class AuthController {
         return 'Login endpoint is working!';
     }
     async googleAuth() { }
-    googleAuthRedirect(req) {
-        return this.authService.googleLogin(req);
+    async googleAuthRedirect(req) {
+        const user = await this.authService.googleLogin(req);
+        return { access_token: user.access_token, refresh_token: user.refresh_token };
     }
     async refreshToken(refreshTokenDto) {
         return this.authService.refreshToken(refreshTokenDto.refreshToken);
@@ -94,7 +90,7 @@ __decorate([
     __param(0, (0, common_1.Req)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], AuthController.prototype, "googleAuthRedirect", null);
 __decorate([
     (0, common_1.Post)('refresh'),

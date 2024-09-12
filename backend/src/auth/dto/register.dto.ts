@@ -1,4 +1,4 @@
-//trustbank/api/nestjs-backend/src/auth/dto/register.dto.ts
+//trustbank/backend/src/auth/dto/register.dto.ts
 import { IsEmail, IsString, MinLength, IsOptional } from 'class-validator';
 
 export class RegisterDto {
