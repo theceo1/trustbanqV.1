@@ -16,6 +16,7 @@ const wallet_module_1 = require("./wallet/wallet.module");
 const app_controller_1 = require("./app.controller");
 const throttler_1 = require("@nestjs/throttler");
 const core_1 = require("@nestjs/core");
+const market_module_1 = require("./market/market.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -33,6 +34,7 @@ exports.AppModule = AppModule = __decorate([
             user_module_1.UserModule,
             auth_module_1.AuthModule,
             wallet_module_1.WalletModule,
+            market_module_1.MarketModule,
             throttler_1.ThrottlerModule.forRoot([{
                     ttl: 60000,
                     limit: 10,

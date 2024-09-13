@@ -1,3 +1,4 @@
+//src/pages/markets.tsx
 import React from 'react';
 import Layout from '../components/layout/Layout';
 import MarketOverview from '../components/market/MarketOverview';

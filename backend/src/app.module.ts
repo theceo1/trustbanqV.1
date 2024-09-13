@@ -8,6 +8,7 @@ import { WalletModule } from './wallet/wallet.module';
 import { AppController } from './app.controller';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
+import { MarketModule } from './market/market.module'; // Add this line
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { APP_GUARD } from '@nestjs/core';
     UserModule,
     AuthModule,
     WalletModule,
+    MarketModule, // Add this line
     ThrottlerModule.forRoot([{
       ttl: 60000,
       limit: 10,

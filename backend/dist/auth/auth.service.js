@@ -42,13 +42,25 @@ let AuthService = AuthService_1 = class AuthService {
     }
     async login(loginDto) {
         const { email, password } = loginDto;
+        this.logger.log(`Login attempt for email: ${email}`);
         const user = await this.userService.findByEmail(email);
-        if (user && await bcrypt.compare(password, user.password)) {
-            const payload = { email: user.email, sub: user._id };
-            return {
-                access_token: this.jwtService.sign(payload),
-                refresh_token: this.jwtService.sign(payload, { expiresIn: '7d' }),
-            };
+        if (user) {
+            this.logger.log(`User found: ${email}`);
+            const passwordMatch = await bcrypt.compare(password, user.password);
+            if (passwordMatch) {
+                const payload = { email: user.email, sub: user._id };
+                this.logger.log(`Login successful for user: ${email}`);
+                return {
+                    access_token: this.jwtService.sign(payload),
+                    refresh_token: this.jwtService.sign(payload, { expiresIn: '7d' }),
+                };
+            }
+            else {
+                this.logger.warn(`Invalid password for user: ${email}`);
+            }
+        }
+        else {
+            this.logger.warn(`User not found: ${email}`);
         }
         throw new common_1.UnauthorizedException('Invalid credentials');
     }

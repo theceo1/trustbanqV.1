@@ -35,6 +35,8 @@ const handleError = (error: any): never => {
 // Define interfaces
 export interface AuthResponse {
   token: string;
+  access_token?: string;
+  refresh_token?: string; 
   message?: string;
 }
 

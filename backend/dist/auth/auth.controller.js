@@ -36,6 +36,7 @@ let AuthController = AuthController_1 = class AuthController {
         }
     }
     async login(loginDto) {
+        this.logger.log(`Login request received for email: ${loginDto.email}`);
         return this.authService.login(loginDto);
     }
     loginTest() {

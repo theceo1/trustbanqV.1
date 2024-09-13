@@ -31,6 +31,7 @@ export class AuthController {
 
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
+    this.logger.log(`Login request received for email: ${loginDto.email}`);
     return this.authService.login(loginDto);
   }
 
