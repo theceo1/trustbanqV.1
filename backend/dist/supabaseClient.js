@@ -6,6 +6,8 @@ const config_1 = require("@nestjs/config");
 const configService = new config_1.ConfigService();
 const supabaseUrl = configService.get('SUPABASE_URL');
 const supabaseAnonKey = configService.get('SUPABASE_ANON_KEY');
+console.log('Supabase URL:', supabaseUrl);
+console.log('Supabase Anon Key:', supabaseAnonKey);
 if (!supabaseUrl || !supabaseAnonKey) {
     throw new Error('Supabase URL and Anon Key must be defined in the environment variables');
 }
