@@ -12,7 +12,9 @@ import { MarketModule } from './market/market.module'; // Add this line
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      isGlobal: true, // Makes the config globally available
+    }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
