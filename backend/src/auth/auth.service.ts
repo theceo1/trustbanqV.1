@@ -5,6 +5,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { supabase } from '../supabaseClient';
 
 @Injectable()
 export class AuthService {
@@ -20,17 +21,38 @@ export class AuthService {
       const { email, password, name } = registerDto;
       this.logger.log(`Attempting to register user with email: ${email}`);
       
-      const existingUser = await this.userService.findByEmail(email);
+      // Check if user already exists in Supabase
+      const { data: existingUser, error: userError } = await supabase
+        .from('users')
+        .select('*')
+        .eq('email', email)
+        .single();
+
+      if (userError && userError.code !== 'PGRST116') { // PGRST116 means no rows found
+        throw new BadRequestException('Error checking existing user');
+      }
+
       if (existingUser) {
         this.logger.warn(`Registration failed: Email ${email} already exists`);
         throw new BadRequestException('Email already exists');
       }
 
-      const hashedPassword = await bcrypt.hash(password, 10);
-      const newUser = await this.userService.create({ email, password: hashedPassword, name });
-      
-      this.logger.log(`User registered successfully: ${newUser.email}`);
-      return { message: 'User registered successfully', userId: newUser._id }; // Ensure this line is present
+      // Create user in Supabase
+      const { data: user, error } = await supabase.auth.signUp({
+        email,
+        password,
+      });
+
+      if (error) {
+        throw new BadRequestException(error.message);
+      }
+
+      if (!user || !user.user) {
+        throw new BadRequestException('User registration failed');
+      }
+
+      this.logger.log(`User registered successfully: ${user.user.email}`);
+      return { message: 'User registered successfully', userId: user.user.id }; // Use Supabase user ID
     } catch (error) {
       this.logger.error(`Registration failed: ${error.message}`, error.stack);
       throw new BadRequestException(error.message || 'Registration failed');
@@ -40,25 +62,24 @@ export class AuthService {
   async login(loginDto: LoginDto) {
     const { email, password } = loginDto;
     this.logger.log(`Login attempt for email: ${email}`); // Log the login attempt
-    const user = await this.userService.findByEmail(email);
-    
-    if (user) {
-      this.logger.log(`User found: ${email}`);
-      const passwordMatch = await bcrypt.compare(password, user.password);
-      if (passwordMatch) {
-        const payload = { email: user.email, sub: user._id };
-        this.logger.log(`Login successful for user: ${email}`);
-        return {
-          access_token: this.jwtService.sign(payload),
-          refresh_token: this.jwtService.sign(payload, { expiresIn: '7d' }),
-        };
-      } else {
-        this.logger.warn(`Invalid password for user: ${email}`);
-      }
-    } else {
-      this.logger.warn(`User not found: ${email}`);
+
+    // Use signInWithPassword instead of signIn
+    const { data: user, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error || !user || !user.user) {
+      this.logger.warn(`Invalid credentials for user: ${email}`);
+      throw new UnauthorizedException('Invalid credentials');
     }
-    throw new UnauthorizedException('Invalid credentials');
+
+    const payload = { email: user.user.email, sub: user.user.id }; // Use Supabase user ID
+    this.logger.log(`Login successful for user: ${email}`);
+    return {
+      access_token: this.jwtService.sign(payload),
+      refresh_token: this.jwtService.sign(payload, { expiresIn: '7d' }),
+    };
   }
 
   async googleLogin(req: any) {

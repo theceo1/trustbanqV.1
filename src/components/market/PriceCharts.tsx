@@ -25,26 +25,23 @@ ChartJS.register(
 );
 
 const PriceCharts: React.FC<{ coin: string }> = ({ coin }) => {
-  const [chartData, setChartData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [chartData, setChartData] = useState<any>(null); // Initialize as null or appropriate type
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await fetchPriceChartData(coin);
+        const data = await fetchPriceChartData(coin); // Your API call
         setChartData(data);
       } catch (error) {
-        console.error('Failed to fetch price chart data', error);
-      } finally {
-        setLoading(false);
+        console.error('Failed to fetch price chart data:', error);
+        setChartData(null); // Set to null or handle error state
       }
     };
-
     fetchData();
   }, [coin]);
 
-  if (loading) {
-    return <div>Loading chart...</div>;
+  if (!chartData) {
+    return <div>Loading...</div>; // Or handle loading/error state
   }
 
   const data = {

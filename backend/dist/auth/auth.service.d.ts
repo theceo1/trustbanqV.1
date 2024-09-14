@@ -9,7 +9,7 @@ export declare class AuthService {
     constructor(userService: UserService, jwtService: JwtService);
     register(registerDto: RegisterDto): Promise<{
         message: string;
-        userId: unknown;
+        userId: string;
     }>;
     login(loginDto: LoginDto): Promise<{
         access_token: string;

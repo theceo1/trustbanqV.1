@@ -15,6 +15,7 @@ const common_1 = require("@nestjs/common");
 const user_service_1 = require("../user/user.service");
 const jwt_1 = require("@nestjs/jwt");
 const bcrypt = require("bcrypt");
+const supabaseClient_1 = require("../supabaseClient");
 let AuthService = AuthService_1 = class AuthService {
     constructor(userService, jwtService) {
         this.userService = userService;
@@ -25,15 +26,30 @@ let AuthService = AuthService_1 = class AuthService {
         try {
             const { email, password, name } = registerDto;
             this.logger.log(`Attempting to register user with email: ${email}`);
-            const existingUser = await this.userService.findByEmail(email);
+            const { data: existingUser, error: userError } = await supabaseClient_1.supabase
+                .from('users')
+                .select('*')
+                .eq('email', email)
+                .single();
+            if (userError && userError.code !== 'PGRST116') {
+                throw new common_1.BadRequestException('Error checking existing user');
+            }
             if (existingUser) {
                 this.logger.warn(`Registration failed: Email ${email} already exists`);
                 throw new common_1.BadRequestException('Email already exists');
             }
-            const hashedPassword = await bcrypt.hash(password, 10);
-            const newUser = await this.userService.create({ email, password: hashedPassword, name });
-            this.logger.log(`User registered successfully: ${newUser.email}`);
-            return { message: 'User registered successfully', userId: newUser._id };
+            const { data: user, error } = await supabaseClient_1.supabase.auth.signUp({
+                email,
+                password,
+            });
+            if (error) {
+                throw new common_1.BadRequestException(error.message);
+            }
+            if (!user || !user.user) {
+                throw new common_1.BadRequestException('User registration failed');
+            }
+            this.logger.log(`User registered successfully: ${user.user.email}`);
+            return { message: 'User registered successfully', userId: user.user.id };
         }
         catch (error) {
             this.logger.error(`Registration failed: ${error.message}`, error.stack);
@@ -43,26 +59,20 @@ let AuthService = AuthService_1 = class AuthService {
     async login(loginDto) {
         const { email, password } = loginDto;
         this.logger.log(`Login attempt for email: ${email}`);
-        const user = await this.userService.findByEmail(email);
-        if (user) {
-            this.logger.log(`User found: ${email}`);
-            const passwordMatch = await bcrypt.compare(password, user.password);
-            if (passwordMatch) {
-                const payload = { email: user.email, sub: user._id };
-                this.logger.log(`Login successful for user: ${email}`);
-                return {
-                    access_token: this.jwtService.sign(payload),
-                    refresh_token: this.jwtService.sign(payload, { expiresIn: '7d' }),
-                };
-            }
-            else {
-                this.logger.warn(`Invalid password for user: ${email}`);
-            }
+        const { data: user, error } = await supabaseClient_1.supabase.auth.signInWithPassword({
+            email,
+            password,
+        });
+        if (error || !user || !user.user) {
+            this.logger.warn(`Invalid credentials for user: ${email}`);
+            throw new common_1.UnauthorizedException('Invalid credentials');
         }
-        else {
-            this.logger.warn(`User not found: ${email}`);
-        }
-        throw new common_1.UnauthorizedException('Invalid credentials');
+        const payload = { email: user.user.email, sub: user.user.id };
+        this.logger.log(`Login successful for user: ${email}`);
+        return {
+            access_token: this.jwtService.sign(payload),
+            refresh_token: this.jwtService.sign(payload, { expiresIn: '7d' }),
+        };
     }
     async googleLogin(req) {
         if (!req.user) {
