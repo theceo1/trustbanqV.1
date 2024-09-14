@@ -13,7 +13,7 @@ import { MarketModule } from './market/market.module'; // Add this line
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true, // Ensure this is set to true
+      isGlobal: true,
     }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
@@ -25,7 +25,7 @@ import { MarketModule } from './market/market.module'; // Add this line
     UserModule,
     AuthModule,
     WalletModule,
-    MarketModule, // Add this line
+    MarketModule,
     ThrottlerModule.forRoot([{
       ttl: 60000,
       limit: 10,
@@ -39,4 +39,10 @@ import { MarketModule } from './market/market.module'; // Add this line
     },
   ],
 })
-export class AppModule {}
+export class AppModule {
+  constructor(private configService: ConfigService) {
+    console.log('MONGODB_URI:', this.configService.get('MONGODB_URI'));
+    console.log('SUPABASE_URL:', this.configService.get('SUPABASE_URL'));
+    console.log('SUPABASE_ANON_KEY:', this.configService.get('SUPABASE_ANON_KEY'));
+  }
+}
