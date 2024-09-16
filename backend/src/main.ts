@@ -4,6 +4,8 @@ import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { ValidationPipe } from '@nestjs/common';
 import { LoggerService } from './common/services/logger.service';
+import { ConfigService } from '@nestjs/config'; // Import ConfigService
+import { initializeSupabase } from './supabaseClient'; // Import the initialize function
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -26,6 +28,10 @@ async function bootstrap() {
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   });
+
+  // Initialize Supabase
+  const configService = app.get(ConfigService); // Get the ConfigService instance
+  initializeSupabase(configService); // Call the initialize function
 
   const port = process.env.PORT || 5001;
   await app.listen(port);
