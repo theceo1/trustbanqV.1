@@ -8,16 +8,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.WalletModule = void 0;
 const common_1 = require("@nestjs/common");
-const mongoose_1 = require("@nestjs/mongoose");
 const wallet_controller_1 = require("./wallet.controller");
 const wallet_service_1 = require("./wallet.service");
-const wallet_schema_1 = require("./schemas/wallet.schema");
 let WalletModule = class WalletModule {
 };
 exports.WalletModule = WalletModule;
 exports.WalletModule = WalletModule = __decorate([
     (0, common_1.Module)({
-        imports: [mongoose_1.MongooseModule.forFeature([{ name: wallet_schema_1.Wallet.name, schema: wallet_schema_1.WalletSchema }])],
         controllers: [wallet_controller_1.WalletController],
         providers: [wallet_service_1.WalletService],
         exports: [wallet_service_1.WalletService],

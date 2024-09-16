@@ -5,11 +5,12 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
-import { supabase } from '../supabaseClient';
+import { getSupabaseClient } from '../supabaseClient';
 
 @Injectable()
 export class AuthService {
   private readonly logger = new Logger(AuthService.name);
+  private supabase = getSupabaseClient(); // Get the initialized Supabase client
 
   constructor(
     private userService: UserService,
@@ -22,7 +23,7 @@ export class AuthService {
       this.logger.log(`Attempting to register user with email: ${email}`);
       
       // Check if user already exists in Supabase
-      const { data: existingUser, error: userError } = await supabase
+      const { data: existingUser, error: userError } = await this.supabase // Use this.supabase
         .from('users')
         .select('*')
         .eq('email', email)
@@ -38,7 +39,7 @@ export class AuthService {
       }
 
       // Create user in Supabase
-      const { data: user, error } = await supabase.auth.signUp({
+      const { data: user, error } = await this.supabase.auth.signUp({ // Use this.supabase
         email,
         password,
       });
@@ -64,7 +65,7 @@ export class AuthService {
     this.logger.log(`Login attempt for email: ${email}`); // Log the login attempt
 
     // Use signInWithPassword instead of signIn
-    const { data: user, error } = await supabase.auth.signInWithPassword({
+    const { data: user, error } = await this.supabase.auth.signInWithPassword({ // Use this.supabase
       email,
       password,
     });
@@ -106,7 +107,7 @@ export class AuthService {
         this.logger.log(`New user created via Google login: ${email}`);
       }
 
-      const payload = { email: user.email, sub: user._id };
+      const payload = { email: user.email, sub: user.id };
       return {
         access_token: this.jwtService.sign(payload),
         refresh_token: this.jwtService.sign(payload, { expiresIn: '7d' }),
@@ -121,7 +122,7 @@ export class AuthService {
     try {
       const payload = this.jwtService.verify(refreshToken);
       const user = await this.userService.findById(payload.sub);
-      const newPayload = { email: user.email, sub: user._id };
+      const newPayload = { email: user.email, sub: user.id };
       return {
         access_token: this.jwtService.sign(newPayload),
         refresh_token: this.jwtService.sign(newPayload, { expiresIn: '7d' }),

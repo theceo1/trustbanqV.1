@@ -7,7 +7,7 @@ import { LoginDto } from './dto/login.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { Request } from 'express';
-import { User } from '../user/schemas/user.schema';
+import { User } from '../types/user.types'; // Ensure this path is correct
 
 interface RequestWithUser extends Request {
   user?: User & { _id: string }; // Explicitly define _id as a string

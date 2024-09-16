@@ -3,7 +3,7 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { Request } from 'express';
-import { User } from '../user/schemas/user.schema';
+import { User } from '../types/user.types';
 interface RequestWithUser extends Request {
     user?: User & {
         _id: string;

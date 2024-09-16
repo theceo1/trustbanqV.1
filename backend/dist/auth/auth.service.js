@@ -21,12 +21,13 @@ let AuthService = AuthService_1 = class AuthService {
         this.userService = userService;
         this.jwtService = jwtService;
         this.logger = new common_1.Logger(AuthService_1.name);
+        this.supabase = (0, supabaseClient_1.getSupabaseClient)();
     }
     async register(registerDto) {
         try {
             const { email, password, name } = registerDto;
             this.logger.log(`Attempting to register user with email: ${email}`);
-            const { data: existingUser, error: userError } = await supabaseClient_1.supabase
+            const { data: existingUser, error: userError } = await this.supabase
                 .from('users')
                 .select('*')
                 .eq('email', email)
@@ -38,7 +39,7 @@ let AuthService = AuthService_1 = class AuthService {
                 this.logger.warn(`Registration failed: Email ${email} already exists`);
                 throw new common_1.BadRequestException('Email already exists');
             }
-            const { data: user, error } = await supabaseClient_1.supabase.auth.signUp({
+            const { data: user, error } = await this.supabase.auth.signUp({
                 email,
                 password,
             });
@@ -59,7 +60,7 @@ let AuthService = AuthService_1 = class AuthService {
     async login(loginDto) {
         const { email, password } = loginDto;
         this.logger.log(`Login attempt for email: ${email}`);
-        const { data: user, error } = await supabaseClient_1.supabase.auth.signInWithPassword({
+        const { data: user, error } = await this.supabase.auth.signInWithPassword({
             email,
             password,
         });
@@ -93,7 +94,7 @@ let AuthService = AuthService_1 = class AuthService {
                 });
                 this.logger.log(`New user created via Google login: ${email}`);
             }
-            const payload = { email: user.email, sub: user._id };
+            const payload = { email: user.email, sub: user.id };
             return {
                 access_token: this.jwtService.sign(payload),
                 refresh_token: this.jwtService.sign(payload, { expiresIn: '7d' }),
@@ -108,7 +109,7 @@ let AuthService = AuthService_1 = class AuthService {
         try {
             const payload = this.jwtService.verify(refreshToken);
             const user = await this.userService.findById(payload.sub);
-            const newPayload = { email: user.email, sub: user._id };
+            const newPayload = { email: user.email, sub: user.id };
             return {
                 access_token: this.jwtService.sign(newPayload),
                 refresh_token: this.jwtService.sign(newPayload, { expiresIn: '7d' }),
