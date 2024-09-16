@@ -23,7 +23,7 @@ const supabaseClient_1 = require("../supabaseClient");
 const typeGuards_1 = require("../types/typeGuards");
 let UserService = class UserService {
     async create(createUserDto) {
-        const { data, error } = await (0, supabaseClient_1.supabaseInstance)()
+        const { data, error } = await (0, supabaseClient_1.getSupabaseClient)()
             .from('users')
             .insert(createUserDto)
             .single();
@@ -36,7 +36,7 @@ let UserService = class UserService {
         return data;
     }
     async findByEmail(email) {
-        const { data, error } = await (0, supabaseClient_1.supabaseInstance)()
+        const { data, error } = await (0, supabaseClient_1.getSupabaseClient)()
             .from('users')
             .select('*')
             .eq('email', email)
@@ -50,7 +50,7 @@ let UserService = class UserService {
         return data;
     }
     async findById(id) {
-        const { data, error } = await (0, supabaseClient_1.supabaseInstance)()
+        const { data, error } = await (0, supabaseClient_1.getSupabaseClient)()
             .from('users')
             .select('*')
             .eq('id', id)

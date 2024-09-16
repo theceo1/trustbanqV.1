@@ -12,7 +12,7 @@ const supabaseClient_1 = require("../supabaseClient");
 const typeGuards_1 = require("../types/typeGuards");
 let WalletService = class WalletService {
     async findByUserId(userId) {
-        const { data, error } = await (0, supabaseClient_1.supabaseInstance)()
+        const { data, error } = await (0, supabaseClient_1.getSupabaseClient)()
             .from('wallets')
             .select('*')
             .eq('userId', userId)
@@ -26,7 +26,7 @@ let WalletService = class WalletService {
         return data;
     }
     async create(userId) {
-        const { data, error } = await (0, supabaseClient_1.supabaseInstance)()
+        const { data, error } = await (0, supabaseClient_1.getSupabaseClient)()
             .from('wallets')
             .insert({ userId, balance: 0 })
             .single();
@@ -39,7 +39,7 @@ let WalletService = class WalletService {
         return data;
     }
     async updateBalance(userId, amount) {
-        const { data, error } = await (0, supabaseClient_1.supabaseInstance)()
+        const { data, error } = await (0, supabaseClient_1.getSupabaseClient)()
             .from('wallets')
             .update({ balance: amount })
             .eq('userId', userId)

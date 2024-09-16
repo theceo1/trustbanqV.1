@@ -10,26 +10,28 @@ import { getSupabaseClient } from '../supabaseClient';
 @Injectable()
 export class AuthService {
   private readonly logger = new Logger(AuthService.name);
-  private supabase = getSupabaseClient(); // Get the initialized Supabase client
 
   constructor(
     private userService: UserService,
     private jwtService: JwtService,
   ) {}
 
+  private get supabase() {
+    return getSupabaseClient(); // Access the initialized Supabase client
+  }
+
   async register(registerDto: RegisterDto) {
     try {
       const { email, password, name } = registerDto;
       this.logger.log(`Attempting to register user with email: ${email}`);
       
-      // Check if user already exists in Supabase
-      const { data: existingUser, error: userError } = await this.supabase // Use this.supabase
+      const { data: existingUser, error: userError } = await this.supabase
         .from('users')
         .select('*')
         .eq('email', email)
         .single();
 
-      if (userError && userError.code !== 'PGRST116') { // PGRST116 means no rows found
+      if (userError && userError.code !== 'PGRST116') {
         throw new BadRequestException('Error checking existing user');
       }
 
@@ -38,8 +40,7 @@ export class AuthService {
         throw new BadRequestException('Email already exists');
       }
 
-      // Create user in Supabase
-      const { data: user, error } = await this.supabase.auth.signUp({ // Use this.supabase
+      const { data: user, error } = await this.supabase.auth.signUp({
         email,
         password,
       });
@@ -53,7 +54,7 @@ export class AuthService {
       }
 
       this.logger.log(`User registered successfully: ${user.user.email}`);
-      return { message: 'User registered successfully', userId: user.user.id }; // Use Supabase user ID
+      return { message: 'User registered successfully', userId: user.user.id };
     } catch (error) {
       this.logger.error(`Registration failed: ${error.message}`, error.stack);
       throw new BadRequestException(error.message || 'Registration failed');
@@ -62,10 +63,9 @@ export class AuthService {
 
   async login(loginDto: LoginDto) {
     const { email, password } = loginDto;
-    this.logger.log(`Login attempt for email: ${email}`); // Log the login attempt
+    this.logger.log(`Login attempt for email: ${email}`);
 
-    // Use signInWithPassword instead of signIn
-    const { data: user, error } = await this.supabase.auth.signInWithPassword({ // Use this.supabase
+    const { data: user, error } = await this.supabase.auth.signInWithPassword({
       email,
       password,
     });
@@ -75,7 +75,7 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const payload = { email: user.user.email, sub: user.user.id }; // Use Supabase user ID
+    const payload = { email: user.user.email, sub: user.user.id };
     this.logger.log(`Login successful for user: ${email}`);
     return {
       access_token: this.jwtService.sign(payload),
@@ -102,7 +102,7 @@ export class AuthService {
           email,
           name: firstName,
           password: hashedPassword,
-          googleId: email, // Using email as googleId for simplicity
+          googleId: email,
         });
         this.logger.log(`New user created via Google login: ${email}`);
       }
@@ -133,8 +133,6 @@ export class AuthService {
   }
 
   async logout(userId: string) {
-    // Implement logout logic here
-    // This could involve invalidating the refresh token in the database
     this.logger.log(`User ${userId} logged out`);
     return { message: 'Logged out successfully' };
   }

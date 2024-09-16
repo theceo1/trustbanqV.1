@@ -1,13 +1,13 @@
 // backend/src/user/user.service.ts
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { supabaseInstance } from '../supabaseClient'; // Ensure you have the Supabase client imported
+import { getSupabaseClient } from '../supabaseClient'; // Update the import
 import { User } from '../types/user.types'; // Import the User type
 import { isUser } from '../types/typeGuards'; // Import the type guard
 
 @Injectable()
 export class UserService {
   async create(createUserDto: Partial<User>): Promise<User> {
-    const { data, error } = await supabaseInstance()
+    const { data, error } = await getSupabaseClient() // Use getSupabaseClient
       .from('users')
       .insert(createUserDto)
       .single();
@@ -24,7 +24,7 @@ export class UserService {
   }
 
   async findByEmail(email: string): Promise<User | null> {
-    const { data, error } = await supabaseInstance()
+    const { data, error } = await getSupabaseClient() // Use getSupabaseClient
       .from('users')
       .select('*')
       .eq('email', email)
@@ -42,7 +42,7 @@ export class UserService {
   }
 
   async findById(id: string): Promise<Partial<User>> {
-    const { data, error } = await supabaseInstance()
+    const { data, error } = await getSupabaseClient() // Use getSupabaseClient
       .from('users')
       .select('*')
       .eq('id', id)

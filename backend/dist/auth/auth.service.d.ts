@@ -6,8 +6,8 @@ export declare class AuthService {
     private userService;
     private jwtService;
     private readonly logger;
-    private supabase;
     constructor(userService: UserService, jwtService: JwtService);
+    private get supabase();
     register(registerDto: RegisterDto): Promise<{
         message: string;
         userId: string;

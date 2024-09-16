@@ -1,13 +1,13 @@
 // backend/src/wallet/wallet.service.ts
 import { Injectable } from '@nestjs/common';
-import { supabaseInstance } from '../supabaseClient'; // Import the Supabase client
+import { getSupabaseClient } from '../supabaseClient'; // Update the import
 import { Wallet } from '../types/wallet.types'; // Import the Wallet type
 import { isWallet } from '../types/typeGuards'; // Import the type guard
 
 @Injectable()
 export class WalletService {
   async findByUserId(userId: string): Promise<Wallet | null> {
-    const { data, error } = await supabaseInstance()
+    const { data, error } = await getSupabaseClient() // Use getSupabaseClient
       .from('wallets')
       .select('*')
       .eq('userId', userId)
@@ -25,7 +25,7 @@ export class WalletService {
   }
 
   async create(userId: string): Promise<Wallet> {
-    const { data, error } = await supabaseInstance()
+    const { data, error } = await getSupabaseClient() // Use getSupabaseClient
       .from('wallets')
       .insert({ userId, balance: 0 })
       .single();
@@ -42,7 +42,7 @@ export class WalletService {
   }
 
   async updateBalance(userId: string, amount: number): Promise<Wallet | null> {
-    const { data, error } = await supabaseInstance()
+    const { data, error } = await getSupabaseClient() // Use getSupabaseClient
       .from('wallets')
       .update({ balance: amount }) // Update balance directly
       .eq('userId', userId)

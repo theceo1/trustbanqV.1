@@ -21,7 +21,9 @@ let AuthService = AuthService_1 = class AuthService {
         this.userService = userService;
         this.jwtService = jwtService;
         this.logger = new common_1.Logger(AuthService_1.name);
-        this.supabase = (0, supabaseClient_1.getSupabaseClient)();
+    }
+    get supabase() {
+        return (0, supabaseClient_1.getSupabaseClient)();
     }
     async register(registerDto) {
         try {
