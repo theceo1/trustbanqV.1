@@ -1,4 +1,3 @@
-// backend/dist/user/schemas/user.schema.d.ts
 export interface User {
     email: string;
     password: string;
@@ -6,3 +5,4 @@ export interface User {
     balance: number;
     googleId?: string;
 }
+export declare function createUser(user: User): Promise<null>;
