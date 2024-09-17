@@ -2,12 +2,13 @@ import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { SupabaseClient } from '@supabase/supabase-js';
 export declare class AuthService {
     private userService;
     private jwtService;
+    private readonly supabase;
     private readonly logger;
-    constructor(userService: UserService, jwtService: JwtService);
-    private get supabase();
+    constructor(userService: UserService, jwtService: JwtService, supabase: SupabaseClient);
     register(registerDto: RegisterDto): Promise<{
         message: string;
         userId: string;

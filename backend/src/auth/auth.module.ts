@@ -8,6 +8,7 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './jwt.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GoogleStrategy } from './google.strategy';
+import { initializeSupabase } from '../supabaseClient'; // Import the Supabase initialization function
 
 @Module({
   imports: [
@@ -24,7 +25,19 @@ import { GoogleStrategy } from './google.strategy';
     ConfigModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, GoogleStrategy],
+  providers: [
+    AuthService,
+    JwtStrategy,
+    GoogleStrategy,
+    {
+      provide: 'SUPABASE_CLIENT',
+      useFactory: (configService: ConfigService) => {
+        const supabaseClient = initializeSupabase(configService);
+        return supabaseClient;
+      },
+      inject: [ConfigService],
+    },
+  ],
   exports: [AuthService],
 })
 export class AuthModule {}

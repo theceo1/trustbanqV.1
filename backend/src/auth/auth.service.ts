@@ -1,11 +1,10 @@
-//trustbank/backend/src/auth/auth.service.ts
-import { Injectable, Logger, UnauthorizedException, BadRequestException } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException, BadRequestException, Inject } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
-import { getSupabaseClient } from '../supabaseClient';
+import { SupabaseClient } from '@supabase/supabase-js'; // Import SupabaseClient
 
 @Injectable()
 export class AuthService {
@@ -14,11 +13,8 @@ export class AuthService {
   constructor(
     private userService: UserService,
     private jwtService: JwtService,
+    @Inject('SUPABASE_CLIENT') private readonly supabase: SupabaseClient, // Inject Supabase client
   ) {}
-
-  private get supabase() {
-    return getSupabaseClient(); // Access the initialized Supabase client
-  }
 
   async register(registerDto: RegisterDto) {
     try {
