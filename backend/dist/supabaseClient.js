@@ -10,6 +10,7 @@ const initializeSupabase = (configService) => {
         throw new Error('Supabase URL and Anon Key must be defined in the environment variables');
     }
     supabase = (0, supabase_js_1.createClient)(supabaseUrl, supabaseAnonKey);
+    return supabase;
 };
 exports.initializeSupabase = initializeSupabase;
 const getSupabaseClient = () => {

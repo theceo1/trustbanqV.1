@@ -13,6 +13,7 @@
      }
    
      supabase = createClient(supabaseUrl, supabaseAnonKey);
+     return supabase; // Return the initialized client
    };
    
    // Export the supabase instance
