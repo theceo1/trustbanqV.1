@@ -34,5 +34,8 @@ export declare class AuthController {
     logout(req: RequestWithUser): Promise<{
         message: string;
     }>;
+    resendConfirmation(email: string): Promise<{
+        message: string;
+    }>;
 }
 export {};

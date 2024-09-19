@@ -56,6 +56,15 @@ let AuthController = AuthController_1 = class AuthController {
         }
         return this.authService.logout(req.user._id.toString());
     }
+    async resendConfirmation(email) {
+        try {
+            const result = await this.authService.resendConfirmationEmail(email);
+            return result;
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message || 'Failed to resend confirmation email', common_1.HttpStatus.BAD_REQUEST);
+        }
+    }
 };
 exports.AuthController = AuthController;
 __decorate([
@@ -108,6 +117,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "logout", null);
+__decorate([
+    (0, common_1.Post)('resend-confirmation'),
+    __param(0, (0, common_1.Body)('email')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "resendConfirmation", null);
 exports.AuthController = AuthController = AuthController_1 = __decorate([
     (0, common_1.Controller)('auth'),
     __metadata("design:paramtypes", [auth_service_1.AuthService])

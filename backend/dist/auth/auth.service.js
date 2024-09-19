@@ -30,15 +30,16 @@ let AuthService = AuthService_1 = class AuthService {
         try {
             const { email, password, name } = registerDto;
             this.logger.log(`Attempting to register user with email: ${email}`);
-            const { data: existingUser, error: userError } = await this.supabase
+            const { data: existingUsers, error: userError } = await this.supabase
                 .from('users')
                 .select('*')
                 .eq('email', email)
-                .single();
-            if (userError && userError.code !== 'PGRST116') {
+                .limit(1);
+            if (userError) {
+                this.logger.error(`Error checking existing user: ${userError.message}`);
                 throw new common_1.BadRequestException('Error checking existing user');
             }
-            if (existingUser) {
+            if (existingUsers.length > 0) {
                 this.logger.warn(`Registration failed: Email ${email} already exists`);
                 throw new common_1.BadRequestException('Email already exists');
             }
@@ -47,9 +48,11 @@ let AuthService = AuthService_1 = class AuthService {
                 password,
             });
             if (error) {
+                this.logger.error(`Error during sign up: ${error.message}`);
                 throw new common_1.BadRequestException(error.message);
             }
             if (!user || !user.user) {
+                this.logger.error('User registration failed: No user data returned');
                 throw new common_1.BadRequestException('User registration failed');
             }
             this.logger.log(`User registered successfully: ${user.user.email}`);
@@ -69,6 +72,7 @@ let AuthService = AuthService_1 = class AuthService {
         });
         if (error || !user || !user.user) {
             this.logger.warn(`Invalid credentials for user: ${email}`);
+            this.logger.error(`Login error: ${error ? error.message : 'No user data returned'}`);
             throw new common_1.UnauthorizedException('Invalid credentials');
         }
         const payload = { email: user.user.email, sub: user.user.id };
@@ -119,12 +123,38 @@ let AuthService = AuthService_1 = class AuthService {
             };
         }
         catch (error) {
+            this.logger.error(`Error refreshing token: ${error.message}`, error.stack);
             throw new common_1.UnauthorizedException('Invalid refresh token');
         }
     }
     async logout(userId) {
         this.logger.log(`User ${userId} logged out`);
         return { message: 'Logged out successfully' };
+    }
+    async resendConfirmationEmail(email) {
+        const { data: existingUser, error: userError } = await this.supabase
+            .from('users')
+            .select('*')
+            .eq('email', email)
+            .single();
+        if (userError || !existingUser) {
+            this.logger.error(`Error finding user: ${(userError === null || userError === void 0 ? void 0 : userError.message) || 'User not found'}`);
+            throw new common_1.BadRequestException('User not found');
+        }
+        if (existingUser.confirmed_at) {
+            this.logger.warn(`User ${email} is already confirmed.`);
+            throw new common_1.BadRequestException('User is already confirmed');
+        }
+        const { error } = await this.supabase.auth.signUp({
+            email,
+            password: 'temporaryPassword',
+        });
+        if (error) {
+            this.logger.error(`Error resending confirmation email: ${error.message}`);
+            throw new common_1.BadRequestException('Error resending confirmation email');
+        }
+        this.logger.log(`Confirmation email resent to: ${email}`);
+        return { message: 'Confirmation email resent successfully' };
     }
 };
 exports.AuthService = AuthService;

@@ -1,3 +1,4 @@
+// backend/src/auth/auth.service.ts
 import { Injectable, Logger, UnauthorizedException, BadRequestException, Inject } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
@@ -21,31 +22,38 @@ export class AuthService {
       const { email, password, name } = registerDto;
       this.logger.log(`Attempting to register user with email: ${email}`);
       
-      const { data: existingUser, error: userError } = await this.supabase
+      // Check for existing user
+      const { data: existingUsers, error: userError } = await this.supabase
         .from('users')
         .select('*')
         .eq('email', email)
-        .single();
+        .limit(1); // Limit to 1 result
 
-      if (userError && userError.code !== 'PGRST116') {
+      // Log the userError if it exists
+      if (userError) {
+        this.logger.error(`Error checking existing user: ${userError.message}`);
         throw new BadRequestException('Error checking existing user');
       }
 
-      if (existingUser) {
+      // Check if any users were returned
+      if (existingUsers.length > 0) {
         this.logger.warn(`Registration failed: Email ${email} already exists`);
         throw new BadRequestException('Email already exists');
       }
 
+      // Sign up the user
       const { data: user, error } = await this.supabase.auth.signUp({
         email,
         password,
       });
 
       if (error) {
+        this.logger.error(`Error during sign up: ${error.message}`);
         throw new BadRequestException(error.message);
       }
 
       if (!user || !user.user) {
+        this.logger.error('User registration failed: No user data returned');
         throw new BadRequestException('User registration failed');
       }
 
@@ -68,6 +76,7 @@ export class AuthService {
 
     if (error || !user || !user.user) {
       this.logger.warn(`Invalid credentials for user: ${email}`);
+      this.logger.error(`Login error: ${error ? error.message : 'No user data returned'}`);
       throw new UnauthorizedException('Invalid credentials');
     }
 
@@ -124,6 +133,7 @@ export class AuthService {
         refresh_token: this.jwtService.sign(newPayload, { expiresIn: '7d' }),
       };
     } catch (error) {
+      this.logger.error(`Error refreshing token: ${error.message}`, error.stack);
       throw new UnauthorizedException('Invalid refresh token');
     }
   }
@@ -131,5 +141,39 @@ export class AuthService {
   async logout(userId: string) {
     this.logger.log(`User ${userId} logged out`);
     return { message: 'Logged out successfully' };
+  }
+
+  async resendConfirmationEmail(email: string) {
+    // Check if the user exists
+    const { data: existingUser, error: userError } = await this.supabase
+        .from('users')
+        .select('*')
+        .eq('email', email)
+        .single();
+
+    if (userError || !existingUser) {
+        this.logger.error(`Error finding user: ${userError?.message || 'User not found'}`);
+        throw new BadRequestException('User not found');
+    }
+
+    // Check if the user is confirmed
+    if (existingUser.confirmed_at) {
+        this.logger.warn(`User ${email} is already confirmed.`);
+        throw new BadRequestException('User is already confirmed');
+    }
+
+    // Re-invite the user (this is a workaround)
+    const { error } = await this.supabase.auth.signUp({
+        email,
+        password: 'temporaryPassword', // Use a temporary password or handle it as needed
+    });
+
+    if (error) {
+        this.logger.error(`Error resending confirmation email: ${error.message}`);
+        throw new BadRequestException('Error resending confirmation email');
+    }
+
+    this.logger.log(`Confirmation email resent to: ${email}`);
+    return { message: 'Confirmation email resent successfully' };
   }
 }

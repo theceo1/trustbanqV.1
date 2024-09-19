@@ -28,4 +28,7 @@ export declare class AuthService {
     logout(userId: string): Promise<{
         message: string;
     }>;
+    resendConfirmationEmail(email: string): Promise<{
+        message: string;
+    }>;
 }

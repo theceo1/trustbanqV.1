@@ -64,4 +64,14 @@ export class AuthController {
     }
     return this.authService.logout(req.user._id.toString());
   }
+
+  @Post('resend-confirmation')
+  async resendConfirmation(@Body('email') email: string) {
+    try {
+      const result = await this.authService.resendConfirmationEmail(email);
+      return result;
+    } catch (error) {
+      throw new HttpException(error.message || 'Failed to resend confirmation email', HttpStatus.BAD_REQUEST);
+    }
+  }
 }
