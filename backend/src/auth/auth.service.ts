@@ -21,21 +21,19 @@ export class AuthService {
     try {
       const { email, password, name } = registerDto;
       this.logger.log(`Attempting to register user with email: ${email}`);
-      
+
       // Check for existing user
       const { data: existingUsers, error: userError } = await this.supabase
         .from('users')
         .select('*')
         .eq('email', email)
-        .limit(1); // Limit to 1 result
+        .limit(1);
 
-      // Log the userError if it exists
       if (userError) {
         this.logger.error(`Error checking existing user: ${userError.message}`);
         throw new BadRequestException('Error checking existing user');
       }
 
-      // Check if any users were returned
       if (existingUsers.length > 0) {
         this.logger.warn(`Registration failed: Email ${email} already exists`);
         throw new BadRequestException('Email already exists');
@@ -57,11 +55,28 @@ export class AuthService {
         throw new BadRequestException('User registration failed');
       }
 
+      // Insert user data into the users table
+      const userData = {
+        email,
+        name,
+        created_at: new Date().toISOString(),
+        id: user.user.id, // Use the Supabase user ID
+      };
+
+      const { data: insertedUser, error: insertError } = await this.supabase
+        .from('users')
+        .insert([userData]);
+
+      if (insertError) {
+        this.logger.error(`Error inserting user into users table: ${insertError.message}`);
+        throw new BadRequestException('User registration succeeded, but failed to save user data');
+      }
+
       this.logger.log(`User registered successfully: ${user.user.email}`);
       return { message: 'User registered successfully', userId: user.user.id };
     } catch (error) {
-      this.logger.error(`Registration failed: ${error.message}`, error.stack);
-      throw new BadRequestException(error.message || 'Registration failed');
+      this.logger.error(`Registration error: ${error.message}`);
+      throw new BadRequestException('Registration failed');
     }
   }
 

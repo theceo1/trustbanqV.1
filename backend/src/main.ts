@@ -13,8 +13,15 @@ async function bootstrap() {
   });
   app.setGlobalPrefix('api');
 
+  // Use global exception filter for handling errors
   app.useGlobalFilters(new HttpExceptionFilter());
-  app.useGlobalPipes(new ValidationPipe());
+
+  // Enable global validation pipe
+  app.useGlobalPipes(new ValidationPipe({
+    transform: true, // Automatically transform payloads to DTO instances
+    whitelist: true, // Strip properties that do not have decorators
+    forbidNonWhitelisted: true, // Reject requests with non-whitelisted properties
+  }));
 
   const allowedOrigins = [
     'http://localhost:3000',

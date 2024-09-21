@@ -5,16 +5,18 @@ exports.isWallet = isWallet;
 function isUser(data) {
     return (typeof data === 'object' &&
         data !== null &&
-        'id' in data &&
-        'email' in data &&
-        'password' in data &&
-        'balance' in data);
+        typeof data.id === 'string' &&
+        typeof data.email === 'string' &&
+        typeof data.password === 'string' &&
+        typeof data.name === 'string' &&
+        typeof data.created_at === 'string' &&
+        (typeof data.googleId === 'string' || data.googleId === undefined));
 }
 function isWallet(data) {
     return (typeof data === 'object' &&
         data !== null &&
-        'id' in data &&
-        'userId' in data &&
-        'balance' in data);
+        typeof data.id === 'string' &&
+        typeof data.userId === 'string' &&
+        typeof data.balance === 'number');
 }
 //# sourceMappingURL=typeGuards.js.map

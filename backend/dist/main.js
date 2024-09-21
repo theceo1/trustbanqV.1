@@ -13,7 +13,11 @@ async function bootstrap() {
     });
     app.setGlobalPrefix('api');
     app.useGlobalFilters(new http_exception_filter_1.HttpExceptionFilter());
-    app.useGlobalPipes(new common_1.ValidationPipe());
+    app.useGlobalPipes(new common_1.ValidationPipe({
+        transform: true,
+        whitelist: true,
+        forbidNonWhitelisted: true,
+    }));
     const allowedOrigins = [
         'http://localhost:3000',
         'https://trustbank1.vercel.app',

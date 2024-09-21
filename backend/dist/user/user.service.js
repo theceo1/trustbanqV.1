@@ -23,11 +23,22 @@ const supabaseClient_1 = require("../supabaseClient");
 const typeGuards_1 = require("../types/typeGuards");
 let UserService = class UserService {
     async create(createUserDto) {
+        if (!createUserDto.email) {
+            throw new common_1.BadRequestException('Email is required');
+        }
+        const existingUser = await this.findByEmail(createUserDto.email);
+        if (existingUser) {
+            throw new common_1.ConflictException('Email already exists');
+        }
+        const userData = Object.assign(Object.assign({}, createUserDto), { created_at: new Date().toISOString() });
+        console.log('Creating user with data:', userData);
         const { data, error } = await (0, supabaseClient_1.getSupabaseClient)()
             .from('users')
-            .insert(createUserDto)
+            .insert(userData)
             .single();
+        console.log('Supabase response data:', data);
         if (error) {
+            console.error('Supabase error:', error);
             throw new Error(`Error creating user: ${error.message}`);
         }
         if (!(0, typeGuards_1.isUser)(data)) {

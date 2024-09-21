@@ -55,12 +55,25 @@ let AuthService = AuthService_1 = class AuthService {
                 this.logger.error('User registration failed: No user data returned');
                 throw new common_1.BadRequestException('User registration failed');
             }
+            const userData = {
+                email,
+                name,
+                created_at: new Date().toISOString(),
+                id: user.user.id,
+            };
+            const { data: insertedUser, error: insertError } = await this.supabase
+                .from('users')
+                .insert([userData]);
+            if (insertError) {
+                this.logger.error(`Error inserting user into users table: ${insertError.message}`);
+                throw new common_1.BadRequestException('User registration succeeded, but failed to save user data');
+            }
             this.logger.log(`User registered successfully: ${user.user.email}`);
             return { message: 'User registered successfully', userId: user.user.id };
         }
         catch (error) {
-            this.logger.error(`Registration failed: ${error.message}`, error.stack);
-            throw new common_1.BadRequestException(error.message || 'Registration failed');
+            this.logger.error(`Registration error: ${error.message}`);
+            throw new common_1.BadRequestException('Registration failed');
         }
     }
     async login(loginDto) {

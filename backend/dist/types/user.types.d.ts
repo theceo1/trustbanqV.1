@@ -2,7 +2,7 @@ export interface User {
     id: string;
     email: string;
     password: string;
-    name?: string;
-    balance: number;
+    name: string;
+    created_at: string;
     googleId?: string;
 }

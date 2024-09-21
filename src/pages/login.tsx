@@ -1,16 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { useRouter } from 'next/router';
 import Alert from '@/components/common/Alert';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useAuth } from '../context/AuthContext';
-import { googleLogin } from '@/services/api'; 
-
-interface AuthResponse {
-  message: string;
-  token?: string;
-}
+import { googleLogin, login as loginApi, AuthResponse } from '@/services/api'; // Import AuthResponse
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -18,22 +12,18 @@ const LoginPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const { login, user, loading } = useAuth();
+  const { login: loginContext, user, loading } = useAuth();
 
   useEffect(() => {
-    const token = router.query.token; // This can be string | string[] | undefined
+    const token = router.query.token;
     if (token) {
-      const tokenString = Array.isArray(token) ? token[0] : token; // Ensure it's a string
-      if (typeof tokenString === 'string') { // Check if it's a string
+      const tokenString = Array.isArray(token) ? token[0] : token;
+      if (typeof tokenString === 'string') {
         console.log('Received token from query params:', tokenString);
-        login(tokenString); // Now it will always be a string
-      } else {
-        console.error('Token is not a string:', token);
+        loginContext(tokenString);
       }
-    } else {
-      console.warn('No token found in query params');
     }
-  }, [router.query.token, login]);
+  }, [router.query.token, loginContext]);
 
   useEffect(() => {
     if (!loading && user) {
@@ -45,15 +35,15 @@ const LoginPage: React.FC = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const response = await axios.post<AuthResponse>('/api/auth/login', { email, password });
-      if (response.data.token) {
-        console.log('Login successful:', response.data);
-        localStorage.setItem('token', response.data.token); // Store the token
-        router.push('/dashboard'); // Redirect to dashboard
+      const response: AuthResponse = await loginApi(email, password); // Now matches the AuthResponse from API
+      if (response.token) {
+        console.log('Login successful:', response);
+        localStorage.setItem('token', response.token);
+        router.push('/dashboard');
       } else {
         setError('Login failed: No token received');
       }
-    } catch (error: any) { // Explicitly typing the error
+    } catch (error: any) {
       setError('Login failed: ' + (error.response?.data?.message || 'Unexpected error'));
     } finally {
       setIsLoading(false);
@@ -65,15 +55,14 @@ const LoginPage: React.FC = () => {
     try {
       const response = await googleLogin();
       console.log('Google login successful:', response);
-      
-      // Check if access_token is defined
+
       if (response.access_token) {
-        localStorage.setItem('token', response.access_token); // Store the token
-        router.push('/dashboard'); // Redirect to dashboard
+        localStorage.setItem('token', response.access_token);
+        router.push('/dashboard');
       } else {
         setError('Google login failed: No access token received');
       }
-    } catch (error: any) { // Explicitly typing the error
+    } catch (error: any) {
       setError('Google login failed: ' + error.message);
     }
   };
@@ -83,7 +72,7 @@ const LoginPage: React.FC = () => {
   }
 
   if (user) {
-    return null; // or a redirect component
+    return null;
   }
 
   return (
