@@ -1,5 +1,5 @@
 //backend/src/auth/auth.controller.ts
-import { Controller, Post, Body, Get, UseGuards, Req, Logger, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Body, Get, UseGuards, Req, Logger, HttpException, HttpStatus, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
 import { RegisterDto } from './dto/register.dto';
@@ -32,7 +32,14 @@ export class AuthController {
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
     this.logger.log(`Login request received for email: ${loginDto.email}`);
-    return this.authService.login(loginDto);
+    try {
+      const result = await this.authService.login(loginDto);
+      this.logger.log(`Login successful for email: ${loginDto.email}`);
+      return result;
+    } catch (error) {
+      this.logger.error(`Login failed for email: ${loginDto.email}`, error.stack);
+      throw new UnauthorizedException(error.message || 'Invalid credentials');
+    }
   }
 
   @Get('login-test')
@@ -72,6 +79,22 @@ export class AuthController {
       return result;
     } catch (error) {
       throw new HttpException(error.message || 'Failed to resend confirmation email', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('user')
+  async getUser(@Req() req: RequestWithUser) {
+    this.logger.log('getUser method called');
+    if (!req.user) {
+      throw new UnauthorizedException('User not found');
+    }
+    try {
+      const user = await this.authService.getUserById(req.user._id);
+      return { user };
+    } catch (error) {
+      this.logger.error(`Error fetching user data: ${error.message}`);
+      throw new HttpException('Failed to fetch user data', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }

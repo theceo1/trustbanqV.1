@@ -4,6 +4,8 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api';
 
 export interface AuthResponse {
   token: string;
+  access_token: string; // Add this line
+  refresh_token?: string; // Add this line if you're using refresh tokens
   user: any;
 }
 
@@ -30,15 +32,24 @@ export function registerWithGoogle() {
 
 export async function loginUser(credentials: { email: string; password: string }) {
   try {
+    console.log('Sending login request to:', `${API_URL}/auth/login`);
+    console.log('Login credentials:', { email: credentials.email, password: '******' });
     const response = await axios.post<AuthResponse>(`${API_URL}/auth/login`, credentials);
-    if (response.data.token) {
-      localStorage.setItem('token', response.data.token);
+    console.log('Login response:', response.data);
+    if (response.data.access_token) {
+      localStorage.setItem('token', response.data.access_token);
       return response.data;
     } else {
-      throw new Error('Login failed: No token received');
+      console.error('Login failed: No access token received');
+      console.error('Full response:', response);
+      throw new Error('Login failed: No access token received');
     }
   } catch (error: any) {
-    console.error('Login error:', error.response?.data || error.message);
+    console.error('Login error:', error);
+    console.error('Error response:', error.response?.data);
+    console.error('Error status:', error.response?.status);
+    console.error('Error headers:', error.response?.headers);
+    console.error('Full error object:', JSON.stringify(error, null, 2));
     throw new Error(error.response?.data?.message || 'Unexpected error during login');
   }
 }

@@ -79,21 +79,33 @@ let AuthService = AuthService_1 = class AuthService {
     async login(loginDto) {
         const { email, password } = loginDto;
         this.logger.log(`Login attempt for email: ${email}`);
-        const { data: user, error } = await this.supabase.auth.signInWithPassword({
-            email,
-            password,
-        });
-        if (error || !user || !user.user) {
-            this.logger.warn(`Invalid credentials for user: ${email}`);
-            this.logger.error(`Login error: ${error ? error.message : 'No user data returned'}`);
-            throw new common_1.UnauthorizedException('Invalid credentials');
+        try {
+            this.logger.log('Attempting Supabase signInWithPassword');
+            const { data: user, error } = await this.supabase.auth.signInWithPassword({
+                email,
+                password,
+            });
+            if (error) {
+                this.logger.error(`Supabase login error for ${email}:`, error);
+                throw new common_1.UnauthorizedException('Invalid credentials');
+            }
+            if (!user || !user.user) {
+                this.logger.warn(`No user data returned from Supabase for ${email}`);
+                throw new common_1.UnauthorizedException('Invalid credentials');
+            }
+            this.logger.log(`Login successful for user: ${email}`);
+            const payload = { email: user.user.email, sub: user.user.id };
+            const tokens = {
+                access_token: this.jwtService.sign(payload),
+                refresh_token: this.jwtService.sign(payload, { expiresIn: '7d' }),
+            };
+            this.logger.log(`Tokens generated for ${email}:`, tokens);
+            return tokens;
         }
-        const payload = { email: user.user.email, sub: user.user.id };
-        this.logger.log(`Login successful for user: ${email}`);
-        return {
-            access_token: this.jwtService.sign(payload),
-            refresh_token: this.jwtService.sign(payload, { expiresIn: '7d' }),
-        };
+        catch (error) {
+            this.logger.error(`Login error for ${email}:`, error);
+            throw error;
+        }
     }
     async googleLogin(req) {
         if (!req.user) {

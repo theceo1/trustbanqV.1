@@ -1,5 +1,5 @@
 // backend/src/auth/auth.service.ts
-import { Injectable, Logger, UnauthorizedException, BadRequestException, Inject } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException, BadRequestException, Inject, NotFoundException } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -84,23 +84,35 @@ export class AuthService {
     const { email, password } = loginDto;
     this.logger.log(`Login attempt for email: ${email}`);
 
-    const { data: user, error } = await this.supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    try {
+      this.logger.log('Attempting Supabase signInWithPassword');
+      const { data: user, error } = await this.supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-    if (error || !user || !user.user) {
-      this.logger.warn(`Invalid credentials for user: ${email}`);
-      this.logger.error(`Login error: ${error ? error.message : 'No user data returned'}`);
-      throw new UnauthorizedException('Invalid credentials');
+      if (error) {
+        this.logger.error(`Supabase login error for ${email}:`, error);
+        throw new UnauthorizedException('Invalid credentials');
+      }
+
+      if (!user || !user.user) {
+        this.logger.warn(`No user data returned from Supabase for ${email}`);
+        throw new UnauthorizedException('Invalid credentials');
+      }
+
+      this.logger.log(`Login successful for user: ${email}`);
+      const payload = { email: user.user.email, sub: user.user.id };
+      const tokens = {
+        access_token: this.jwtService.sign(payload),
+        refresh_token: this.jwtService.sign(payload, { expiresIn: '7d' }),
+      };
+      this.logger.log(`Tokens generated for ${email}:`, tokens);
+      return tokens;
+    } catch (error) {
+      this.logger.error(`Login error for ${email}:`, error);
+      throw error;
     }
-
-    const payload = { email: user.user.email, sub: user.user.id };
-    this.logger.log(`Login successful for user: ${email}`);
-    return {
-      access_token: this.jwtService.sign(payload),
-      refresh_token: this.jwtService.sign(payload, { expiresIn: '7d' }),
-    };
   }
 
   async googleLogin(req: any) {
@@ -190,5 +202,13 @@ export class AuthService {
 
     this.logger.log(`Confirmation email resent to: ${email}`);
     return { message: 'Confirmation email resent successfully' };
+  }
+
+  async getUserById(userId: string) {
+    const user = await this.userService.findById(userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return user;
   }
 }

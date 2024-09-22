@@ -1,10 +1,12 @@
+// File: src/pages/login.tsx
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Alert from '@/components/common/Alert';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useAuth } from '../context/AuthContext';
-import { googleLogin, login as loginApi, AuthResponse } from '@/services/api'; // Import AuthResponse
+import { googleLogin, AuthResponse } from '@/services/api';
+import { loginUser } from '@/services/authService'; // Add this line
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -34,17 +36,22 @@ const LoginPage: React.FC = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError('');
     try {
-      const response: AuthResponse = await loginApi(email, password); // Now matches the AuthResponse from API
-      if (response.token) {
-        console.log('Login successful:', response);
-        localStorage.setItem('token', response.token);
+      console.log('Attempting login with email:', email);
+      const response = await loginUser({ email, password });
+      console.log('Login response:', response);
+      if (response.access_token) {
+        console.log('Login successful, token received');
+        loginContext(response.access_token); // Use the loginContext function to set the user
         router.push('/dashboard');
       } else {
+        console.error('Login failed: No token received');
         setError('Login failed: No token received');
       }
     } catch (error: any) {
-      setError('Login failed: ' + (error.response?.data?.message || 'Unexpected error'));
+      console.error('Login error:', error);
+      setError('Login failed: ' + (error.message || 'Unexpected error'));
     } finally {
       setIsLoading(false);
     }
@@ -61,8 +68,10 @@ const LoginPage: React.FC = () => {
         router.push('/dashboard');
       } else {
         setError('Google login failed: No access token received');
+        console.error('Google login failed: No access token received');
       }
     } catch (error: any) {
+      console.error('Google login error:', error.message);
       setError('Google login failed: ' + error.message);
     }
   };

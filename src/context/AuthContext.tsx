@@ -26,7 +26,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-
   const fetchUserData = useCallback(async (token: string) => {
     try {
       console.log('Fetching user data with token:', token);
@@ -34,18 +33,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const response = await axios.get<{ user: User }>(`${API_URL}/auth/user`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      console.log('Response:', response.data);
+      console.log('User data response:', response.data);
       const userData = response.data.user;
       setUser(userData);
       return userData;
     } catch (error) {
       console.error('Error fetching user data:', error);
       if (error && typeof error === 'object' && 'response' in error) {
-        const axiosError = error as { response?: { data?: unknown; status?: number } };
+        const axiosError = error as { response?: { data?: unknown; status?: number; headers?: unknown } };
         console.error('Response data:', axiosError.response?.data);
         console.error('Response status:', axiosError.response?.status);
+        console.error('Response headers:', axiosError.response?.headers);
       } else if (error instanceof Error) {
         console.error('Error message:', error.message);
+      } else {
+        console.error('Unexpected error:', error);
       }
       setUser(null);
       localStorage.removeItem('token');

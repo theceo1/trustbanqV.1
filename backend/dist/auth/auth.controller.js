@@ -37,7 +37,15 @@ let AuthController = AuthController_1 = class AuthController {
     }
     async login(loginDto) {
         this.logger.log(`Login request received for email: ${loginDto.email}`);
-        return this.authService.login(loginDto);
+        try {
+            const result = await this.authService.login(loginDto);
+            this.logger.log(`Login successful for email: ${loginDto.email}`);
+            return result;
+        }
+        catch (error) {
+            this.logger.error(`Login failed for email: ${loginDto.email}`, error.stack);
+            throw new common_1.UnauthorizedException(error.message || 'Invalid credentials');
+        }
     }
     loginTest() {
         return 'Login endpoint is working!';
