@@ -31,4 +31,5 @@ export declare class AuthService {
     resendConfirmationEmail(email: string): Promise<{
         message: string;
     }>;
+    getUserById(userId: string): Promise<any>;
 }

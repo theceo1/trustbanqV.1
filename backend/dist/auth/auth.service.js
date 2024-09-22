@@ -87,7 +87,15 @@ let AuthService = AuthService_1 = class AuthService {
             });
             if (error) {
                 this.logger.error(`Supabase login error for ${email}:`, error);
-                throw new common_1.UnauthorizedException('Invalid credentials');
+                if (error.message.includes('Email not confirmed')) {
+                    throw new common_1.UnauthorizedException('Email not confirmed. Please check your inbox and confirm your email.');
+                }
+                else if (error.message.includes('Invalid login credentials')) {
+                    throw new common_1.UnauthorizedException('Invalid email or password');
+                }
+                else {
+                    throw new common_1.UnauthorizedException('Login failed: ' + error.message);
+                }
             }
             if (!user || !user.user) {
                 this.logger.warn(`No user data returned from Supabase for ${email}`);
@@ -104,7 +112,12 @@ let AuthService = AuthService_1 = class AuthService {
         }
         catch (error) {
             this.logger.error(`Login error for ${email}:`, error);
-            throw error;
+            if (error instanceof common_1.UnauthorizedException) {
+                throw error;
+            }
+            else {
+                throw new common_1.UnauthorizedException('An unexpected error occurred during login');
+            }
         }
     }
     async googleLogin(req) {
@@ -180,6 +193,18 @@ let AuthService = AuthService_1 = class AuthService {
         }
         this.logger.log(`Confirmation email resent to: ${email}`);
         return { message: 'Confirmation email resent successfully' };
+    }
+    async getUserById(userId) {
+        const { data: user, error } = await this.supabase
+            .from('users')
+            .select('*')
+            .eq('id', userId)
+            .single();
+        if (error) {
+            this.logger.error(`Error fetching user: ${error.message}`);
+            throw new common_1.NotFoundException('User not found');
+        }
+        return user;
     }
 };
 exports.AuthService = AuthService;

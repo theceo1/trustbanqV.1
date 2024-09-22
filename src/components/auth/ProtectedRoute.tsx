@@ -1,6 +1,7 @@
 // src/components/auth/ProtectedRoute.tsx
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
+import { useAuth } from '../../context/AuthContext';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -8,16 +9,19 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const router = useRouter();
+  const { user, loading } = useAuth();
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-
-    if (!token) {
-      router.push('/'); // Redirect to login page if not authenticated
+    if (!loading && !user) {
+      router.push('/login');
     }
-  }, [router]);
+  }, [user, loading, router]);
 
-  return <>{children}</>;
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  return user ? <>{children}</> : null;
 };
 
 export default ProtectedRoute;

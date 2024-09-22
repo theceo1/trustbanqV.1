@@ -93,7 +93,13 @@ export class AuthService {
 
       if (error) {
         this.logger.error(`Supabase login error for ${email}:`, error);
-        throw new UnauthorizedException('Invalid credentials');
+        if (error.message.includes('Email not confirmed')) {
+          throw new UnauthorizedException('Email not confirmed. Please check your inbox and confirm your email.');
+        } else if (error.message.includes('Invalid login credentials')) {
+          throw new UnauthorizedException('Invalid email or password');
+        } else {
+          throw new UnauthorizedException('Login failed: ' + error.message);
+        }
       }
 
       if (!user || !user.user) {
@@ -111,7 +117,11 @@ export class AuthService {
       return tokens;
     } catch (error) {
       this.logger.error(`Login error for ${email}:`, error);
-      throw error;
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      } else {
+        throw new UnauthorizedException('An unexpected error occurred during login');
+      }
     }
   }
 
@@ -205,10 +215,17 @@ export class AuthService {
   }
 
   async getUserById(userId: string) {
-    const user = await this.userService.findById(userId);
-    if (!user) {
+    const { data: user, error } = await this.supabase
+      .from('users')
+      .select('*')
+      .eq('id', userId)
+      .single();
+
+    if (error) {
+      this.logger.error(`Error fetching user: ${error.message}`);
       throw new NotFoundException('User not found');
     }
+
     return user;
   }
 }

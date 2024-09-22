@@ -46,10 +46,13 @@ export async function loginUser(credentials: { email: string; password: string }
     }
   } catch (error: any) {
     console.error('Login error:', error);
-    console.error('Error response:', error.response?.data);
-    console.error('Error status:', error.response?.status);
-    console.error('Error headers:', error.response?.headers);
-    console.error('Full error object:', JSON.stringify(error, null, 2));
+    if (error.response) {
+      console.error('Error response:', error.response.data);
+      console.error('Error status:', error.response.status);
+      if (error.response.status === 401) {
+        throw new Error('Invalid email or password');
+      }
+    }
     throw new Error(error.response?.data?.message || 'Unexpected error during login');
   }
 }

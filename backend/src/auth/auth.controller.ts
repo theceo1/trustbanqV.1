@@ -10,7 +10,7 @@ import { Request } from 'express';
 import { User } from '../types/user.types'; // Ensure this path is correct
 
 interface RequestWithUser extends Request {
-  user?: User & { _id: string }; // Explicitly define _id as a string
+  user?: User; // Removed explicit type definition for _id
 }
 
 @Controller('auth')
@@ -69,7 +69,7 @@ export class AuthController {
     if (!req.user) {
       throw new Error('User not found in request');
     }
-    return this.authService.logout(req.user._id.toString());
+    return this.authService.logout(req.user.id.toString());
   }
 
   @Post('resend-confirmation')
@@ -90,7 +90,7 @@ export class AuthController {
       throw new UnauthorizedException('User not found');
     }
     try {
-      const user = await this.authService.getUserById(req.user._id);
+      const user = await this.authService.getUserById(req.user.id);
       return { user };
     } catch (error) {
       this.logger.error(`Error fetching user data: ${error.message}`);

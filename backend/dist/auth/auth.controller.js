@@ -62,7 +62,7 @@ let AuthController = AuthController_1 = class AuthController {
         if (!req.user) {
             throw new Error('User not found in request');
         }
-        return this.authService.logout(req.user._id.toString());
+        return this.authService.logout(req.user.id.toString());
     }
     async resendConfirmation(email) {
         try {
@@ -71,6 +71,20 @@ let AuthController = AuthController_1 = class AuthController {
         }
         catch (error) {
             throw new common_1.HttpException(error.message || 'Failed to resend confirmation email', common_1.HttpStatus.BAD_REQUEST);
+        }
+    }
+    async getUser(req) {
+        this.logger.log('getUser method called');
+        if (!req.user) {
+            throw new common_1.UnauthorizedException('User not found');
+        }
+        try {
+            const user = await this.authService.getUserById(req.user.id);
+            return { user };
+        }
+        catch (error) {
+            this.logger.error(`Error fetching user data: ${error.message}`);
+            throw new common_1.HttpException('Failed to fetch user data', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 };
@@ -132,6 +146,14 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "resendConfirmation", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Get)('user'),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "getUser", null);
 exports.AuthController = AuthController = AuthController_1 = __decorate([
     (0, common_1.Controller)('auth'),
     __metadata("design:paramtypes", [auth_service_1.AuthService])

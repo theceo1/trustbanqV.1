@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useAuth } from '../context/AuthContext';
 import { googleLogin, AuthResponse } from '@/services/api';
 import { loginUser } from '@/services/authService'; // Add this line
+import axios from 'axios';
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -43,7 +44,8 @@ const LoginPage: React.FC = () => {
       console.log('Login response:', response);
       if (response.access_token) {
         console.log('Login successful, token received');
-        loginContext(response.access_token); // Use the loginContext function to set the user
+        localStorage.setItem('token', response.access_token);
+        loginContext(response.access_token);
         router.push('/dashboard');
       } else {
         console.error('Login failed: No token received');
@@ -51,7 +53,12 @@ const LoginPage: React.FC = () => {
       }
     } catch (error: any) {
       console.error('Login error:', error);
-      setError('Login failed: ' + (error.message || 'Unexpected error'));
+      if (error.message.includes('Email not confirmed')) {
+        setError('Your email is not confirmed. Please check your inbox and confirm your email before logging in.');
+        // Optionally, you could add a button or link here to resend the confirmation email
+      } else {
+        setError('Login failed: ' + (error.message || 'Unexpected error'));
+      }
     } finally {
       setIsLoading(false);
     }

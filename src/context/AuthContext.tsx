@@ -29,14 +29,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const fetchUserData = useCallback(async (token: string) => {
     try {
       console.log('Fetching user data with token:', token);
-      console.log('Full URL:', `${API_URL}/auth/user`);
-      const response = await axios.get<{ user: User }>(`${API_URL}/auth/user`, {
+      console.log('Full URL:', `${API_URL}/auth/me`);
+      const response = await axios.get<User>(`${API_URL}/auth/me`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       console.log('User data response:', response.data);
-      const userData = response.data.user;
-      setUser(userData);
-      return userData;
+      setUser(response.data);
+      return response.data;
     } catch (error) {
       console.error('Error fetching user data:', error);
       if (error && typeof error === 'object' && 'response' in error) {
@@ -62,6 +61,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         await fetchUserData(token);
       } catch (error) {
         console.error('Error during authentication check:', error);
+        localStorage.removeItem('token');
       }
     }
     setLoading(false);
@@ -72,14 +72,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [checkAuth]);
 
   const login = async (token: string) => {
-    localStorage.setItem('token', token);
-    await fetchUserData(token);
-    router.push('/dashboard');
+    try {
+      localStorage.setItem('token', token);
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      await fetchUserData(token);
+      router.push('/dashboard');
+    } catch (error) {
+      console.error('Error during login:', error);
+      localStorage.removeItem('token');
+      delete axios.defaults.headers.common['Authorization'];
+      setUser(null);
+      router.push('/login');
+    }
   };
 
   const logout = useCallback(() => {
     setUser(null);
     localStorage.removeItem('token');
+    delete axios.defaults.headers.common['Authorization'];
     router.push('/login');
   }, [router]);
 

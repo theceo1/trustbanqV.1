@@ -5,9 +5,7 @@ import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { Request } from 'express';
 import { User } from '../types/user.types';
 interface RequestWithUser extends Request {
-    user?: User & {
-        _id: string;
-    };
+    user?: User;
 }
 export declare class AuthController {
     private authService;
@@ -36,6 +34,9 @@ export declare class AuthController {
     }>;
     resendConfirmation(email: string): Promise<{
         message: string;
+    }>;
+    getUser(req: RequestWithUser): Promise<{
+        user: any;
     }>;
 }
 export {};

@@ -27,7 +27,7 @@ const RegisterPage: React.FC = () => {
     try {
       const response = await register(email, password, name);
       console.log('Registration successful:', response);
-      setSuccess('Registration successful! Please check your email to verify your account.');
+      setSuccess('Registration successful! Please check your email to confirm your account before logging in.');
       // Automatically log in the user after registration
       localStorage.setItem('token', response.token); // Assuming the response contains a token
       router.push('/'); // Redirect to homepage after successful registration
