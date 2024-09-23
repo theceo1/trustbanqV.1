@@ -19,6 +19,9 @@
       "forceConsistentCasingInFileNames": true,
       "noFallthroughCasesInSwitch": true
     },
-    "include": ["src/**/*"],
+    "include": [
+       "src/**/*",
+       "src/supabase/**/*"  // Add this line if it's not already there
+     ],
     "exclude": ["node_modules", "dist"]
 }

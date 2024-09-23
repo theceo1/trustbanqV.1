@@ -53,6 +53,7 @@ export class UserService {
       .single();
 
     if (error) {
+      console.error('Supabase error:', error); // Log the error
       return null; // Handle error as needed
     }
 
@@ -71,6 +72,7 @@ export class UserService {
       .single();
 
     if (error || !data) {
+      console.error('Supabase error:', error); // Log the error
       throw new NotFoundException(`User with ID ${id} not found`);
     }
 

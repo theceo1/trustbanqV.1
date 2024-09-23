@@ -25,8 +25,8 @@ let UserController = UserController_1 = class UserController {
     }
     async getProfile(req) {
         this.logger.log('getProfile method called');
-        this.logger.log(`User ID: ${req.user.userId}`);
-        return this.userService.findById(req.user.userId);
+        this.logger.log(`User ID: ${req.user.id}`);
+        return this.userService.findById(req.user.id);
     }
     async create(createUserDto) {
         return this.userService.create(createUserDto);

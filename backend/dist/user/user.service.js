@@ -53,6 +53,7 @@ let UserService = class UserService {
             .eq('email', email)
             .single();
         if (error) {
+            console.error('Supabase error:', error);
             return null;
         }
         if (!(0, typeGuards_1.isUser)(data)) {
@@ -67,6 +68,7 @@ let UserService = class UserService {
             .eq('id', id)
             .single();
         if (error || !data) {
+            console.error('Supabase error:', error);
             throw new common_1.NotFoundException(`User with ID ${id} not found`);
         }
         if (!(0, typeGuards_1.isUser)(data)) {

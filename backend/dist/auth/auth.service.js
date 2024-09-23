@@ -111,13 +111,8 @@ let AuthService = AuthService_1 = class AuthService {
             return tokens;
         }
         catch (error) {
-            this.logger.error(`Login error for ${email}:`, error);
-            if (error instanceof common_1.UnauthorizedException) {
-                throw error;
-            }
-            else {
-                throw new common_1.UnauthorizedException('An unexpected error occurred during login');
-            }
+            this.logger.error(`Login error for ${email}: ${error.message}`, error.stack);
+            throw error;
         }
     }
     async googleLogin(req) {
@@ -127,6 +122,7 @@ let AuthService = AuthService_1 = class AuthService {
         }
         try {
             const { email, firstName } = req.user;
+            this.logger.log(`Google login attempt for email: ${email}`);
             let user = await this.userService.findByEmail(email);
             if (!user) {
                 const randomPassword = Math.random().toString(36).slice(-8);
@@ -140,25 +136,32 @@ let AuthService = AuthService_1 = class AuthService {
                 this.logger.log(`New user created via Google login: ${email}`);
             }
             const payload = { email: user.email, sub: user.id };
-            return {
+            const tokens = {
                 access_token: this.jwtService.sign(payload),
                 refresh_token: this.jwtService.sign(payload, { expiresIn: '7d' }),
             };
+            this.logger.log(`Tokens generated for Google user ${email}:`, tokens);
+            return tokens;
         }
         catch (error) {
-            this.logger.error(`Error during Google login: ${error.message}`, error.stack);
+            this.logger.error(`Error during Google login for ${req.user.email}: ${error.message}`, error.stack);
             throw new common_1.UnauthorizedException('Failed to process Google login');
         }
     }
     async refreshToken(refreshToken) {
         try {
+            this.logger.log(`Refreshing token: ${refreshToken}`);
             const payload = this.jwtService.verify(refreshToken);
+            this.logger.log(`Token payload: ${JSON.stringify(payload)}`);
             const user = await this.userService.findById(payload.sub);
+            this.logger.log(`User found for refresh token: ${JSON.stringify(user)}`);
             const newPayload = { email: user.email, sub: user.id };
-            return {
+            const tokens = {
                 access_token: this.jwtService.sign(newPayload),
                 refresh_token: this.jwtService.sign(newPayload, { expiresIn: '7d' }),
             };
+            this.logger.log(`New tokens generated: ${JSON.stringify(tokens)}`);
+            return tokens;
         }
         catch (error) {
             this.logger.error(`Error refreshing token: ${error.message}`, error.stack);
@@ -194,16 +197,18 @@ let AuthService = AuthService_1 = class AuthService {
         this.logger.log(`Confirmation email resent to: ${email}`);
         return { message: 'Confirmation email resent successfully' };
     }
-    async getUserById(userId) {
+    async getUserById(id) {
+        this.logger.log(`Fetching user by ID: ${id}`);
         const { data: user, error } = await this.supabase
             .from('users')
             .select('*')
-            .eq('id', userId)
+            .eq('id', id)
             .single();
         if (error) {
             this.logger.error(`Error fetching user: ${error.message}`);
             throw new common_1.NotFoundException('User not found');
         }
+        this.logger.log(`User fetched successfully: ${JSON.stringify(user)}`);
         return user;
     }
 };

@@ -40,7 +40,7 @@ exports.AppModule = AppModule = __decorate([
             wallet_module_1.WalletModule,
             market_module_1.MarketModule,
             throttler_1.ThrottlerModule.forRoot([{
-                    ttl: 60000,
+                    ttl: 60,
                     limit: 10,
                 }]),
         ],

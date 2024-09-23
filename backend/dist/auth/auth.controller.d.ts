@@ -8,7 +8,7 @@ interface RequestWithUser extends Request {
     user?: User;
 }
 export declare class AuthController {
-    private authService;
+    private readonly authService;
     private readonly logger;
     constructor(authService: AuthService);
     register(registerDto: RegisterDto): Promise<{

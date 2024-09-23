@@ -13,14 +13,14 @@ import { initializeSupabase } from './supabaseClient';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true, // Ensure this is set to true
+      isGlobal: true,
     }),
     UserModule,
     AuthModule,
     WalletModule,
     MarketModule,
     ThrottlerModule.forRoot([{
-      ttl: 60000,
+      ttl: 60,
       limit: 10,
     }]),
   ],

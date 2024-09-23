@@ -75,11 +75,13 @@ let AuthController = AuthController_1 = class AuthController {
     }
     async getUser(req) {
         this.logger.log('getUser method called');
+        this.logger.log(`req.user: ${JSON.stringify(req.user)}`);
         if (!req.user) {
             throw new common_1.UnauthorizedException('User not found');
         }
         try {
             const user = await this.authService.getUserById(req.user.id);
+            this.logger.log(`User data fetched: ${JSON.stringify(user)}`);
             return { user };
         }
         catch (error) {

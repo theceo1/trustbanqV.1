@@ -4,8 +4,8 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { SupabaseClient } from '@supabase/supabase-js';
 export declare class AuthService {
-    private userService;
-    private jwtService;
+    private readonly userService;
+    private readonly jwtService;
     private readonly supabase;
     private readonly logger;
     constructor(userService: UserService, jwtService: JwtService, supabase: SupabaseClient);
@@ -31,5 +31,5 @@ export declare class AuthService {
     resendConfirmationEmail(email: string): Promise<{
         message: string;
     }>;
-    getUserById(userId: string): Promise<any>;
+    getUserById(id: string): Promise<any>;
 }

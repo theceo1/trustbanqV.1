@@ -1,5 +1,5 @@
 // backend/src/auth/auth.module.ts
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { UserModule } from '../user/user.module';
@@ -12,7 +12,7 @@ import { initializeSupabase } from '../supabaseClient'; // Import the Supabase i
 
 @Module({
   imports: [
-    UserModule,
+    forwardRef(() => UserModule),
     PassportModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
@@ -38,6 +38,6 @@ import { initializeSupabase } from '../supabaseClient'; // Import the Supabase i
       inject: [ConfigService],
     },
   ],
-  exports: [AuthService],
+  exports: [AuthService, JwtModule],
 })
 export class AuthModule {}
