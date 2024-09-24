@@ -86,7 +86,7 @@ export class AuthService {
   }
 
   async getUserById(id: string) {
-    this.logger.log(`Fetching user by ID: ${id}`);
+    this.logger.debug(`Attempting to fetch user with ID: ${id}`);
     const { data: user, error } = await this.supabase
       .from('users')
       .select('*')
@@ -98,6 +98,12 @@ export class AuthService {
       throw new NotFoundException('User not found');
     }
 
+    if (!user) {
+      this.logger.warn(`No user found with ID: ${id}`);
+      throw new NotFoundException('User not found');
+    }
+
+    this.logger.debug(`User found: ${JSON.stringify(user)}`);
     return user;
   }
 }

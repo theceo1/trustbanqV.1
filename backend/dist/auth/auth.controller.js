@@ -16,78 +16,50 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthController = void 0;
 const common_1 = require("@nestjs/common");
 const auth_service_1 = require("./auth.service");
-const passport_1 = require("@nestjs/passport");
 const register_dto_1 = require("./dto/register.dto");
 const login_dto_1 = require("./dto/login.dto");
+const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 const refresh_token_dto_1 = require("./dto/refresh-token.dto");
-const jwt_auth_guard_1 = require("./jwt-auth.guard");
 let AuthController = AuthController_1 = class AuthController {
     constructor(authService) {
         this.authService = authService;
         this.logger = new common_1.Logger(AuthController_1.name);
     }
     async register(registerDto) {
-        try {
-            const result = await this.authService.register(registerDto);
-            return result;
-        }
-        catch (error) {
-            throw new common_1.HttpException(error.message || 'Registration failed', common_1.HttpStatus.BAD_REQUEST);
-        }
+        return this.authService.register(registerDto);
     }
     async login(loginDto) {
-        this.logger.log(`Login request received for email: ${loginDto.email}`);
-        try {
-            const result = await this.authService.login(loginDto);
-            this.logger.log(`Login successful for email: ${loginDto.email}`);
-            return result;
+        this.logger.log(`Login attempt for email: ${loginDto.email}`);
+        const user = await this.authService.validateUser(loginDto.email, loginDto.password);
+        if (!user) {
+            this.logger.warn(`Login failed for email: ${loginDto.email}`);
+            throw new common_1.UnauthorizedException('Invalid credentials');
         }
-        catch (error) {
-            this.logger.error(`Login failed for email: ${loginDto.email}`, error.stack);
-            throw new common_1.UnauthorizedException(error.message || 'Invalid credentials');
-        }
-    }
-    loginTest() {
-        return 'Login endpoint is working!';
-    }
-    async googleAuth() { }
-    async googleAuthRedirect(req) {
-        const user = await this.authService.googleLogin(req);
-        return { access_token: user.access_token, refresh_token: user.refresh_token };
+        this.logger.log(`Login successful for email: ${loginDto.email}`);
+        return this.authService.login(user);
     }
     async refreshToken(refreshTokenDto) {
         return this.authService.refreshToken(refreshTokenDto.refreshToken);
     }
     async logout(req) {
-        if (!req.user) {
-            throw new Error('User not found in request');
-        }
-        return this.authService.logout(req.user.id.toString());
+        return this.authService.logout(req.user.id);
     }
     async resendConfirmation(email) {
         try {
-            const result = await this.authService.resendConfirmationEmail(email);
-            return result;
+            await this.authService.resendConfirmationEmail(email);
+            return { message: 'Confirmation email sent successfully' };
         }
         catch (error) {
-            throw new common_1.HttpException(error.message || 'Failed to resend confirmation email', common_1.HttpStatus.BAD_REQUEST);
+            throw new common_1.HttpException('Failed to resend confirmation email', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     async getUser(req) {
-        this.logger.log('getUser method called');
-        this.logger.log(`req.user: ${JSON.stringify(req.user)}`);
-        if (!req.user) {
-            throw new common_1.UnauthorizedException('User not found');
+        this.logger.log(`Fetching user data for ID: ${req.user.id}`);
+        const user = await this.authService.getUserById(req.user.id);
+        if (!user) {
+            throw new common_1.HttpException('User not found', common_1.HttpStatus.NOT_FOUND);
         }
-        try {
-            const user = await this.authService.getUserById(req.user.id);
-            this.logger.log(`User data fetched: ${JSON.stringify(user)}`);
-            return { user };
-        }
-        catch (error) {
-            this.logger.error(`Error fetching user data: ${error.message}`);
-            throw new common_1.HttpException('Failed to fetch user data', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        return user;
     }
 };
 exports.AuthController = AuthController;
@@ -106,28 +78,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "login", null);
 __decorate([
-    (0, common_1.Get)('login-test'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", String)
-], AuthController.prototype, "loginTest", null);
-__decorate([
-    (0, common_1.Get)('google'),
-    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('google')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], AuthController.prototype, "googleAuth", null);
-__decorate([
-    (0, common_1.Get)('google/callback'),
-    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('google')),
-    __param(0, (0, common_1.Req)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], AuthController.prototype, "googleAuthRedirect", null);
-__decorate([
-    (0, common_1.Post)('refresh'),
+    (0, common_1.Post)('refresh-token'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [refresh_token_dto_1.RefreshTokenDto]),
@@ -135,7 +86,7 @@ __decorate([
 ], AuthController.prototype, "refreshToken", null);
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, common_1.Get)('logout'),
+    (0, common_1.Post)('logout'),
     __param(0, (0, common_1.Req)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),

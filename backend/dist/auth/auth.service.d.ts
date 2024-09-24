@@ -1,23 +1,19 @@
-import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 import { RegisterDto } from './dto/register.dto';
-import { LoginDto } from './dto/login.dto';
 import { SupabaseClient } from '@supabase/supabase-js';
 export declare class AuthService {
-    private readonly userService;
     private readonly jwtService;
+    private readonly configService;
     private readonly supabase;
     private readonly logger;
-    constructor(userService: UserService, jwtService: JwtService, supabase: SupabaseClient);
+    constructor(jwtService: JwtService, configService: ConfigService, supabase: SupabaseClient);
     register(registerDto: RegisterDto): Promise<{
         message: string;
-        userId: string;
+        userId: string | undefined;
     }>;
-    login(loginDto: LoginDto): Promise<{
-        access_token: string;
-        refresh_token: string;
-    }>;
-    googleLogin(req: any): Promise<{
+    validateUser(email: string, password: string): Promise<any>;
+    login(user: any): Promise<{
         access_token: string;
         refresh_token: string;
     }>;

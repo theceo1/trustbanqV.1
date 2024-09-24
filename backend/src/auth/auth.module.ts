@@ -8,7 +8,8 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './jwt.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GoogleStrategy } from './google.strategy';
-import { initializeSupabase } from '../supabaseClient'; // Import the Supabase initialization function
+import { initializeSupabase } from '../supabaseClient';
+import { SUPABASE } from '../supabase.constants';
 
 @Module({
   imports: [
@@ -30,10 +31,9 @@ import { initializeSupabase } from '../supabaseClient'; // Import the Supabase i
     JwtStrategy,
     GoogleStrategy,
     {
-      provide: 'SUPABASE_CLIENT',
+      provide: SUPABASE,
       useFactory: (configService: ConfigService) => {
-        const supabaseClient = initializeSupabase(configService);
-        return supabaseClient;
+        return initializeSupabase(configService);
       },
       inject: [ConfigService],
     },

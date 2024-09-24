@@ -17,6 +17,7 @@ const jwt_strategy_1 = require("./jwt.strategy");
 const config_1 = require("@nestjs/config");
 const google_strategy_1 = require("./google.strategy");
 const supabaseClient_1 = require("../supabaseClient");
+const supabase_constants_1 = require("../supabase.constants");
 let AuthModule = class AuthModule {
 };
 exports.AuthModule = AuthModule;
@@ -41,10 +42,9 @@ exports.AuthModule = AuthModule = __decorate([
             jwt_strategy_1.JwtStrategy,
             google_strategy_1.GoogleStrategy,
             {
-                provide: 'SUPABASE_CLIENT',
+                provide: supabase_constants_1.SUPABASE,
                 useFactory: (configService) => {
-                    const supabaseClient = (0, supabaseClient_1.initializeSupabase)(configService);
-                    return supabaseClient;
+                    return (0, supabaseClient_1.initializeSupabase)(configService);
                 },
                 inject: [config_1.ConfigService],
             },
