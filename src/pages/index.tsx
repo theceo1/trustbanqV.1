@@ -17,14 +17,14 @@ const Home: React.FC = () => {
       login(token);
     } else if (!loading && user) {
       console.log('User already logged in, redirecting to dashboard');
-      router.push('/dashboard');
+      router.push('/');
     }
   }, [router.query.token, login, user, loading, router]);
 
   const handleGetStarted = () => {
     if (user) {
       // User is authenticated, redirect to dashboard
-      router.push('/dashboard');
+      router.push('/');
     } else {
       // User is not authenticated, redirect to login
       router.push('/login');

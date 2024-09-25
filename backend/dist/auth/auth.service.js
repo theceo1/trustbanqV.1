@@ -37,7 +37,17 @@ let AuthService = AuthService_1 = class AuthService {
         return { message: 'User registered successfully', userId: (_a = data.user) === null || _a === void 0 ? void 0 : _a.id };
     }
     async validateUser(email, password) {
+          this.logger.debug(`Attempting to validate user with email: ${email}`);
+
         const { data, error } = await this.supabase.auth.signInWithPassword({ email, password });
+        if (error) {
+    this.logger.error(`User validation failed: ${error.message}`);
+    this.logger.error(`Full error object: ${JSON.stringify(error)}`);
+    return null;
+  }
+
+  this.logger.debug(`User validation successful for email: ${email}`);
+  return data.user;
         if (error) {
             this.logger.error(`User validation failed: ${error.message}`);
             return null;
@@ -83,17 +93,22 @@ let AuthService = AuthService_1 = class AuthService {
         }
         return { message: 'Confirmation email sent successfully' };
     }
-    async getUserById(id) {
-        this.logger.log(`Fetching user by ID: ${id}`);
+    async getUserById(sub) {
+        this.logger.debug(`Attempting to fetch user with ID: ${sub}`);
         const { data: user, error } = await this.supabase
             .from('users')
             .select('*')
-            .eq('id', id)
+            .eq('id', sub)
             .single();
         if (error) {
             this.logger.error(`Error fetching user: ${error.message}`);
             throw new common_1.NotFoundException('User not found');
         }
+        if (!user) {
+            this.logger.warn(`No user found with ID: ${sub}`);
+            throw new common_1.NotFoundException('User not found');
+        }
+        this.logger.debug(`User found: ${JSON.stringify(user)}`);
         return user;
     }
 };

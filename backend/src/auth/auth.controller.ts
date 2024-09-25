@@ -20,15 +20,24 @@ export class AuthController {
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
     this.logger.log(`Login attempt for email: ${loginDto.email}`);
-    const user = await this.authService.validateUser(loginDto.email, loginDto.password);
-    
-    if (!user) {
-      this.logger.warn(`Login failed for email: ${loginDto.email}`);
+    try {
+      const user = await this.authService.validateUser(loginDto.email, loginDto.password);
+      if (!user) {
+        this.logger.warn(`Login failed for email: ${loginDto.email}`);
+        throw new UnauthorizedException('Invalid credentials');
+      }
+      this.logger.log(`Login successful for email: ${loginDto.email}`);
+      return this.authService.login(user);
+    } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        if (error.message === 'Email not confirmed') {
+          this.logger.warn(`Login failed for email: ${loginDto.email} - Email not confirmed`);
+          throw new UnauthorizedException('Email not confirmed');
+        }
+      }
+      this.logger.error(`Login error: ${error.message}`);
       throw new UnauthorizedException('Invalid credentials');
     }
-
-    this.logger.log(`Login successful for email: ${loginDto.email}`);
-    return this.authService.login(user);
   }
 
   @Post('refresh-token')
@@ -39,7 +48,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Post('logout')
   async logout(@Req() req: RequestWithUser) {
-    return this.authService.logout(req.user.id);
+    return this.authService.logout(req.user.sub);
   }
 
   @Post('resend-confirmation')
@@ -55,8 +64,8 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Get('user')
   async getUser(@Req() req: RequestWithUser) {
-    this.logger.log(`Fetching user data for ID: ${req.user.id}`);
-    const user = await this.authService.getUserById(req.user.id);
+    this.logger.log(`Fetching user data for ID: ${req.user.sub}`);
+    const user = await this.authService.getUserById(req.user.sub);
     if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }

@@ -15,8 +15,8 @@ export class UserController {
   @Get('profile')
   async getProfile(@Request() req: RequestWithUser) {
     this.logger.log('getProfile method called');
-    this.logger.log(`User ID: ${req.user.id}`);
-    return this.userService.findById(req.user.id);
+    this.logger.log(`User ID: ${req.user.sub}`);
+    return this.userService.findById(req.user.sub);
   }
 
   @Post()

@@ -10,7 +10,7 @@ export declare class AuthService {
     constructor(jwtService: JwtService, configService: ConfigService, supabase: SupabaseClient);
     register(registerDto: RegisterDto): Promise<{
         message: string;
-        userId: string | undefined;
+        userId: string ;
     }>;
     validateUser(email: string, password: string): Promise<any>;
     login(user: any): Promise<{

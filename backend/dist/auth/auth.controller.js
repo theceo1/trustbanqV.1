@@ -30,19 +30,31 @@ let AuthController = AuthController_1 = class AuthController {
     }
     async login(loginDto) {
         this.logger.log(`Login attempt for email: ${loginDto.email}`);
-        const user = await this.authService.validateUser(loginDto.email, loginDto.password);
-        if (!user) {
-            this.logger.warn(`Login failed for email: ${loginDto.email}`);
+        try {
+            const user = await this.authService.validateUser(loginDto.email, loginDto.password);
+            if (!user) {
+                this.logger.warn(`Login failed for email: ${loginDto.email}`);
+                throw new common_1.UnauthorizedException('Invalid credentials');
+            }
+            this.logger.log(`Login successful for email: ${loginDto.email}`);
+            return this.authService.login(user);
+        }
+        catch (error) {
+            if (error instanceof common_1.UnauthorizedException) {
+                if (error.message === 'Email not confirmed') {
+                    this.logger.warn(`Login failed for email: ${loginDto.email} - Email not confirmed`);
+                    throw new common_1.UnauthorizedException('Email not confirmed');
+                }
+            }
+            this.logger.error(`Login error: ${error.message}`);
             throw new common_1.UnauthorizedException('Invalid credentials');
         }
-        this.logger.log(`Login successful for email: ${loginDto.email}`);
-        return this.authService.login(user);
     }
     async refreshToken(refreshTokenDto) {
         return this.authService.refreshToken(refreshTokenDto.refreshToken);
     }
     async logout(req) {
-        return this.authService.logout(req.user.id);
+        return this.authService.logout(req.user.sub);
     }
     async resendConfirmation(email) {
         try {
@@ -54,8 +66,8 @@ let AuthController = AuthController_1 = class AuthController {
         }
     }
     async getUser(req) {
-        this.logger.log(`Fetching user data for ID: ${req.user.id}`);
-        const user = await this.authService.getUserById(req.user.id);
+        this.logger.log(`Fetching user data for ID: ${req.user.sub}`);
+        const user = await this.authService.getUserById(req.user.sub);
         if (!user) {
             throw new common_1.HttpException('User not found', common_1.HttpStatus.NOT_FOUND);
         }

@@ -30,7 +30,7 @@ const LoginPage: React.FC = () => {
 
   useEffect(() => {
     if (!loading && user) {
-      router.push('/dashboard');
+      router.push('/');
     }
   }, [user, loading, router]);
 
@@ -46,7 +46,7 @@ const LoginPage: React.FC = () => {
         console.log('Login successful, token received');
         localStorage.setItem('token', response.access_token);
         loginContext(response.access_token);
-        router.push('/dashboard');
+        router.push('/');
       } else {
         console.error('Login failed: No token received');
         setError('Login failed: No token received');
@@ -72,7 +72,7 @@ const LoginPage: React.FC = () => {
 
       if (response.access_token) {
         localStorage.setItem('token', response.access_token);
-        router.push('/dashboard');
+        router.push('/');
       } else {
         setError('Google login failed: No access token received');
         console.error('Google login failed: No access token received');

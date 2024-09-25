@@ -28,21 +28,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const fetchUserData = useCallback(async (token: string) => {
     try {
-      console.log('Fetching user data with token:', token);
-      console.log('Full URL:', `${API_URL}/auth/user`);
-      const response = await axios.get<User>(`${API_URL}/auth/user`, {
-        headers: { Authorization: `Bearer ${token}` }
+      const response = await axios.get(`${API_URL}/`, {
+        headers: { Authorization: `Bearer ${token}` },
       });
       console.log('User data response:', response.data);
-      setUser(response.data);
+      setUser(response.data as User);
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching user data:', error);
-      if (error && typeof error === 'object' && 'response' in error) {
-        const axiosError = error as { response?: { data?: unknown; status?: number; headers?: unknown } };
-        console.error('Response data:', axiosError.response?.data);
-        console.error('Response status:', axiosError.response?.status);
-        console.error('Response headers:', axiosError.response?.headers);
+      if (error.response) {
+        console.error('Response data:', error.response.data);
+        console.error('Response status:', error.response.status);
+        console.error('Response headers:', error.response.headers);
       }
       setUser(null);
       localStorage.removeItem('token');
@@ -72,7 +69,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       localStorage.setItem('token', token);
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       await fetchUserData(token);
-      router.push('/dashboard');
+      router.push('/');
     } catch (error) {
       console.error('Error during login:', error);
       localStorage.removeItem('token');

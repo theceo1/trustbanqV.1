@@ -50,6 +50,9 @@ export async function loginUser(credentials: { email: string; password: string }
       console.error('Error response:', error.response.data);
       console.error('Error status:', error.response.status);
       if (error.response.status === 401) {
+        if (error.response.data.message === 'Email not confirmed') {
+          throw new Error('Email not confirmed. Please check your inbox and confirm your email before logging in.');
+        }
         throw new Error('Invalid email or password');
       }
     }

@@ -31,13 +31,18 @@ export class AuthService {
   }
 
   async validateUser(email: string, password: string): Promise<any> {
+    this.logger.debug(`Attempting to validate user with email: ${email}`);
     const { data, error } = await this.supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
       this.logger.error(`User validation failed: ${error.message}`);
+      if (error.message.includes('Email not confirmed')) {
+        throw new UnauthorizedException('Email not confirmed');
+      }
       return null;
     }
 
+    this.logger.debug(`User validation successful for email: ${email}`);
     return data.user;
   }
 
@@ -46,6 +51,7 @@ export class AuthService {
     return {
       access_token: this.jwtService.sign(payload),
       refresh_token: this.jwtService.sign(payload, { expiresIn: '7d' }),
+      user: { id: user.id, email: user.email }
     };
   }
 
@@ -85,12 +91,16 @@ export class AuthService {
     return { message: 'Confirmation email sent successfully' };
   }
 
-  async getUserById(id: string) {
-    this.logger.debug(`Attempting to fetch user with ID: ${id}`);
+  async getUserById(sub: string) {
+    if (!sub) {
+      this.logger.error('Attempted to fetch user with undefined ID');
+      throw new BadRequestException('User ID is required');
+    }
+    this.logger.debug(`Attempting to fetch user with ID: ${sub}`);
     const { data: user, error } = await this.supabase
       .from('users')
       .select('*')
-      .eq('id', id)
+      .eq('id', sub)
       .single();
 
     if (error) {
@@ -99,7 +109,7 @@ export class AuthService {
     }
 
     if (!user) {
-      this.logger.warn(`No user found with ID: ${id}`);
+      this.logger.warn(`No user found with ID: ${sub}`);
       throw new NotFoundException('User not found');
     }
 
@@ -107,3 +117,4 @@ export class AuthService {
     return user;
   }
 }
+

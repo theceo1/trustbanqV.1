@@ -14,6 +14,10 @@ export declare class AuthController {
     login(loginDto: LoginDto): Promise<{
         access_token: string;
         refresh_token: string;
+        user: {
+            id: any;
+            email: any;
+        };
     }>;
     refreshToken(refreshTokenDto: RefreshTokenDto): Promise<{
         access_token: string;
